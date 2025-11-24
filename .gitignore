@@ -1,2 +1,16 @@
-bin/
 packages/
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Build
+bin/
+obj/
+
+# DevExpress Designer generated stuff
+*.Designer.cs
+*.resx
+*.dll
+*.cache
+
