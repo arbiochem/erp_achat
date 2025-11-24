@@ -1,8 +1,2 @@
-.vs/
-*.user
-*.suo
-*.VC.db
-*.vscode/
-obj/
 bin/
 packages/
