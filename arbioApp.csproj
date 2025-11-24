@@ -1,0 +1,905 @@
+﻿<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\EntityFramework.6.5.1\build\EntityFramework.props" Condition="Exists('..\packages\EntityFramework.6.5.1\build\EntityFramework.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{78D775A6-87D6-4010-86C9-4DDC40FBCA69}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>arbioApp</RootNamespace>
+    <AssemblyName>arbioApp</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <PublishUrl>\\SRV-ARB\arApplication%24\</PublishUrl>
+    <Install>false</Install>
+    <InstallFrom>Unc</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
+    <WebPage>publish.htm</WebPage>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <PublishWizardCompleted>true</PublishWizardCompleted>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <LangVersion>8.0</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>logo_gm_ok1_RLY_icon2.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestCertificateThumbprint>2FB6BA43360161FAF942C025323391321AF5C6D5</ManifestCertificateThumbprint>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestKeyFile>arbioApp_TemporaryKey.pfx</ManifestKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>true</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignManifests>true</SignManifests>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Accessibility" />
+    <Reference Include="BouncyCastle.Cryptography, Version=2.0.0.0, Culture=neutral, PublicKeyToken=072edcf4a5328938, processorArchitecture=MSIL">
+      <HintPath>..\packages\BouncyCastle.Cryptography.2.5.0\lib\net461\BouncyCastle.Cryptography.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.BonusSkins.v24.1" />
+    <Reference Include="DevExpress.Charts.v24.1.Core, Version=24.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.CodeParser.v24.1, Version=24.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.Dashboard.v24.1.Core, Version=24.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.Dashboard.v24.1.Win, Version=24.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Data.Desktop.v24.1" />
+    <Reference Include="DevExpress.Data.v24.1" />
+    <Reference Include="DevExpress.DataAccess.v24.1, Version=24.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.DataAccess.v24.1.UI, Version=24.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.DataVisualization.v24.1.Core, Version=24.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.Dialogs.v24.1.Core, Version=24.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.Docs.v24.1, Version=24.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="DevExpress.ExpressApp.Objects.v24.1, Version=24.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files\DevExpress 24.1\Components\Bin\NetCore\DevExpress.ExpressApp.Objects.v24.1.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.Images.v24.1, Version=24.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.Map.v24.1.Core, Version=24.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.Office.v24.1.Core, Version=24.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.Pdf.v24.1.Core, Version=24.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Pdf.v24.1.Drawing, Version=24.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files\DevExpress 24.1\Components\Bin\Framework\DevExpress.Pdf.v24.1.Drawing.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.PivotGrid.v24.1.Core, Version=24.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.RichEdit.v24.1.Core, Version=24.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.RichEdit.v24.1.Export, Version=24.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Spreadsheet.v24.1.Core, Version=24.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.TreeMap.v24.1.Core, Version=24.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.Utils.v24.1" />
+    <Reference Include="DevExpress.Sparkline.v24.1.Core" />
+    <Reference Include="DevExpress.Utils.v24.1.UI, Version=24.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.Xpo.v24.1, Version=24.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.XtraBars.v24.1, Version=24.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.XtraCharts.v24.1, Version=24.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.XtraCharts.v24.1.UI, Version=24.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.XtraCharts.v24.1.Wizard, Version=24.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.XtraDialogs.v24.1, Version=24.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.XtraEditors.v24.1" />
+    <Reference Include="DevExpress.Printing.v24.1.Core" />
+    <Reference Include="DevExpress.Drawing.v24.1" />
+    <Reference Include="DevExpress.XtraGauges.v24.1.Core, Version=24.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.XtraGauges.v24.1.Presets, Version=24.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.XtraGauges.v24.1.Win, Version=24.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.XtraGrid.v24.1, Version=24.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.XtraLayout.v24.1, Version=24.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.XtraMap.v24.1, Version=24.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.XtraNavBar.v24.1, Version=24.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.XtraPivotGrid.v24.1, Version=24.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.XtraPrinting.v24.1, Version=24.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.XtraReports.v24.1, Version=24.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.XtraReports.v24.1.Extensions, Version=24.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.XtraRichEdit.v24.1, Version=24.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.XtraScheduler.v24.1, Version=24.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.XtraScheduler.v24.1.Core, Version=24.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.XtraScheduler.v24.1.Core.Desktop, Version=24.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.XtraSpreadsheet.v24.1, Version=24.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.XtraTreeList.v24.1, Version=24.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.XtraTreeMap.v24.1, Version=24.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.XtraTreeMap.v24.1.UI, Version=24.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.XtraVerticalGrid.v24.1, Version=24.1.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.5.1\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.5.1\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Humanizer, Version=2.14.0.0, Culture=neutral, PublicKeyToken=979442b78dfc278e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Humanizer.Core.2.14.1\lib\netstandard2.0\Humanizer.dll</HintPath>
+    </Reference>
+    <Reference Include="Interop.Objets100cLib">
+      <HintPath>..\..\..\Sauve du 14102025\arbioApp_13102025\arbioApp_10102025\arbioApp_130\arbioApp\arbioApp\obj\Debug\Interop.Objets100cLib.dll</HintPath>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="MailKit, Version=4.9.0.0, Culture=neutral, PublicKeyToken=4e064fe7c44a8f1b, processorArchitecture=MSIL">
+      <HintPath>..\packages\MailKit.4.9.0\lib\net48\MailKit.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.Common, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ReportingServices.ReportViewerControl.Winforms.150.1652.0\lib\net40\Microsoft.ReportViewer.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.DataVisualization, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ReportingServices.ReportViewerControl.Winforms.150.1652.0\lib\net40\Microsoft.ReportViewer.DataVisualization.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.Design, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ReportingServices.ReportViewerControl.Winforms.150.1652.0\lib\net40\Microsoft.ReportViewer.Design.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.ProcessingObjectModel, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ReportingServices.ReportViewerControl.Winforms.150.1652.0\lib\net40\Microsoft.ReportViewer.ProcessingObjectModel.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.WinForms, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ReportingServices.ReportViewerControl.Winforms.150.1652.0\lib\net40\Microsoft.ReportViewer.WinForms.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SqlServer.Types, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.SqlServer.Types.14.0.314.76\lib\net40\Microsoft.SqlServer.Types.dll</HintPath>
+    </Reference>
+    <Reference Include="MimeKit, Version=4.9.0.0, Culture=neutral, PublicKeyToken=bede1c8a46c66814, processorArchitecture=MSIL">
+      <HintPath>..\packages\MimeKit.4.9.0\lib\net48\MimeKit.dll</HintPath>
+    </Reference>
+    <Reference Include="Syncfusion.Maps.Windows, Version=29.1462.33.0, Culture=neutral, PublicKeyToken=3d67ed1f87d44c89, processorArchitecture=MSIL" />
+    <Reference Include="Syncfusion.Shared.Base, Version=29.1462.33.0, Culture=neutral, PublicKeyToken=3d67ed1f87d44c89" />
+    <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.4.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.6.0\lib\net462\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Linq" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Formats.Asn1, Version=8.0.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Formats.Asn1.8.0.1\lib\net462\System.Formats.Asn1.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Memory, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.6.0\lib\net462\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.5.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.6.0\lib\net462\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.6.1.0\lib\net462\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Runtime.Serialization.Formatters.Soap" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.6.0\lib\net462\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ARBIOCHEMDataSet.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ARBIOCHEMDataSet.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202510131145338_F_DOCFRAISIMPORT.cs" />
+    <Compile Include="Migrations\202510131145338_F_DOCFRAISIMPORT.Designer.cs">
+      <DependentUpon>202510131145338_F_DOCFRAISIMPORT.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202510150730181_f_fret.cs" />
+    <Compile Include="Migrations\202510150730181_f_fret.Designer.cs">
+      <DependentUpon>202510150730181_f_fret.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202510150758469_f_devise.cs" />
+    <Compile Include="Migrations\202510150758469_f_devise.Designer.cs">
+      <DependentUpon>202510150758469_f_devise.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202510150807059_f_devises.cs" />
+    <Compile Include="Migrations\202510150807059_f_devises.Designer.cs">
+      <DependentUpon>202510150807059_f_devises.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Modules\Helpers\ExcelToDatable.cs" />
+    <Compile Include="Modules\Principal\Dashboard\RECOUVREMENT\ucRecouvrement.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Modules\Principal\Dashboard\RECOUVREMENT\ucRecouvrement.Designer.cs">
+      <DependentUpon>ucRecouvrement.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Principal\DI\2_Documents\frmAutorisation.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Modules\Principal\DI\2_Documents\frmAutorisation.Designer.cs">
+      <DependentUpon>frmAutorisation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Principal\DI\2_Documents\frmAutorisations_achat.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Modules\Principal\DI\2_Documents\frmAutorisations_achat.Designer.cs">
+      <DependentUpon>frmAutorisations_achat.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Principal\DI\2_Documents\frmEditArticles.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Modules\Principal\DI\2_Documents\frmEditArticles.Designer.cs">
+      <DependentUpon>frmEditArticles.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Principal\DI\2_Documents\frmEditFrns.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Modules\Principal\DI\2_Documents\frmEditFrns.Designer.cs">
+      <DependentUpon>frmEditFrns.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Principal\DI\2_Documents\frmEditInfos.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Modules\Principal\DI\2_Documents\frmEditInfos.Designer.cs">
+      <DependentUpon>frmEditInfos.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Principal\DI\2_Documents\frmQuery.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Modules\Principal\DI\2_Documents\frmQuery.Designer.cs">
+      <DependentUpon>frmQuery.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Principal\DI\2_Documents\frmReglementFrns.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Modules\Principal\DI\2_Documents\frmReglementFrns.Designer.cs">
+      <DependentUpon>frmReglementFrns.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Principal\DI\2_Documents\frmTarifFrns.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Modules\Principal\DI\2_Documents\frmTarifFrns.Designer.cs">
+      <DependentUpon>frmTarifFrns.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Principal\DI\2_Documents\frmTransform.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Modules\Principal\DI\2_Documents\frmTransform.Designer.cs">
+      <DependentUpon>frmTransform.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Principal\DI\2_Documents\rptDocument.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Modules\Principal\DI\2_Documents\rptDocument.Designer.cs">
+      <DependentUpon>rptDocument.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Principal\DI\Converter.cs" />
+    <Compile Include="Modules\Principal\DI\dto\ArtClient.cs" />
+    <Compile Include="Modules\Principal\DI\dto\ArtCompta.cs" />
+    <Compile Include="Modules\Principal\DI\dto\ArtStock.cs" />
+    <Compile Include="Modules\Principal\DI\dto\CaisseInfo.cs" />
+    <Compile Include="Modules\Principal\DI\dto\CategoriesTarifairesGammes.cs" />
+    <Compile Include="Modules\Principal\DI\dto\DataInfo.cs" />
+    <Compile Include="Modules\Principal\DI\dto\DetailsArticle\Article.cs" />
+    <Compile Include="Modules\Principal\DI\dto\DetailsArticle\CategoriesTarifaires.cs" />
+    <Compile Include="Modules\Principal\DI\dto\DetailsArticle\Conditionnement.cs" />
+    <Compile Include="Modules\Principal\DI\dto\DetailsArticle\DepotParametres.cs" />
+    <Compile Include="Modules\Principal\DI\dto\DetailsArticle\DocsAttaches.cs" />
+    <Compile Include="Modules\Principal\DI\dto\DetailsArticle\GammeDataGridView.cs" />
+    <Compile Include="Modules\Principal\DI\dto\DetailsArticle\GlossaireDetailsArticle.cs" />
+    <Compile Include="Modules\Principal\DI\dto\DetailsArticle\InterrogationStock\CMUPInterrStock.cs" />
+    <Compile Include="Modules\Principal\DI\dto\DetailsArticle\InterrogationStock\EmplacementsInterrStock.cs" />
+    <Compile Include="Modules\Principal\DI\dto\DetailsArticle\ModeleDEnregistrement.cs" />
+    <Compile Include="Modules\Principal\DI\dto\DetailsArticle\TarifsClients.cs" />
+    <Compile Include="Modules\Principal\DI\dto\Devise.cs" />
+    <Compile Include="Modules\Principal\DI\dto\ListeEcheancesPourImpressionDocumentsDeVente.cs" />
+    <Compile Include="Modules\Principal\DI\dto\ListeSelectionEcheances.cs" />
+    <Compile Include="Modules\Principal\DI\dto\ModeReglement.cs" />
+    <Compile Include="Modules\Principal\DI\dto\Taxe.cs" />
+    <Compile Include="Modules\Principal\DI\dto\Unite.cs" />
+    <Compile Include="Modules\Account\FrmChangePassword.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Modules\Account\FrmChangePassword.Designer.cs">
+      <DependentUpon>FrmChangePassword.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Account\WaitForm3.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Modules\Account\WaitForm3.Designer.cs">
+      <DependentUpon>WaitForm3.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Helpers\Addserver.cs" />
+    <Compile Include="Form1.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form1.Designer.cs">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Account\FrmProfil.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Modules\Account\FrmProfil.Designer.cs">
+      <DependentUpon>FrmProfil.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Account\FrmConnex.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Modules\Account\FrmConnex.Designer.cs">
+      <DependentUpon>FrmConnex.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Helpers\DateHelper.cs" />
+    <Compile Include="Modules\Helpers\GridHScrollHelper.cs" />
+    <Compile Include="Modules\Helpers\HelperToken.cs" />
+    <Compile Include="Modules\Principal\BrowsSites.cs" />
+    <Compile Include="Modules\Principal\Dashboard\CIAL\ModulesDash\ucdashDocVente.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Modules\Principal\Dashboard\CIAL\ModulesDash\ucdashDocVente.Designer.cs">
+      <DependentUpon>ucdashDocVente.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Principal\Dashboard\CIAL\ucCial.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Modules\Principal\Dashboard\CIAL\ucCial.Designer.cs">
+      <DependentUpon>ucCial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Principal\Dashboard\CIAL\ucDashDesigner.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Modules\Principal\Dashboard\CIAL\ucDashDesigner.Designer.cs">
+      <DependentUpon>ucDashDesigner.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Principal\Dashboard\clsMultiDataTable.cs" />
+    <Compile Include="Modules\Principal\Dashboard\CPTA\ucCpta.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Modules\Principal\Dashboard\CPTA\ucCpta.Designer.cs">
+      <DependentUpon>ucCpta.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Principal\DI\2_Documents\frmEditDocument.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Modules\Principal\DI\2_Documents\frmEditDocument.Designer.cs">
+      <DependentUpon>frmEditDocument.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Principal\DI\2_Documents\frmSites.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Modules\Principal\DI\2_Documents\frmSites.Designer.cs">
+      <DependentUpon>frmSites.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Principal\DI\2_Documents\ucDocuments.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Modules\Principal\DI\2_Documents\ucDocuments.Designer.cs">
+      <DependentUpon>ucDocuments.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Principal\DI\FileIconHelper.cs" />
+    <Compile Include="Modules\Principal\DI\frmOpenFile.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Modules\Principal\DI\frmOpenFile.Designer.cs">
+      <DependentUpon>frmOpenFile.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Principal\DI\Lignes.cs" />
+    <Compile Include="Modules\Principal\DI\Entetes.cs" />
+    <Compile Include="Modules\Principal\DI\frmMenuAchat.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Modules\Principal\DI\frmMenuAchat.Designer.cs">
+      <DependentUpon>frmMenuAchat.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Principal\DI\Models\F_FRET.cs" />
+    <Compile Include="Modules\Principal\DI\Models\F_COORDINATES.cs" />
+    <Compile Include="Modules\Principal\DI\Models\F_DEVISE.cs" />
+    <Compile Include="Modules\Principal\DI\Models\F_DOCCOUTREVIENT.cs" />
+    <Compile Include="Modules\Principal\DI\Models\F_DOCFRAISIMPORT.cs" />
+    <Compile Include="Modules\Principal\DI\Models\P_CRISQUE.cs" />
+    <Compile Include="Modules\Principal\DI\Models\P_TYPEFRAIS.cs" />
+    <Compile Include="Modules\Principal\DI\Models\P_TYPEREPARTITION.cs" />
+    <Compile Include="Modules\Principal\DI\NetworkFolderHelper.cs" />
+    <Compile Include="Modules\Principal\DI\Repositories\ModelsRepository\F_AGENDARepository.cs" />
+    <Compile Include="Modules\Principal\DI\Repositories\ModelsRepository\F_ARTFOURNISSRepository.cs" />
+    <Compile Include="Modules\Principal\DI\Repositories\ModelsRepository\F_ARTGAMMERepository.cs" />
+    <Compile Include="Modules\Principal\DI\Repositories\ModelsRepository\F_ARTICLERepository.cs" />
+    <Compile Include="Modules\Principal\DI\Repositories\ModelsRepository\F_ARTSTOCKEMPLRepository.cs" />
+    <Compile Include="Modules\Principal\DI\Repositories\ModelsRepository\F_ARTSTOCKRepository.cs" />
+    <Compile Include="Modules\Principal\DI\Repositories\ModelsRepository\F_CREGLEMENTRepository.cs" />
+    <Compile Include="Modules\Principal\DI\Repositories\ModelsRepository\F_DOCFRAISIMPORTRepository.cs" />
+    <Compile Include="Modules\Principal\DI\Repositories\ModelsRepository\P_CRISQUERepository.cs" />
+    <Compile Include="Modules\Principal\DI\Repositories\ModelsRepository\F_DEPOTRepository.cs" />
+    <Compile Include="Modules\Principal\DI\Repositories\ModelsRepository\F_DOCLIGNEEMPLRepository.cs" />
+    <Compile Include="Modules\Principal\DI\Repositories\ModelsRepository\F_DOCLIGNERepository.cs" />
+    <Compile Include="Modules\Principal\DI\Repositories\ModelsRepository\F_TAXERepository.cs" />
+    <Compile Include="Modules\Principal\DI\Repositories\ModelsRepository\IRepository.cs" />
+    <Compile Include="Modules\Principal\DI\Repositories\ModelsRepository\P_DEVISERepository.cs" />
+    <Compile Include="Modules\Principal\DI\Services\F_ARTFOURNISSService.cs" />
+    <Compile Include="Modules\Principal\DI\Services\F_ARTICLEService.cs" />
+    <Compile Include="Modules\Principal\DI\Services\F_ARTSTOCKEMPLService.cs" />
+    <Compile Include="Modules\Principal\DI\Services\F_ARTSTOCKService.cs" />
+    <Compile Include="Modules\Principal\DI\Services\F_COMPTETService.cs" />
+    <Compile Include="Modules\Principal\DI\Services\F_CREGLEMENTService.cs" />
+    <Compile Include="Modules\Principal\DI\Services\F_DOCFRAISIMPORTService.cs" />
+    <Compile Include="Modules\Principal\DI\Services\F_DOCLIGNEService.cs" />
+    <Compile Include="Modules\Principal\DSI\FrmNewUser.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Modules\Principal\DSI\FrmNewUser.Designer.cs">
+      <DependentUpon>FrmNewUser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Principal\DSI\ucReleaseUser.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Modules\Principal\DSI\ucReleaseUser.Designer.cs">
+      <DependentUpon>ucReleaseUser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Principal\DSI\ucUpdatePrix.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Modules\Principal\DSI\ucUpdatePrix.Designer.cs">
+      <DependentUpon>ucUpdatePrix.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Principal\DSI\WaitForm2.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Modules\Principal\DSI\WaitForm2.Designer.cs">
+      <DependentUpon>WaitForm2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Principal\FINANCE\ucFinanceMvtStock.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Modules\Principal\FINANCE\ucFinanceMvtStock.Designer.cs">
+      <DependentUpon>ucFinanceMvtStock.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Principal\FrmMdiParent.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Modules\Principal\FrmMdiParent.Designer.cs">
+      <DependentUpon>FrmMdiParent.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Infos\FrmHelp.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Modules\Infos\FrmHelp.Designer.cs">
+      <DependentUpon>FrmHelp.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Helpers\PasswordHelper.cs" />
+    <Compile Include="Modules\Helpers\PermissionManager.cs" />
+    <Compile Include="Modules\Principal\GESTION_COMMERCIALE\FrmNewPrice.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Modules\Principal\GESTION_COMMERCIALE\FrmNewPrice.Designer.cs">
+      <DependentUpon>FrmNewPrice.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Principal\GESTION_COMMERCIALE\FrmNewPrix.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Modules\Principal\GESTION_COMMERCIALE\FrmNewPrix.Designer.cs">
+      <DependentUpon>FrmNewPrix.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Principal\GESTION_COMMERCIALE\ucChangePrix.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Modules\Principal\GESTION_COMMERCIALE\ucChangePrix.Designer.cs">
+      <DependentUpon>ucChangePrix.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Principal\GESTION_COMMERCIALE\ucReglement.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Modules\Principal\GESTION_COMMERCIALE\ucReglement.Designer.cs">
+      <DependentUpon>ucReglement.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Principal\DI\Models\AppDbContext.cs" />
+    <Compile Include="Modules\Principal\DI\Models\Collaborateur.cs" />
+    <Compile Include="Modules\Principal\DI\Models\CurrentRGPiece.cs" />
+    <Compile Include="Modules\Principal\DI\Models\F_AGENDA.cs" />
+    <Compile Include="Modules\Principal\DI\Models\F_ARTCLIENT.cs" />
+    <Compile Include="Modules\Principal\DI\Models\F_ARTCOMPTA.cs" />
+    <Compile Include="Modules\Principal\DI\Models\F_ARTENUMREF.cs" />
+    <Compile Include="Modules\Principal\DI\Models\F_ARTFOURNISS.cs" />
+    <Compile Include="Modules\Principal\DI\Models\F_ARTGAMME.cs" />
+    <Compile Include="Modules\Principal\DI\Models\F_ARTGLOSS.cs" />
+    <Compile Include="Modules\Principal\DI\Models\F_ARTICLE.cs" />
+    <Compile Include="Modules\Principal\DI\Models\F_ARTICLEMEDIA.cs" />
+    <Compile Include="Modules\Principal\DI\Models\F_ARTMODELE.cs" />
+    <Compile Include="Modules\Principal\DI\Models\F_ARTPRIX.cs" />
+    <Compile Include="Modules\Principal\DI\Models\F_ARTSTOCK.cs" />
+    <Compile Include="Modules\Principal\DI\Models\F_ARTSTOCKEMPL.cs" />
+    <Compile Include="Modules\Principal\DI\Models\F_BILLETPIECE.cs" />
+    <Compile Include="Modules\Principal\DI\Models\F_CAISSE.cs" />
+    <Compile Include="Modules\Principal\DI\Models\F_CATALOGUE.cs" />
+    <Compile Include="Modules\Principal\DI\Models\F_COLLABORATEUR.cs" />
+    <Compile Include="Modules\Principal\DI\Models\F_COMPTEA.cs" />
+    <Compile Include="Modules\Principal\DI\Models\F_COMPTEG.cs" />
+    <Compile Include="Modules\Principal\DI\Models\F_COMPTET.cs" />
+    <Compile Include="Modules\Principal\DI\Models\F_CONDITION.cs" />
+    <Compile Include="Modules\Principal\DI\Models\F_CREGLEMENT.cs" />
+    <Compile Include="Modules\Principal\DI\Models\F_DEPOT.cs" />
+    <Compile Include="Modules\Principal\DI\Models\F_DEPOTEMPL.cs" />
+    <Compile Include="Modules\Principal\DI\Models\F_DOCCURRENTPIECE.cs" />
+    <Compile Include="Modules\Principal\DI\Models\F_DOCENTETE.cs" />
+    <Compile Include="Modules\Principal\DI\Models\F_DOCLIGNE.cs" />
+    <Compile Include="Modules\Principal\DI\Models\F_DOCLIGNEEMPL.cs" />
+    <Compile Include="Modules\Principal\DI\Models\F_DOCREGL.cs" />
+    <Compile Include="Modules\Principal\DI\Models\F_ENUMGAMME.cs" />
+    <Compile Include="Modules\Principal\DI\Models\F_FAMILLE.cs" />
+    <Compile Include="Modules\Principal\DI\Models\F_GAMSTOCK.cs" />
+    <Compile Include="Modules\Principal\DI\Models\F_GAMSTOCKEMPL.cs" />
+    <Compile Include="Modules\Principal\DI\Models\F_GLOSSAIRE.cs" />
+    <Compile Include="Modules\Principal\DI\Models\F_JOURNAUX.cs" />
+    <Compile Include="Modules\Principal\DI\Models\F_LIGNEARCHIVE.cs" />
+    <Compile Include="Modules\Principal\DI\Models\F_LIVRAISON.cs" />
+    <Compile Include="Modules\Principal\DI\Models\F_MODELE.cs" />
+    <Compile Include="Modules\Principal\DI\Models\F_PAYS.cs" />
+    <Compile Include="Modules\Principal\DI\Models\F_REGLEARCHIVE.cs" />
+    <Compile Include="Modules\Principal\DI\Models\F_REGLECH.cs" />
+    <Compile Include="Modules\Principal\DI\Models\F_REGLEMENTT.cs" />
+    <Compile Include="Modules\Principal\DI\Models\F_TARIFGAM.cs" />
+    <Compile Include="Modules\Principal\DI\Models\F_TAXE.cs" />
+    <Compile Include="Modules\Principal\DI\Models\F_TICKETARCHIVE.cs" />
+    <Compile Include="Modules\Principal\DI\Models\Json\Langue.cs" />
+    <Compile Include="Modules\Principal\DI\Models\Json\TypeDocument.cs" />
+    <Compile Include="Modules\Principal\DI\Models\P_ANALYTIQUE.cs" />
+    <Compile Include="Modules\Principal\DI\Models\P_CATCOMPTA.cs" />
+    <Compile Include="Modules\Principal\DI\Models\P_CATTARIF.cs" />
+    <Compile Include="Modules\Principal\DI\Models\P_COLREGLEMENT.cs" />
+    <Compile Include="Modules\Principal\DI\Models\P_CONDLIVR.cs" />
+    <Compile Include="Modules\Principal\DI\Models\P_DEVISE.cs" />
+    <Compile Include="Modules\Principal\DI\Models\P_EXPEDITION.cs" />
+    <Compile Include="Modules\Principal\DI\Models\P_GAMME.cs" />
+    <Compile Include="Modules\Principal\DI\Models\P_PARAMETRECIAL.cs" />
+    <Compile Include="Modules\Principal\DI\Models\P_PREFERENCES.cs" />
+    <Compile Include="Modules\Principal\DI\Models\P_REGLEMENT.cs" />
+    <Compile Include="Modules\Principal\DI\Models\P_SCDREGLEMENT.cs" />
+    <Compile Include="Modules\Principal\DI\Models\P_SOUCHEVENTE.cs" />
+    <Compile Include="Modules\Principal\DI\Models\P_UNITE.cs" />
+    <Compile Include="Modules\Principal\DI\Models\Role.cs" />
+    <Compile Include="Modules\Principal\DI\Models\RoleAutorisation.cs" />
+    <Compile Include="Modules\Principal\DI\Models\Rubrique.cs" />
+    <Compile Include="Modules\Principal\DI\Models\Users.cs" />
+    <Compile Include="Modules\Principal\RECOUVREMENT\ucClient.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Modules\Principal\RECOUVREMENT\ucClient.Designer.cs">
+      <DependentUpon>ucClient.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Principal\Theme\FrmTheme.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Modules\Principal\Theme\FrmTheme.Designer.cs">
+      <DependentUpon>FrmTheme.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Principal\WaitForm1.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Modules\Principal\WaitForm1.Designer.cs">
+      <DependentUpon>WaitForm1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Modules\Principal\DI\Repositories\ModelsRepository\F_COLLABORATEURRepository.cs" />
+    <Compile Include="Modules\Principal\DI\Repositories\ModelsRepository\F_COMPTEARepository.cs" />
+    <Compile Include="Modules\Principal\DI\Repositories\ModelsRepository\F_COMPTETRepository.cs" />
+    <Compile Include="Modules\Principal\DI\Repositories\ModelsRepository\F_DOCCURRENTPIECERepository.cs" />
+    <Compile Include="Modules\Principal\DI\Repositories\ModelsRepository\F_DOCENTETERepository.cs" />
+    <Compile Include="Modules\Principal\DI\Repositories\ModelsRepository\F_LIVRAISONRepository.cs" />
+    <Compile Include="Modules\Principal\DI\Repositories\ModelsRepository\P_EXPEDITIONRepository.cs" />
+    <Compile Include="Modules\Principal\DI\Services\F_DOCENTETEService.cs" />
+    <Compile Include="SqlServerTypes\Loader.cs" />
+    <Compile Include="utils\ComboBox\Cmbx.cs" />
+    <Compile Include="utils\Connection\Db.cs" />
+    <Compile Include="utils\Controls\AddControl.cs" />
+    <Compile Include="utils\Controls\RoundedTableLayoutPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="utils\EnterKeyDownEventHadler.cs" />
+    <Compile Include="utils\Global\CaisseOuvert.cs" />
+    <Compile Include="utils\Global\ConnectedUser.cs" />
+    <EmbeddedResource Include="Form1.resx">
+      <DependentUpon>Form1.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202510131145338_F_DOCFRAISIMPORT.resx">
+      <DependentUpon>202510131145338_F_DOCFRAISIMPORT.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202510150730181_f_fret.resx">
+      <DependentUpon>202510150730181_f_fret.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202510150758469_f_devise.resx">
+      <DependentUpon>202510150758469_f_devise.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202510150807059_f_devises.resx">
+      <DependentUpon>202510150807059_f_devises.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\Account\FrmChangePassword.resx">
+      <DependentUpon>FrmChangePassword.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\Account\FrmProfil.resx">
+      <DependentUpon>FrmProfil.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\Account\FrmConnex.resx">
+      <DependentUpon>FrmConnex.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\Account\WaitForm3.resx">
+      <DependentUpon>WaitForm3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\Principal\Dashboard\CIAL\ModulesDash\ucdashDocVente.resx">
+      <DependentUpon>ucdashDocVente.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\Principal\Dashboard\CIAL\ucCial.resx">
+      <DependentUpon>ucCial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\Principal\Dashboard\CIAL\ucDashDesigner.resx">
+      <DependentUpon>ucDashDesigner.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\Principal\Dashboard\CPTA\ucCpta.resx">
+      <DependentUpon>ucCpta.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\Principal\Dashboard\RECOUVREMENT\ucRecouvrement.resx">
+      <DependentUpon>ucRecouvrement.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\Principal\DI\2_Documents\frmAutorisation.resx">
+      <DependentUpon>frmAutorisation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\Principal\DI\2_Documents\frmAutorisations_achat.resx">
+      <DependentUpon>frmAutorisations_achat.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\Principal\DI\2_Documents\frmEditDocument.resx">
+      <DependentUpon>frmEditDocument.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\Principal\DI\2_Documents\frmEditArticles.resx">
+      <DependentUpon>frmEditArticles.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\Principal\DI\2_Documents\frmEditFrns.resx">
+      <DependentUpon>frmEditFrns.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\Principal\DI\2_Documents\frmEditInfos.resx">
+      <DependentUpon>frmEditInfos.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\Principal\DI\2_Documents\frmQuery.resx">
+      <DependentUpon>frmQuery.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\Principal\DI\2_Documents\frmReglementFrns.resx">
+      <DependentUpon>frmReglementFrns.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\Principal\DI\2_Documents\frmSites.resx">
+      <DependentUpon>frmSites.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\Principal\DI\2_Documents\frmTarifFrns.resx">
+      <DependentUpon>frmTarifFrns.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\Principal\DI\2_Documents\frmTransform.resx">
+      <DependentUpon>frmTransform.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\Principal\DI\2_Documents\ucDocuments.resx">
+      <DependentUpon>ucDocuments.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\Principal\DI\2_Documents\rptDocument.resx">
+      <DependentUpon>rptDocument.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\Principal\DI\frmMenuAchat.resx">
+      <DependentUpon>frmMenuAchat.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\Principal\DI\frmOpenFile.resx">
+      <DependentUpon>frmOpenFile.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\Principal\DSI\FrmNewUser.resx">
+      <DependentUpon>FrmNewUser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\Principal\DSI\ucReleaseUser.resx">
+      <DependentUpon>ucReleaseUser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\Principal\DSI\ucUpdatePrix.resx">
+      <DependentUpon>ucUpdatePrix.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\Principal\DSI\WaitForm2.resx">
+      <DependentUpon>WaitForm2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\Principal\FINANCE\ucFinanceMvtStock.resx">
+      <DependentUpon>ucFinanceMvtStock.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\Principal\FrmMdiParent.resx">
+      <DependentUpon>FrmMdiParent.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\Infos\FrmHelp.resx">
+      <DependentUpon>FrmHelp.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\Principal\GESTION_COMMERCIALE\FrmNewPrice.resx">
+      <DependentUpon>FrmNewPrice.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\Principal\GESTION_COMMERCIALE\FrmNewPrix.resx">
+      <DependentUpon>FrmNewPrix.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\Principal\GESTION_COMMERCIALE\ucChangePrix.resx">
+      <DependentUpon>ucChangePrix.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\Principal\GESTION_COMMERCIALE\ucReglement.resx">
+      <DependentUpon>ucReglement.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\Principal\RECOUVREMENT\ucClient.resx">
+      <DependentUpon>ucClient.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\Principal\Theme\FrmTheme.resx">
+      <DependentUpon>FrmTheme.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\Principal\WaitForm1.resx">
+      <DependentUpon>WaitForm1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\licenses.licx" />
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <EmbeddedResource Include="utils\Controls\RoundedTableLayoutPanel.resx">
+      <DependentUpon>RoundedTableLayoutPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="App.config" />
+    <None Include="arbioApp_TemporaryKey.pfx" />
+    <None Include="ARBIOCHEMDataSet.xsc">
+      <DependentUpon>ARBIOCHEMDataSet.xsd</DependentUpon>
+    </None>
+    <None Include="ARBIOCHEMDataSet.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>ARBIOCHEMDataSet.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="ARBIOCHEMDataSet.xss">
+      <DependentUpon>ARBIOCHEMDataSet.xsd</DependentUpon>
+    </None>
+    <None Include="sample_data.shp" />
+    <None Include="world1.dbf" />
+    <EmbeddedResource Include="world1.shp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="logo_gm_ok1_RLY_icon2.ico" />
+    <Content Include="mpr.dll" />
+    <Content Include="Resources\cart_icon - Copie.png" />
+    <Content Include="Resources\datasource_enabled.bmp" />
+    <Content Include="Resources\Error.png" />
+    <Content Include="Resources\Image0.png" />
+    <Content Include="Resources\Image1.png" />
+    <Content Include="Resources\Image2.png" />
+    <Content Include="Resources\Image3.png" />
+    <Content Include="Resources\Image4.png" />
+    <Content Include="Resources\Image5.png" />
+    <Content Include="Resources\Image6.png" />
+    <Content Include="Resources\Image7.png" />
+    <Content Include="Resources\Info.png" />
+    <Content Include="Resources\read.bmp" />
+    <Content Include="Resources\unread.bmp" />
+    <Content Include="Resources\Warning.png" />
+    <Content Include="SqlServerTypes\readme.htm" />
+    <Content Include="SqlServerTypes\x64\msvcr120.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SqlServerTypes\x64\SqlServerSpatial140.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SqlServerTypes\x86\msvcr120.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SqlServerTypes\x86\SqlServerSpatial140.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="Resources\cart_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="Microsoft.Office.Core">
+      <Guid>{2DF8D04C-5BFA-101B-BDE5-00AA0044DE52}</Guid>
+      <VersionMajor>2</VersionMajor>
+      <VersionMinor>8</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="Microsoft.Office.Interop.Outlook">
+      <Guid>{00062FFF-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>9</VersionMajor>
+      <VersionMinor>6</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="stdole">
+      <Guid>{00020430-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>2</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.8">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.8 %28x86 et x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>Ce projet fait référence à des packages NuGet qui sont manquants sur cet ordinateur. Utilisez l'option de restauration des packages NuGet pour les télécharger. Pour plus d'informations, consultez http://go.microsoft.com/fwlink/?LinkID=322105. Le fichier manquant est : {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\EntityFramework.6.5.1\build\EntityFramework.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.5.1\build\EntityFramework.props'))" />
+    <Error Condition="!Exists('..\packages\EntityFramework.6.5.1\build\EntityFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.5.1\build\EntityFramework.targets'))" />
+  </Target>
+  <Import Project="..\packages\EntityFramework.6.5.1\build\EntityFramework.targets" Condition="Exists('..\packages\EntityFramework.6.5.1\build\EntityFramework.targets')" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
