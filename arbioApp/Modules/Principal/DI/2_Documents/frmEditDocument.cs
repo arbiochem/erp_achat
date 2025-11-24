@@ -2084,7 +2084,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 decimal totPoids = Convert.ToDecimal(txt_poids.Text.ToString());
                 if (totPoids != totalPoids)
                 {
-                    MessageBox.Show("Le poids total est différent au total des poids dans la ligne", "Erreur", MessageBoxButtons.OK,
+                    MessageBox.Show("Le poids total FRET est différent au total des poids dans la ligne", "Erreur", MessageBoxButtons.OK,
                                 MessageBoxIcon.Error);
                 }
                 else
