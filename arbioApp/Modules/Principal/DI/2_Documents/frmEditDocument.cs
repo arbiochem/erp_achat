@@ -19,6 +19,7 @@ using DevExpress.DataAccess.UI.Excel;
 using DevExpress.DataProcessing.InMemoryDataProcessor.GraphGenerator;
 using DevExpress.Pdf.Xmp;
 using DevExpress.Spreadsheet;
+using DevExpress.UIAutomation;
 using DevExpress.Utils.About;
 using DevExpress.XtraBars.Customization;
 using DevExpress.XtraCharts.Native;
@@ -1118,6 +1119,29 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
                         // MessageBox.Show($"Ligne cliquée:\nREFERENCE: {AR_Ref}\nFRNS: {CT_Num}");
                         AddLigne();
+
+                        //Récupération unité
+                        var recup = _context.F_ARTFOURNISS
+                        .FirstOrDefault(x => x.AR_Ref == AR_Ref);
+
+                        if (recup != null)
+                        {
+                            string uniteLibelle = _context.P_UNITE
+                             .Where(u => u.cbMarq == recup.AF_Unite)
+                             .Select(u => u.U_Intitule)
+                             .FirstOrDefault();
+
+                            gvLigneEdit.CustomColumnDisplayText += (s, e) =>
+                            {
+                                if (e.Column.FieldName == "Unite")
+                                {
+                                    e.DisplayText = uniteLibelle ?? ""; // juste la string
+                                }
+                            };
+
+                        }
+
+
                     }
                     else
                     {
@@ -1420,9 +1444,12 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                 string strDL_No = Convert.ToString(gvLigneEdit.GetRowCellValue(row, "DL_No"));
                                 decimal montantRegl = _f_DOCLIGNERepository.GetMontantRegleByPieceArRef(dopiece, arRef, CtNum);
                                 decimal poids = Convert.ToDecimal(gvLigneEdit.GetRowCellValue(row, "DL_PoidsNet"));
+                                var val = gvLigneEdit.GetListSourceRowCellValue(row, "Unite");
+
+                                string unite = val == null ? "" : val.ToString();
 
 
-                                _f_DOCLIGNEService.UpdateF_DOCLIGNE(dopiecetxt.Text, CtNum, arRef, dl_Designe, puBrut, dlLigne, quantiteEcriteStock, _typeDocument, dlTaxe1, dlMontantHT, dlMontantTTC, retenu, remisePourcent, dlPiecefrns, dlDatePiecefrns, montantRegl, poids);
+                                _f_DOCLIGNEService.UpdateF_DOCLIGNE(dopiecetxt.Text, CtNum, arRef, dl_Designe, puBrut, dlLigne, quantiteEcriteStock, _typeDocument, dlTaxe1, dlMontantHT, dlMontantTTC, retenu, remisePourcent, dlPiecefrns, dlDatePiecefrns, montantRegl, poids,unite);
 
                                 //// Mise à jour du stock de l'article dans un emplacement concerné
                                 //_f_ARTSTOCKEMPLService.UpdateArtstockEmpl(_typeDocument, ct_Num, dl_Ligne, arRef, previousQuantiteEcriteStock, quantiteEcriteStock, DE_No);
@@ -1467,7 +1494,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             laligneamettreajour = row;
             if (txtCours.Text == "" || txtCours.Text == "0,00")
             {
-                MessageBox.Show($"Le cours de devise est vide", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Le cours de devise est vide", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             else
             {
@@ -1831,7 +1858,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
 
             string connectionStringArbapp = $"Server={FrmMdiParent.DataSourceNameValueParent};" +
-                                            $"Database=arbapp;User ID=Dev;Password=1234;" +
+                                            $"Database=ARBIOCHEM;User ID=Dev;Password=1234;" +
                                             $"TrustServerCertificate=True;Connection Timeout=120;";
 
             DataTable dtMaster =
@@ -2069,28 +2096,198 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         }
         private void btnValider_Click(object sender, EventArgs e)
         {
-            try
+            if (txtCours.Text != "" || txtCours.Text == "0,00")
             {
                 decimal totalPoids = 0;
 
-                for (int i = 0; i < gvLigneEdit.RowCount; i++)
+                if (gvLigneEdit.RowCount > 0)
                 {
-                    object value = gvLigneEdit.GetRowCellValue(i, "DL_PoidsNet");
+                    for (int i = 0; i < gvLigneEdit.RowCount; i++)
+                    {
+                        object value = gvLigneEdit.GetRowCellValue(i, "DL_PoidsNet");
 
-                    if (value != null && value != DBNull.Value)
-                        totalPoids += Convert.ToDecimal(value);
-                }
+                        if (value != null && value != DBNull.Value)
+                            totalPoids += Convert.ToDecimal(value);
+                    }
 
-                decimal totPoids = Convert.ToDecimal(txt_poids.Text.ToString());
-                if (totPoids != totalPoids)
-                {
-                    MessageBox.Show("Le poids total FRET est différent au total des poids dans la ligne", "Erreur", MessageBoxButtons.OK,
-                                MessageBoxIcon.Error);
-                }
-                else
-                {
+                    if (txt_poids.Text != "")
+                    {
+                        decimal totPoids = Convert.ToDecimal(txt_poids.Text.ToString());
 
-                    try
+                        if (totPoids != totalPoids)
+                        {
+                            MessageBox.Show("Le poids total FRET est différent au total des poids dans la ligne", "Erreur", MessageBoxButtons.OK,
+                                        MessageBoxIcon.Error);
+                        }
+                        else
+                        {
+
+                            try
+                            {
+                                if (!ValiderChampsObligatoires())
+                                    return;
+
+                                F_DOCENTETE doc = _f_DOCENTETEService.GetDocByPiece(dopiecetxt.Text, _listeDocs);
+                                string _currentDocPieceNo = dopiecetxt.Text;
+                                if (doc != null)
+                                {
+                                    if (tester_cloturer(dopiecetxt.Text))
+                                    {
+                                        MessageBox.Show(
+                                            "Ce document est déjà clôturé, vous ne pouvez plus modifier son contenu!!!!",
+                                            "Modification bloquée",
+                                            MessageBoxButtons.OK,
+                                            MessageBoxIcon.Error
+                                        );
+                                    }
+                                    else
+                                    {
+                                        if (dopiecetxt.Text.ToString().StartsWith("AFA"))
+                                        {
+                                            bool autorise = frmMenuAchat.verifier_droit("Facture", "UPDATE");
+
+                                            if (autorise)
+                                            {
+                                                UpdateFDOCENTETE();
+                                                _ucDocuments.RafraichirDonnees();
+                                                gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
+                                                StatutActuel = Convert.ToInt32(lkStatut.EditValue);
+                                                MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                                frmSites frmsite = new frmSites(this);
+                                                frmsite.ShowDialog();
+                                            }
+                                            else
+                                            {
+                                                MessageBox.Show(
+                                                    "Vous n'avez pas l'autorisation de mettre à jour une facture !",
+                                                    "Modification bloquée",
+                                                    MessageBoxButtons.OK,
+                                                    MessageBoxIcon.Error
+                                                );
+
+                                            }
+                                        }
+                                        else if (dopiecetxt.Text.ToString().StartsWith("APA"))
+                                        {
+                                            bool autorise = frmMenuAchat.verifier_droit("Projet d'achat", "UPDATE");
+
+                                            if (autorise)
+                                            {
+                                                if (lkStatut.Text != "Accepté")
+                                                {
+                                                    UpdateFDOCENTETE();
+                                                    _ucDocuments.RafraichirDonnees();
+                                                    gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
+                                                    StatutActuel = Convert.ToInt32(lkStatut.EditValue);
+                                                    MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                                    frmSites frmsite = new frmSites(this);
+                                                    frmsite.ShowDialog();
+                                                }
+                                                else
+                                                {
+                                                    MessageBox.Show(
+                                                    "Vous n'avez pas l'autorisation de modifier ce statut, seul DG a le droit !",
+                                                    "Modification bloquée",
+                                                    MessageBoxButtons.OK,
+                                                    MessageBoxIcon.Error
+                                                );
+                                                }
+                                            }
+                                            else
+                                            {
+                                                MessageBox.Show(
+                                                    "Vous n'avez pas l'autorisation de mettre à jour un projet d'achat !",
+                                                    "Modification bloquée",
+                                                    MessageBoxButtons.OK,
+                                                    MessageBoxIcon.Error
+                                                );
+                                            }
+                                        }
+                                        else if (dopiecetxt.Text.ToString().StartsWith("ABC"))
+                                        {
+                                            bool autorise = frmMenuAchat.verifier_droit("Bon de commande", "UPDATE");
+
+                                            if (autorise)
+                                            {
+                                                UpdateFDOCENTETE();
+                                                _ucDocuments.RafraichirDonnees();
+                                                gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
+                                                StatutActuel = Convert.ToInt32(lkStatut.EditValue);
+                                                MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                                frmSites frmsite = new frmSites(this);
+                                                frmsite.ShowDialog();
+                                            }
+                                            else
+                                            {
+                                                MessageBox.Show(
+                                                    "Vous n'avez pas l'autorisation de mettre à jour un bon de commande !",
+                                                    "Modification bloquée",
+                                                    MessageBoxButtons.OK,
+                                                    MessageBoxIcon.Error
+                                                );
+                                            }
+                                        }
+                                        else if (dopiecetxt.Text.ToString().StartsWith("ABR"))
+                                        {
+                                            bool autorise = frmMenuAchat.verifier_droit("Bon de réception", "UPDATE");
+
+                                            if (autorise)
+                                            {
+                                                UpdateFDOCENTETE();
+                                                _ucDocuments.RafraichirDonnees();
+                                                gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
+                                                StatutActuel = Convert.ToInt32(lkStatut.EditValue);
+                                                MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                                frmSites frmsite = new frmSites(this);
+                                                frmsite.ShowDialog();
+                                            }
+                                            else
+                                            {
+                                                MessageBox.Show(
+                                                    "Vous n'avez pas l'autorisation de mettre à jour un Bon de réception !",
+                                                    "Modification bloquée",
+                                                    MessageBoxButtons.OK,
+                                                    MessageBoxIcon.Error
+                                                );
+                                            }
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    var test = _context.F_DOCENTETE.FirstOrDefault(d => d.DO_Piece == _currentDocPieceNo);
+
+                                    if (test == null)
+                                    {
+                                        InsertFDOCENTETE();
+                                        _ucDocuments.RafraichirDonnees();
+                                        gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
+                                        StatutActuel = Convert.ToInt32(lkStatut.EditValue);
+                                        MessageBox.Show("Insertion terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                        frmSites frmsite = new frmSites(this);
+                                        frmsite.ShowDialog();
+                                    }
+                                    else
+                                    {
+                                        UpdateFDOCENTETE();
+                                        _ucDocuments.RafraichirDonnees();
+                                        gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
+                                        MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                        frmSites frmsite = new frmSites(this);
+                                        frmsite.ShowDialog();
+                                    }
+                                }
+                            }
+
+                            catch (System.Exception ex)
+                            {
+                                MethodBase m = MethodBase.GetCurrentMethod();
+                                MessageBox.Show($"Une erreur est survenue : {ex.Message}, {m}", "Erreur", MessageBoxButtons.OK,
+                                            MessageBoxIcon.Error);
+                            }
+                        }
+                    }
+                    else
                     {
                         if (!ValiderChampsObligatoires())
                             return;
@@ -2246,15 +2443,168 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                             }
                         }
                     }
+                }
+                else
+                {
+                    if (!ValiderChampsObligatoires())
+                        return;
 
-                    catch (System.Exception ex)
+                    F_DOCENTETE doc = _f_DOCENTETEService.GetDocByPiece(dopiecetxt.Text, _listeDocs);
+                    string _currentDocPieceNo = dopiecetxt.Text;
+                    if (doc != null)
                     {
-                        MethodBase m = MethodBase.GetCurrentMethod();
-                        MessageBox.Show($"Une erreur est survenue : {ex.Message}, {m}", "Erreur", MessageBoxButtons.OK,
-                                    MessageBoxIcon.Error);
+                        if (tester_cloturer(dopiecetxt.Text))
+                        {
+                            MessageBox.Show(
+                                "Ce document est déjà clôturé, vous ne pouvez plus modifier son contenu!!!!",
+                                "Modification bloquée",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error
+                            );
+                        }
+                        else
+                        {
+                            if (dopiecetxt.Text.ToString().StartsWith("AFA"))
+                            {
+                                bool autorise = frmMenuAchat.verifier_droit("Facture", "UPDATE");
+
+                                if (autorise)
+                                {
+                                    UpdateFDOCENTETE();
+                                    _ucDocuments.RafraichirDonnees();
+                                    gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
+                                    StatutActuel = Convert.ToInt32(lkStatut.EditValue);
+                                    MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                    frmSites frmsite = new frmSites(this);
+                                    frmsite.ShowDialog();
+                                }
+                                else
+                                {
+                                    MessageBox.Show(
+                                        "Vous n'avez pas l'autorisation de mettre à jour une facture !",
+                                        "Modification bloquée",
+                                        MessageBoxButtons.OK,
+                                        MessageBoxIcon.Error
+                                    );
+
+                                }
+                            }
+                            else if (dopiecetxt.Text.ToString().StartsWith("APA"))
+                            {
+                                bool autorise = frmMenuAchat.verifier_droit("Projet d'achat", "UPDATE");
+
+                                if (autorise)
+                                {
+                                    if (lkStatut.Text != "Accepté")
+                                    {
+                                        UpdateFDOCENTETE();
+                                        _ucDocuments.RafraichirDonnees();
+                                        gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
+                                        StatutActuel = Convert.ToInt32(lkStatut.EditValue);
+                                        MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                        frmSites frmsite = new frmSites(this);
+                                        frmsite.ShowDialog();
+                                    }
+                                    else
+                                    {
+                                        MessageBox.Show(
+                                        "Vous n'avez pas l'autorisation de modifier ce statut, seul DG a le droit !",
+                                        "Modification bloquée",
+                                        MessageBoxButtons.OK,
+                                        MessageBoxIcon.Error
+                                    );
+                                    }
+                                }
+                                else
+                                {
+                                    MessageBox.Show(
+                                        "Vous n'avez pas l'autorisation de mettre à jour un projet d'achat !",
+                                        "Modification bloquée",
+                                        MessageBoxButtons.OK,
+                                        MessageBoxIcon.Error
+                                    );
+                                }
+                            }
+                            else if (dopiecetxt.Text.ToString().StartsWith("ABC"))
+                            {
+                                bool autorise = frmMenuAchat.verifier_droit("Bon de commande", "UPDATE");
+
+                                if (autorise)
+                                {
+                                    UpdateFDOCENTETE();
+                                    _ucDocuments.RafraichirDonnees();
+                                    gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
+                                    StatutActuel = Convert.ToInt32(lkStatut.EditValue);
+                                    MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                    frmSites frmsite = new frmSites(this);
+                                    frmsite.ShowDialog();
+                                }
+                                else
+                                {
+                                    MessageBox.Show(
+                                        "Vous n'avez pas l'autorisation de mettre à jour un bon de commande !",
+                                        "Modification bloquée",
+                                        MessageBoxButtons.OK,
+                                        MessageBoxIcon.Error
+                                    );
+                                }
+                            }
+                            else if (dopiecetxt.Text.ToString().StartsWith("ABR"))
+                            {
+                                bool autorise = frmMenuAchat.verifier_droit("Bon de réception", "UPDATE");
+
+                                if (autorise)
+                                {
+                                    UpdateFDOCENTETE();
+                                    _ucDocuments.RafraichirDonnees();
+                                    gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
+                                    StatutActuel = Convert.ToInt32(lkStatut.EditValue);
+                                    MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                    frmSites frmsite = new frmSites(this);
+                                    frmsite.ShowDialog();
+                                }
+                                else
+                                {
+                                    MessageBox.Show(
+                                        "Vous n'avez pas l'autorisation de mettre à jour un Bon de réception !",
+                                        "Modification bloquée",
+                                        MessageBoxButtons.OK,
+                                        MessageBoxIcon.Error
+                                    );
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        var test = _context.F_DOCENTETE.FirstOrDefault(d => d.DO_Piece == _currentDocPieceNo);
+
+                        if (test == null)
+                        {
+                            InsertFDOCENTETE();
+                            _ucDocuments.RafraichirDonnees();
+                            gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
+                            StatutActuel = Convert.ToInt32(lkStatut.EditValue);
+                            MessageBox.Show("Insertion terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            frmSites frmsite = new frmSites(this);
+                            frmsite.ShowDialog();
+                        }
+                        else
+                        {
+                            UpdateFDOCENTETE();
+                            _ucDocuments.RafraichirDonnees();
+                            gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
+                            MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            frmSites frmsite = new frmSites(this);
+                            frmsite.ShowDialog();
+                        }
                     }
                 }
-            }catch(Exception er) { }
+            }
+            else
+            {
+                MessageBox.Show("La saisie du cours de devise est obligatoire!!!!", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
         private void LoadCodeTaxe()
         {
@@ -2419,9 +2769,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         string ExpeditionID = string.Empty;
         private void InsertFDOCENTETE()
         {
-            try
-            {
-                Guid cbCreationUser = getcbCreationUserGuid(FrmConnex.mailuser);
+            Guid cbCreationUser = getcbCreationUserGuid(FrmConnex.mailuser);
                 string caNum = comboBoxAffaire.Text;
                 int caisseNumber = 0;
                 int caissierNumber = 0;
@@ -2451,7 +2799,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 int number = int.Parse(dopiecetxt.Text.Substring(dopiecetxt.Text.Length - 4));
                 decimal DoTaxe1 = 0m;
                 decimal.TryParse(doTaxe1txt.Text, out DoTaxe1);
-                decimal doCours=decimal.Parse(txtCours.Text);
+                decimal doCours = decimal.Parse(txtCours.Text);
 
                 if (fDocenteteToModif == null)
                 {
@@ -2463,12 +2811,6 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                         ct_taux2, CodeTaxe, _prefix,
                         number, DoTaxe1, doCours);
                 }
-            }
-            catch (System.Exception ex)
-            {
-                MethodBase m = MethodBase.GetCurrentMethod();
-                MessageBox.Show($"Une erreur est survenue : {ex.Message}, {m}", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
         }
         public void TransformFDOCENTETE(string doctype)
         {
@@ -2967,6 +3309,14 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
           
             LkDevise_EditValueChanged(sender, e);
 
+            GridColumn col_unite = gvLigneEdit.Columns.AddField("Unite");
+            col_unite.Caption = "Unité";
+            col_unite.UnboundType = DevExpress.Data.UnboundColumnType.Decimal;
+            col_unite.Visible = true;
+            col_unite.OptionsColumn.AllowEdit = false;
+            col_unite.OptionsColumn.ReadOnly = true;
+            col_unite.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+
             GridColumn col = gvLigneEdit.Columns.AddField("FRET");
             col.Caption = "FRET";
             col.UnboundType = DevExpress.Data.UnboundColumnType.Decimal;
@@ -2979,10 +3329,15 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             col1.UnboundType = DevExpress.Data.UnboundColumnType.Decimal;
             col1.Visible = true;
 
+
             // 2. Positionnement avant DL_FRAIS
             int indexFrais = gvLigneEdit.Columns["DL_Frais"].VisibleIndex;
             col.VisibleIndex = indexFrais;
             col1.VisibleIndex = indexFrais+2;
+
+            // 2. Positionnement avant DL_PrixUnitaire
+            int indexPrixUnitaire = gvLigneEdit.Columns["DL_PrixUnitaire"].VisibleIndex;
+            col_unite.VisibleIndex = indexPrixUnitaire - 1;
 
             gvLigneEdit.CustomUnboundColumnData += (sender, e) =>
             {
@@ -3015,6 +3370,29 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
                         decimal tot_frais = dlFrais + fret;
                         e.Value = tot_frais; // reste un decimal
+
+                        //Récupération unité
+
+                        string reference = gvLigneEdit.GetListSourceRowCellValue(e.ListSourceRowIndex, "AR_Ref").ToString();
+                        var recup = _context.F_ARTFOURNISS
+                        .FirstOrDefault(x => x.AR_Ref == reference);
+
+                        if (recup != null)
+                        {
+                            string uniteLibelle = _context.P_UNITE
+                             .Where(u => u.cbMarq == recup.AF_Unite)
+                             .Select(u => u.U_Intitule)
+                             .FirstOrDefault();
+
+                            gvLigneEdit.CustomColumnDisplayText += (s, e) =>
+                            {
+                                if (e.Column.FieldName == "Unite")
+                                {
+                                    e.DisplayText = uniteLibelle ?? ""; // juste la string
+                                }
+                            };
+
+                        }
 
                     }
                 }
@@ -4675,6 +5053,19 @@ private void datelivrprev_EditValueChanged(object sender, EventArgs e)
         private void txt_prix_EditValueChanged(object sender, EventArgs e)
         {
             gvLigneEdit.RefreshData();
+        }
+
+        private string recup_ctnum(string cond)
+        {
+            string val = "";
+            var recup = _context.F_COMPTET
+                               .FirstOrDefault(x => x.CT_Intitule == cond);
+
+            if (recup != null)
+            {
+                val= recup.CT_Num;
+            }
+            return val;
         }
     }
 }
