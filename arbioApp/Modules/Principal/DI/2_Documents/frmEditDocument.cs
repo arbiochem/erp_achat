@@ -33,6 +33,7 @@ using DevExpress.XtraGrid.Columns;
 using DevExpress.XtraGrid.Views.Grid;
 using DevExpress.XtraPrinting;
 using DevExpress.XtraReports.UI;
+using DevExpress.XtraRichEdit.Import.Doc;
 using DevExpress.XtraSplashScreen;
 using DevExpress.XtraSpreadsheet;
 using DevExpress.XtraSpreadsheet.DocumentFormats.Xlsb;
@@ -1854,57 +1855,72 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
         public void ExecuteStockAlert()
         {
-            string query1 = @"SELECT * FROM dbo.VW_ETAT_STOCK WHERE CT_INTITULE='"+ lkEdFrns.Text +"'";
-
-
-            string connectionStringArbapp = $"Server={FrmMdiParent.DataSourceNameValueParent};" +
-                                            $"Database=ARBIOCHEM;User ID=Dev;Password=1234;" +
-                                            $"TrustServerCertificate=True;Connection Timeout=120;";
-
-            DataTable dtMaster =
-                arbioApp.Modules.Principal.BrowsSites.ExecuteQueryOnMultipleServers(connectionStringArbapp, query1);
-
-            treeList1.BeginUpdate();
-            treeList1.ClearNodes();
-            treeList1.Columns.Clear();
-
-
-            var parentColumns = new[]
-                { "SITE", "FAMILLE", "REFERENCE", "DESIGNATION", "CT_Num", "CT_Intitule", "PURCHASE", "AF_PrixAch" };
-            var childColumns = new[] { "DEPOT", "STOCK REEL", "STOCK MINI", "STOCK MAXI" };
-
-            foreach (string col in parentColumns)
+            try
             {
-                treeList1.Columns.AddVisible(col);
-            }
+                string query1 = @"SELECT * FROM dbo.VW_ETAT_STOCK WHERE CT_INTITULE='" + lkEdFrns.Text + "'";
 
-            foreach (string col in childColumns)
-            {
-                treeList1.Columns.AddVisible(col);
-            }
 
-            var groupedData = dtMaster.AsEnumerable()
-                .GroupBy(r => new
+                string connectionStringArbapp = $"Server = tcp:{FrmMdiParent.DataSourceNameValueParent},1433;" +
+                                                $"Database=ARBIOCHEM;User ID=Dev;Password=1234;" +
+                                                $"TrustServerCertificate=True;Connection Timeout=120;";
+
+                DataTable dtMaster;
+                try
                 {
-                    Site = r["SITE"],
-                    Famille = r["FAMILLE"],
-                    Reference = r["REFERENCE"],
-                    Designation = r["DESIGNATION"],
-                    CtNum = r["CT_Num"],
-                    CtIntitule = r["CT_Intitule"],
-                    Purchase = r["PURCHASE"],
-                    AF_PrixAch = r["AF_PrixAch"]
-                });
-
-            if (groupedData.Any())
-            {
-                foreach (var group in groupedData)
+                    dtMaster = arbioApp.Modules.Principal.BrowsSites.ExecuteQueryOnMultipleServers(connectionStringArbapp, query1);
+                }
+                catch (Exception ex)
                 {
-                    decimal totalStockReel = group.Sum(r => r.Field<decimal?>("STOCK REEL") ?? 0);
-                    decimal totalStockMini = group.Sum(r => r.Field<decimal?>("STOCK MINI") ?? 0);
-                    decimal totalStockMaxi = group.Sum(r => r.Field<decimal?>("STOCK MAXI") ?? 0);
-                    TreeListNode parentNode = treeList1.AppendNode(new object[]
+                    // Vous pouvez logger ici
+                    throw new InvalidOperationException("Échec de la récupération des données depuis la base de données.", ex);
+                }
+
+                if (dtMaster == null)
+                    throw new InvalidOperationException("La requête a réussi, mais a retourné une table nulle.");
+
+                // Continuer le traitement...
+
+                treeList1.BeginUpdate();
+                treeList1.ClearNodes();
+                treeList1.Columns.Clear();
+
+
+                var parentColumns = new[]
+                    { "SITE", "FAMILLE", "REFERENCE", "DESIGNATION", "CT_Num", "CT_Intitule", "PURCHASE", "AF_PrixAch" };
+                var childColumns = new[] { "DEPOT", "STOCK REEL", "STOCK MINI", "STOCK MAXI" };
+
+                foreach (string col in parentColumns)
+                {
+                    treeList1.Columns.AddVisible(col);
+                }
+
+                foreach (string col in childColumns)
+                {
+                    treeList1.Columns.AddVisible(col);
+                }
+
+                var groupedData = dtMaster.AsEnumerable()
+                    .GroupBy(r => new
                     {
+                        Site = r["SITE"],
+                        Famille = r["FAMILLE"],
+                        Reference = r["REFERENCE"],
+                        Designation = r["DESIGNATION"],
+                        CtNum = r["CT_Num"],
+                        CtIntitule = r["CT_Intitule"],
+                        Purchase = r["PURCHASE"],
+                        AF_PrixAch = r["AF_PrixAch"]
+                    });
+
+                if (groupedData.Any())
+                {
+                    foreach (var group in groupedData)
+                    {
+                        decimal totalStockReel = group.Sum(r => r.Field<decimal?>("STOCK REEL") ?? 0);
+                        decimal totalStockMini = group.Sum(r => r.Field<decimal?>("STOCK MINI") ?? 0);
+                        decimal totalStockMaxi = group.Sum(r => r.Field<decimal?>("STOCK MAXI") ?? 0);
+                        TreeListNode parentNode = treeList1.AppendNode(new object[]
+                        {
                     group.Key.Site,
                     group.Key.Famille,
                     group.Key.Reference,
@@ -1917,12 +1933,12 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                     totalStockReel, // STOCK REEL total
                     totalStockMini, // STOCK MINI total
                     totalStockMaxi // STOCK MAXI total
-                    }, null);
+                        }, null);
 
-                    foreach (DataRow childRow in group)
-                    {
-                        treeList1.AppendNode(new object[]
+                        foreach (DataRow childRow in group)
                         {
+                            treeList1.AppendNode(new object[]
+                            {
                         null, // SITE
                         null, // FAMILLE
                         null, // REFERENCE
@@ -1935,26 +1951,28 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                         childRow["STOCK REEL"],
                         childRow["STOCK MINI"],
                         childRow["STOCK MAXI"]
-                        }, parentNode);
+                            }, parentNode);
+                        }
                     }
                 }
+
+                RepositoryItemHyperLinkEdit repo = new RepositoryItemHyperLinkEdit();
+                treeList1.RepositoryItems.Add(repo);
+                treeList1.Columns["PURCHASE"].ColumnEdit = repo;
+                repo.Click += Purchase_HyperlinkClick;
+
+                treeList1.Columns["STOCK REEL"].Format.FormatType = DevExpress.Utils.FormatType.Numeric;
+                treeList1.Columns["STOCK REEL"].Format.FormatString = "N2";
+                treeList1.Columns["STOCK MINI"].Format.FormatType = DevExpress.Utils.FormatType.Numeric;
+                treeList1.Columns["STOCK MINI"].Format.FormatString = "N2";
+                treeList1.Columns["STOCK MAXI"].Format.FormatType = DevExpress.Utils.FormatType.Numeric;
+                treeList1.Columns["STOCK MAXI"].Format.FormatString = "N2";
+
+                treeList1.NodeCellStyle += TreeList1_NodeCellStyle;
+
+                treeList1.EndUpdate();
             }
-
-            RepositoryItemHyperLinkEdit repo = new RepositoryItemHyperLinkEdit();
-            treeList1.RepositoryItems.Add(repo);
-            treeList1.Columns["PURCHASE"].ColumnEdit = repo;
-            repo.Click += Purchase_HyperlinkClick;
-
-            treeList1.Columns["STOCK REEL"].Format.FormatType = DevExpress.Utils.FormatType.Numeric;
-            treeList1.Columns["STOCK REEL"].Format.FormatString = "N2";
-            treeList1.Columns["STOCK MINI"].Format.FormatType = DevExpress.Utils.FormatType.Numeric;
-            treeList1.Columns["STOCK MINI"].Format.FormatString = "N2";
-            treeList1.Columns["STOCK MAXI"].Format.FormatType = DevExpress.Utils.FormatType.Numeric;
-            treeList1.Columns["STOCK MAXI"].Format.FormatString = "N2";
-
-            treeList1.NodeCellStyle += TreeList1_NodeCellStyle;
-
-            treeList1.EndUpdate();
+            catch (Exception ex) { }
             
         }
 
@@ -2153,8 +2171,8 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                                 gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
                                                 StatutActuel = Convert.ToInt32(lkStatut.EditValue);
                                                 MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                                frmSites frmsite = new frmSites(this);
-                                                frmsite.ShowDialog();
+                                                //frmSites frmsite = new frmSites(this);
+                                               // frmsite.ShowDialog();
                                             }
                                             else
                                             {
@@ -3309,44 +3327,60 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                     {
                         if (list.DO_MONTANT.ToString() != "")
                         {
-                            txt_prix.Text = list.DO_MONTANT.ToString("N2");
-                            txt_poids.Text = list.DO_POIDS.ToString("N2");
+                            txt_prix.EditValue = list.DO_MONTANT.ToString("N2");
+                            txt_poids.EditValue = list.DO_POIDS.ToString("N2");
                         }
+                       
                     }
                     catch (Exception ef) { }
                 }
-
+               
                 LkDevise_EditValueChanged(sender, e);
 
-                GridColumn col_unite = gvLigneEdit.Columns.AddField("Unite");
-                col_unite.Caption = "Unité";
-                col_unite.UnboundType = DevExpress.Data.UnboundColumnType.Decimal;
-                col_unite.Visible = true;
-                col_unite.OptionsColumn.AllowEdit = false;
-                col_unite.OptionsColumn.ReadOnly = true;
-                col_unite.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+                // === UNITE ===
+                GridColumn col_unite = gvLigneEdit.Columns["Unite"];
+                if (col_unite == null)
+                {
+                    col_unite = gvLigneEdit.Columns.AddField("Unite");
+                    col_unite.Caption = "Unité";
+                    col_unite.UnboundType = DevExpress.Data.UnboundColumnType.Decimal;
+                    col_unite.Visible = true;
+                    col_unite.OptionsColumn.AllowEdit = false;
+                    col_unite.OptionsColumn.ReadOnly = true;
+                    col_unite.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+                }
 
-                GridColumn col = gvLigneEdit.Columns.AddField("FRET");
-                col.Caption = "FRET";
-                col.UnboundType = DevExpress.Data.UnboundColumnType.Decimal;
-                col.Visible = true;
-                col.OptionsColumn.AllowEdit = true;
-                col.OptionsColumn.ReadOnly = false;
+                // === FRET ===
+                GridColumn col = gvLigneEdit.Columns["FRET"];
+                if (col == null)
+                {
+                    col = gvLigneEdit.Columns.AddField("FRET");
+                    col.Caption = "FRET";
+                    col.UnboundType = DevExpress.Data.UnboundColumnType.Decimal;
+                    col.Visible = true;
+                    col.OptionsColumn.AllowEdit = true;
+                    col.OptionsColumn.ReadOnly = false;
+                }
 
-                GridColumn col1 = gvLigneEdit.Columns.AddField("Total Frais");
-                col1.Caption = "Total Frais";
-                col1.UnboundType = DevExpress.Data.UnboundColumnType.Decimal;
-                col1.Visible = true;
+                // === Total Frais ===
+                GridColumn col1 = gvLigneEdit.Columns["Total Frais"];
+                if (col1 == null)
+                {
+                    col1 = gvLigneEdit.Columns.AddField("Total Frais");
+                    col1.Caption = "Total Frais";
+                    col1.UnboundType = DevExpress.Data.UnboundColumnType.Decimal;
+                    col1.Visible = true;
+                }
 
 
-                // 2. Positionnement avant DL_FRAIS
+                // === POSITIONNEMENT ===
                 int indexFrais = gvLigneEdit.Columns["DL_Frais"].VisibleIndex;
                 col.VisibleIndex = indexFrais;
                 col1.VisibleIndex = indexFrais + 2;
 
-                // 2. Positionnement avant DL_PrixUnitaire
                 int indexPrixUnitaire = gvLigneEdit.Columns["DL_PrixUnitaire"].VisibleIndex;
                 col_unite.VisibleIndex = indexPrixUnitaire - 1;
+
 
                 gvLigneEdit.CustomUnboundColumnData += (sender, e) =>
                 {
@@ -3438,9 +3472,14 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                     }
                 };
             }
+            else
+            {
+                txt_prix.EditValue = txt_poids.EditValue = "0";
+            }
+
         }
 
-private void datelivrprev_EditValueChanged(object sender, EventArgs e)
+        private void datelivrprev_EditValueChanged(object sender, EventArgs e)
         {
             datelivrprev.EditValue = datelivrprev.EditValue;
         }
@@ -4908,6 +4947,51 @@ private void datelivrprev_EditValueChanged(object sender, EventArgs e)
             {
                 gvLigneEdit.OptionsBehavior.Editable = true;
             }
+
+            // === UNITE ===
+            GridColumn col_unite = gvLigneEdit.Columns["Unite"];
+            if (col_unite == null)
+            {
+                col_unite = gvLigneEdit.Columns.AddField("Unite");
+                col_unite.Caption = "Unité";
+                col_unite.UnboundType = DevExpress.Data.UnboundColumnType.Decimal;
+                col_unite.Visible = true;
+                col_unite.OptionsColumn.AllowEdit = false;
+                col_unite.OptionsColumn.ReadOnly = true;
+                col_unite.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+            }
+
+            // === FRET ===
+            GridColumn col = gvLigneEdit.Columns["FRET"];
+            if (col == null)
+            {
+                col = gvLigneEdit.Columns.AddField("FRET");
+                col.Caption = "FRET";
+                col.UnboundType = DevExpress.Data.UnboundColumnType.Decimal;
+                col.Visible = true;
+                col.OptionsColumn.AllowEdit = true;
+                col.OptionsColumn.ReadOnly = false;
+            }
+
+            // === Total Frais ===
+            GridColumn col1 = gvLigneEdit.Columns["Total Frais"];
+            if (col1 == null)
+            {
+                col1 = gvLigneEdit.Columns.AddField("Total Frais");
+                col1.Caption = "Total Frais";
+                col1.UnboundType = DevExpress.Data.UnboundColumnType.Decimal;
+                col1.Visible = true;
+            }
+
+
+            // === POSITIONNEMENT ===
+            int indexFrais = gvLigneEdit.Columns["DL_Frais"].VisibleIndex;
+            col.VisibleIndex = indexFrais;
+            col1.VisibleIndex = indexFrais + 2;
+
+            int indexPrixUnitaire = gvLigneEdit.Columns["DL_PrixUnitaire"].VisibleIndex;
+            col_unite.VisibleIndex = indexPrixUnitaire - 1;
+
         }
 
         private void lkDevise_EditValueChanged_1(object sender, EventArgs e)
