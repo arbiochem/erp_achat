@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmAutorisation));
             this.layoutControl1 = new DevExpress.XtraLayout.LayoutControl();
             this.hlSave = new DevExpress.XtraEditors.HyperlinkLabelControl();
             this.gcAut = new DevExpress.XtraGrid.GridControl();
@@ -218,6 +219,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1550, 575);
             this.Controls.Add(this.layoutControl1);
+            this.IconOptions.Icon = ((System.Drawing.Icon)(resources.GetObject("frmAutorisation.IconOptions.Icon")));
             this.Name = "frmAutorisation";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "frmAutorisation";

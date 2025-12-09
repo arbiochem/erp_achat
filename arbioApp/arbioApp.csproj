@@ -54,7 +54,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>logo_gm_ok1_RLY_icon2.ico</ApplicationIcon>
+    <ApplicationIcon>logo.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestCertificateThumbprint>2FB6BA43360161FAF942C025323391321AF5C6D5</ManifestCertificateThumbprint>
@@ -810,6 +810,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="logo.ico" />
     <Content Include="logo_gm_ok1_RLY_icon2.ico" />
     <Content Include="mpr.dll" />
     <Content Include="Resources\cart_icon - Copie.png" />

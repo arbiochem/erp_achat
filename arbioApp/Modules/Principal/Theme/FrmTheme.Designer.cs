@@ -28,12 +28,13 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmTheme));
             this.layoutControl1 = new DevExpress.XtraLayout.LayoutControl();
+            this.hyperlinkSaveTheme = new DevExpress.XtraEditors.HyperlinkLabelControl();
             this.gridControl1 = new DevExpress.XtraGrid.GridControl();
             this.gridView1 = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.Root = new DevExpress.XtraLayout.LayoutControlGroup();
             this.layoutControlItem1 = new DevExpress.XtraLayout.LayoutControlItem();
-            this.hyperlinkSaveTheme = new DevExpress.XtraEditors.HyperlinkLabelControl();
             this.layoutControlItem2 = new DevExpress.XtraLayout.LayoutControlItem();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControl1)).BeginInit();
             this.layoutControl1.SuspendLayout();
@@ -55,6 +56,16 @@
             this.layoutControl1.Size = new System.Drawing.Size(439, 322);
             this.layoutControl1.TabIndex = 0;
             this.layoutControl1.Text = "layoutControl1";
+            // 
+            // hyperlinkSaveTheme
+            // 
+            this.hyperlinkSaveTheme.Location = new System.Drawing.Point(12, 294);
+            this.hyperlinkSaveTheme.Name = "hyperlinkSaveTheme";
+            this.hyperlinkSaveTheme.Size = new System.Drawing.Size(68, 16);
+            this.hyperlinkSaveTheme.StyleController = this.layoutControl1;
+            this.hyperlinkSaveTheme.TabIndex = 5;
+            this.hyperlinkSaveTheme.Text = "Save theme";
+            this.hyperlinkSaveTheme.Click += new System.EventHandler(this.hyperlinkSaveTheme_Click);
             // 
             // gridControl1
             // 
@@ -95,16 +106,6 @@
             this.layoutControlItem1.TextSize = new System.Drawing.Size(0, 0);
             this.layoutControlItem1.TextVisible = false;
             // 
-            // hyperlinkSaveTheme
-            // 
-            this.hyperlinkSaveTheme.Location = new System.Drawing.Point(12, 294);
-            this.hyperlinkSaveTheme.Name = "hyperlinkSaveTheme";
-            this.hyperlinkSaveTheme.Size = new System.Drawing.Size(85, 20);
-            this.hyperlinkSaveTheme.StyleController = this.layoutControl1;
-            this.hyperlinkSaveTheme.TabIndex = 5;
-            this.hyperlinkSaveTheme.Text = "Save theme";
-            this.hyperlinkSaveTheme.Click += new System.EventHandler(this.hyperlinkSaveTheme_Click);
-            // 
             // layoutControlItem2
             // 
             this.layoutControlItem2.Control = this.hyperlinkSaveTheme;
@@ -120,6 +121,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(439, 322);
             this.Controls.Add(this.layoutControl1);
+            this.IconOptions.Icon = ((System.Drawing.Icon)(resources.GetObject("FrmTheme.IconOptions.Icon")));
             this.Name = "FrmTheme";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Thèmes";
