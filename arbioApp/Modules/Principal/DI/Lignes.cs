@@ -192,128 +192,139 @@ namespace arbioApp.Modules.Principal.DI
             }
         }
         public static void cacherColonnes(GridView view)
-        {       
-            view.Columns["CT_Intitule"].VisibleIndex = -1;
-            view.Columns["DO_Domaine"].VisibleIndex = -1;
-            view.Columns["DO_Type"].VisibleIndex = -1;
-            view.Columns["cbCT_Num"].VisibleIndex = -1;
-            view.Columns["DO_Piece"].VisibleIndex = -1;
-            view.Columns["cbDO_Piece"].VisibleIndex = -1;
-            view.Columns["DL_PieceBC"].VisibleIndex = -1;
-            view.Columns["cbDL_PieceBC"].VisibleIndex = -1;
-            view.Columns["DL_PieceBL"].VisibleIndex = -1;
-            view.Columns["cbDL_PieceBL"].VisibleIndex = -1;
-            view.Columns["DO_Date"].VisibleIndex = -1;
-            view.Columns["DL_DateBC"].VisibleIndex = -1;
-            view.Columns["DL_DateBL"].VisibleIndex = -1;
-            view.Columns["DL_Ligne"].VisibleIndex = -1;
-            view.Columns["DO_Ref"].VisibleIndex = -1;
-            view.Columns["cbDO_Ref"].VisibleIndex = -1;
-            view.Columns["DL_TNomencl"].VisibleIndex = -1;
-            view.Columns["DL_TRemPied"].VisibleIndex = -1;
-            view.Columns["DL_TRemExep"].VisibleIndex = -1;
-            //view.Columns["AR_Ref"].VisibleIndex = -1;
-            //view.Columns["DL_Design"].VisibleIndex = -1;
-            view.Columns["cbAR_Ref"].VisibleIndex = -1;
-            //view.Columns["DL_Qte"].VisibleIndex = -1;
-            view.Columns["DL_QteBC"].VisibleIndex = -1;
-            view.Columns["DL_QteBL"].VisibleIndex = -1;
-            //view.Columns["DL_PoidsNet"].VisibleIndex = -1;
-            view.Columns["DL_Valorise"].VisibleIndex = -1;
-            view.Columns["DL_PoidsBrut"].VisibleIndex = -1;
-            view.Columns["DL_Remise01REM_Valeur"].VisibleIndex = -1;
-            view.Columns["DL_Remise01REM_Type"].VisibleIndex = -1;
-            view.Columns["DL_Remise02REM_Valeur"].VisibleIndex = -1;
-            view.Columns["DL_Remise02REM_Type"].VisibleIndex = -1;
-            view.Columns["DL_Remise03REM_Valeur"].VisibleIndex = -1;
-            view.Columns["DL_Remise03REM_Type"].VisibleIndex = -1;
-            view.Columns["DL_PUBC"].VisibleIndex = -1;
-            //view.Columns["DL_PrixUnitaire"].VisibleIndex = -1;
-            view.Columns["DL_PUBC"].VisibleIndex = -1;
-            view.Columns["DL_Taxe1"].VisibleIndex = -1;
-            view.Columns["DL_TypeTaux1"].VisibleIndex = -1;
-            view.Columns["DL_TypeTaxe1"].VisibleIndex = -1;
-            view.Columns["DL_Taxe2"].VisibleIndex = -1;
-            view.Columns["DL_TypeTaux2"].VisibleIndex = -1;
-            view.Columns["DL_TypeTaxe2"].VisibleIndex = -1;
-            view.Columns["CO_No"].VisibleIndex = -1;
-            view.Columns["cbCO_No"].VisibleIndex = -1;
-            view.Columns["AG_No1"].VisibleIndex = -1;
-            view.Columns["AG_No2"].VisibleIndex = -1;
-            //view.Columns["DL_PrixRU"].VisibleIndex = -1;
-            view.Columns["DL_CMUP"].VisibleIndex = -1;
-            view.Columns["DL_MvtStock"].VisibleIndex = -1;
-            view.Columns["DT_No"].VisibleIndex = -1;
-            view.Columns["cbDT_No"].VisibleIndex = -1;
-            view.Columns["cbAF_RefFourniss"].VisibleIndex = -1;
-            view.Columns["EU_Enumere"].VisibleIndex = -1;
-            view.Columns["EU_Qte"].VisibleIndex = -1;
-            view.Columns["DL_TTC"].VisibleIndex = -1;
-            view.Columns["DE_No"].VisibleIndex = -1;
-            view.Columns["cbDE_No"].VisibleIndex = -1;
-            view.Columns["DL_NoRef"].VisibleIndex = -1;
-            view.Columns["DL_TypePL"].VisibleIndex = -1;
-            view.Columns["DL_PUDevise"].VisibleIndex = -1;
-            view.Columns["DL_PUTTC"].VisibleIndex = -1;
-            view.Columns["DL_No"].VisibleIndex = -1;
-            view.Columns["DO_DateLivr"].VisibleIndex = -1;
-            view.Columns["CA_Num"].VisibleIndex = -1;
-            view.Columns["cbCA_Num"].VisibleIndex = -1;
-            view.Columns["DL_Taxe3"].VisibleIndex = -1;
-            view.Columns["DL_TypeTaux3"].VisibleIndex = -1;
-            view.Columns["DL_TypeTaxe3"].VisibleIndex = -1;
-            view.Columns["AR_RefCompose"].VisibleIndex = -1;
-            view.Columns["cbAR_RefCompose"].VisibleIndex = -1;
-            view.Columns["AC_RefClient"].VisibleIndex = -1;
-            //view.Columns["DL_MontantHT"].VisibleIndex = -1;
-            view.Columns["DL_MontantTTC"].VisibleIndex = -1;
-            view.Columns["DL_FactPoids"].VisibleIndex = -1;
-            view.Columns["DL_Escompte"].VisibleIndex = -1;
-            view.Columns["DL_PiecePL"].VisibleIndex = -1;
-            view.Columns["cbDL_PiecePL"].VisibleIndex = -1;
-            view.Columns["DL_DatePL"].VisibleIndex = -1;
-            view.Columns["DL_QtePL"].VisibleIndex = -1;
-            view.Columns["DL_NoColis"].VisibleIndex = -1;
-            view.Columns["DL_NoLink"].VisibleIndex = -1;
-            view.Columns["cbDL_NoLink"].VisibleIndex = -1;
-            view.Columns["RP_Code"].VisibleIndex = -1;
-            view.Columns["cbRP_Code"].VisibleIndex = -1;
-            view.Columns["DL_QteRessource"].VisibleIndex = -1;
-            view.Columns["DL_DateAvancement"].VisibleIndex = -1;
-            view.Columns["PF_Num"].VisibleIndex = -1;
-            view.Columns["cbPF_Num"].VisibleIndex = -1;
-            view.Columns["DL_CodeTaxe1"].VisibleIndex = -1;
-            view.Columns["DL_CodeTaxe2"].VisibleIndex = -1;
-            view.Columns["DL_CodeTaxe3"].VisibleIndex = -1;
-            view.Columns["DL_PieceOFProd"].VisibleIndex = -1;
-            view.Columns["DL_PieceDE"].VisibleIndex = -1;
-            view.Columns["cbDL_PieceDE"].VisibleIndex = -1;
-            view.Columns["DL_DateDE"].VisibleIndex = -1;
-            view.Columns["DL_QteDE"].VisibleIndex = -1;
-            view.Columns["DL_Operation"].VisibleIndex = -1;
-            view.Columns["DL_NoSousTotal"].VisibleIndex = -1;
-            view.Columns["CA_No"].VisibleIndex = -1;
-            view.Columns["cbCA_No"].VisibleIndex = -1;
-            view.Columns["DO_DocType"].VisibleIndex = -1;
-            view.Columns["cbProt"].VisibleIndex = -1;
-            view.Columns["cbMarq"].VisibleIndex = -1;
-            view.Columns["cbCreateur"].VisibleIndex = -1;
-            view.Columns["cbModification"].VisibleIndex = -1;
-            view.Columns["cbReplication"].VisibleIndex = -1;
-            view.Columns["cbFlag"].VisibleIndex = -1;
-            view.Columns["cbCreation"].VisibleIndex = -1;
-            view.Columns["cbCreationUser"].VisibleIndex = -1;
-            view.Columns["cbHash"].VisibleIndex = -1;
-            view.Columns["cbHashVersion"].VisibleIndex = -1;
-            view.Columns["cbHashDate"].VisibleIndex = -1;
-            view.Columns["cbHashOrder"].VisibleIndex = -1;
-            if (DOPiece!= "" && DOPiece.Substring(0, 3) == "APA")
+        {
+            if (view.RowCount > 0)
             {
-                view.Columns["DL_MontantRegle"].VisibleIndex = -1;
-            }
-            else
-            {
-                view.Columns["DL_MontantRegle"].VisibleIndex = 10;
+                try
+                {
+                    view.Columns["CT_Intitule"].VisibleIndex = -1;
+                    view.Columns["DO_Domaine"].VisibleIndex = -1;
+                    view.Columns["DO_Type"].VisibleIndex = -1;
+                    view.Columns["cbCT_Num"].VisibleIndex = -1;
+                    view.Columns["DO_Piece"].VisibleIndex = -1;
+                    view.Columns["cbDO_Piece"].VisibleIndex = -1;
+                    view.Columns["DL_PieceBC"].VisibleIndex = -1;
+                    view.Columns["cbDL_PieceBC"].VisibleIndex = -1;
+                    view.Columns["DL_PieceBL"].VisibleIndex = -1;
+                    view.Columns["cbDL_PieceBL"].VisibleIndex = -1;
+                    view.Columns["DO_Date"].VisibleIndex = -1;
+                    view.Columns["DL_DateBC"].VisibleIndex = -1;
+                    view.Columns["DL_DateBL"].VisibleIndex = -1;
+                    view.Columns["DL_Ligne"].VisibleIndex = -1;
+                    view.Columns["DO_Ref"].VisibleIndex = -1;
+                    view.Columns["cbDO_Ref"].VisibleIndex = -1;
+                    view.Columns["DL_TNomencl"].VisibleIndex = -1;
+                    view.Columns["DL_TRemPied"].VisibleIndex = -1;
+                    view.Columns["DL_TRemExep"].VisibleIndex = -1;
+                    //view.Columns["AR_Ref"].VisibleIndex = -1;
+                    //view.Columns["DL_Design"].VisibleIndex = -1;
+                    view.Columns["cbAR_Ref"].VisibleIndex = -1;
+                    //view.Columns["DL_Qte"].VisibleIndex = -1;
+                    view.Columns["DL_QteBC"].VisibleIndex = -1;
+                    view.Columns["DL_QteBL"].VisibleIndex = -1;
+                    //view.Columns["DL_PoidsNet"].VisibleIndex = -1;
+                    view.Columns["DL_Valorise"].VisibleIndex = -1;
+                    view.Columns["DL_PoidsBrut"].VisibleIndex = -1;
+                    view.Columns["DL_Remise01REM_Valeur"].VisibleIndex = -1;
+                    view.Columns["DL_Remise01REM_Type"].VisibleIndex = -1;
+                    view.Columns["DL_Remise02REM_Valeur"].VisibleIndex = -1;
+                    view.Columns["DL_Remise02REM_Type"].VisibleIndex = -1;
+                    view.Columns["DL_Remise03REM_Valeur"].VisibleIndex = -1;
+                    view.Columns["DL_Remise03REM_Type"].VisibleIndex = -1;
+                    view.Columns["DL_PUBC"].VisibleIndex = -1;
+                    //view.Columns["DL_PrixUnitaire"].VisibleIndex = -1;
+                    view.Columns["DL_PUBC"].VisibleIndex = -1;
+                    view.Columns["DL_Taxe1"].VisibleIndex = -1;
+                    view.Columns["DL_TypeTaux1"].VisibleIndex = -1;
+                    view.Columns["DL_TypeTaxe1"].VisibleIndex = -1;
+                    view.Columns["DL_Taxe2"].VisibleIndex = -1;
+                    view.Columns["DL_TypeTaux2"].VisibleIndex = -1;
+                    view.Columns["DL_TypeTaxe2"].VisibleIndex = -1;
+                    view.Columns["CO_No"].VisibleIndex = -1;
+                    view.Columns["cbCO_No"].VisibleIndex = -1;
+                    view.Columns["AG_No1"].VisibleIndex = -1;
+                    view.Columns["AG_No2"].VisibleIndex = -1;
+                    //view.Columns["DL_PrixRU"].VisibleIndex = -1;
+                    view.Columns["DL_CMUP"].VisibleIndex = -1;
+                    view.Columns["DL_MvtStock"].VisibleIndex = -1;
+                    view.Columns["DT_No"].VisibleIndex = -1;
+                    view.Columns["cbDT_No"].VisibleIndex = -1;
+                    view.Columns["cbAF_RefFourniss"].VisibleIndex = -1;
+                    view.Columns["EU_Enumere"].VisibleIndex = -1;
+                    view.Columns["EU_Qte"].VisibleIndex = -1;
+                    view.Columns["DL_TTC"].VisibleIndex = -1;
+                    view.Columns["DE_No"].VisibleIndex = -1;
+                    view.Columns["cbDE_No"].VisibleIndex = -1;
+                    view.Columns["DL_NoRef"].VisibleIndex = -1;
+                    view.Columns["DL_TypePL"].VisibleIndex = -1;
+                    view.Columns["DL_PUDevise"].VisibleIndex = -1;
+                    view.Columns["DL_PUTTC"].VisibleIndex = -1;
+                    view.Columns["DL_No"].VisibleIndex = -1;
+                    view.Columns["DO_DateLivr"].VisibleIndex = -1;
+                    view.Columns["CA_Num"].VisibleIndex = -1;
+                    view.Columns["cbCA_Num"].VisibleIndex = -1;
+                    view.Columns["DL_Taxe3"].VisibleIndex = -1;
+                    view.Columns["DL_TypeTaux3"].VisibleIndex = -1;
+                    view.Columns["DL_TypeTaxe3"].VisibleIndex = -1;
+                    view.Columns["AR_RefCompose"].VisibleIndex = -1;
+                    view.Columns["cbAR_RefCompose"].VisibleIndex = -1;
+                    view.Columns["AC_RefClient"].VisibleIndex = -1;
+                    //view.Columns["DL_MontantHT"].VisibleIndex = -1;
+                    view.Columns["DL_MontantTTC"].VisibleIndex = -1;
+                    view.Columns["DL_FactPoids"].VisibleIndex = -1;
+                    view.Columns["DL_Escompte"].VisibleIndex = -1;
+                    view.Columns["DL_PiecePL"].VisibleIndex = -1;
+                    view.Columns["cbDL_PiecePL"].VisibleIndex = -1;
+                    view.Columns["DL_DatePL"].VisibleIndex = -1;
+                    view.Columns["DL_QtePL"].VisibleIndex = -1;
+                    view.Columns["DL_NoColis"].VisibleIndex = -1;
+                    view.Columns["DL_NoLink"].VisibleIndex = -1;
+                    view.Columns["cbDL_NoLink"].VisibleIndex = -1;
+                    view.Columns["RP_Code"].VisibleIndex = -1;
+                    view.Columns["cbRP_Code"].VisibleIndex = -1;
+                    view.Columns["DL_QteRessource"].VisibleIndex = -1;
+                    view.Columns["DL_DateAvancement"].VisibleIndex = -1;
+                    view.Columns["PF_Num"].VisibleIndex = -1;
+                    view.Columns["cbPF_Num"].VisibleIndex = -1;
+                    view.Columns["DL_CodeTaxe1"].VisibleIndex = -1;
+                    view.Columns["DL_CodeTaxe2"].VisibleIndex = -1;
+                    view.Columns["DL_CodeTaxe3"].VisibleIndex = -1;
+                    view.Columns["DL_PieceOFProd"].VisibleIndex = -1;
+                    view.Columns["DL_PieceDE"].VisibleIndex = -1;
+                    view.Columns["cbDL_PieceDE"].VisibleIndex = -1;
+                    view.Columns["DL_DateDE"].VisibleIndex = -1;
+                    view.Columns["DL_QteDE"].VisibleIndex = -1;
+                    view.Columns["DL_Operation"].VisibleIndex = -1;
+                    view.Columns["DL_NoSousTotal"].VisibleIndex = -1;
+                    view.Columns["CA_No"].VisibleIndex = -1;
+                    view.Columns["cbCA_No"].VisibleIndex = -1;
+                    view.Columns["DO_DocType"].VisibleIndex = -1;
+                    view.Columns["cbProt"].VisibleIndex = -1;
+                    view.Columns["cbMarq"].VisibleIndex = -1;
+                    view.Columns["cbCreateur"].VisibleIndex = -1;
+                    view.Columns["cbModification"].VisibleIndex = -1;
+                    view.Columns["cbReplication"].VisibleIndex = -1;
+                    view.Columns["cbFlag"].VisibleIndex = -1;
+                    view.Columns["cbCreation"].VisibleIndex = -1;
+                    view.Columns["cbCreationUser"].VisibleIndex = -1;
+                    view.Columns["cbHash"].VisibleIndex = -1;
+                    view.Columns["cbHashVersion"].VisibleIndex = -1;
+                    view.Columns["cbHashDate"].VisibleIndex = -1;
+                    view.Columns["cbHashOrder"].VisibleIndex = -1;
+                    if (DOPiece != "" && DOPiece.Substring(0, 3) == "APA")
+                    {
+                        view.Columns["DL_MontantRegle"].VisibleIndex = -1;
+                    }
+                    else
+                    {
+                        view.Columns["DL_MontantRegle"].VisibleIndex = 10;
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    MethodBase m = MethodBase.GetCurrentMethod();
+                    MessageBox.Show($"Une erreur est survenue : {ex.Message}, {m}", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
 
         }

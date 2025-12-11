@@ -42,7 +42,6 @@ using DevExpress.XtraSpreadsheet.Import.Xls;
 using DevExpress.XtraTab;
 using DevExpress.XtraTreeList;
 using DevExpress.XtraTreeList.Nodes;
-using Humanizer;
 using Microsoft.Office.Interop.Outlook;
 using Org.BouncyCastle.Tls;
 //using Syncfusion.Windows.Forms.Maps;
@@ -53,7 +52,6 @@ using System.ComponentModel;
 using System.Data;
 using System.Data.Entity;
 using System.Data.SqlClient;
-using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
@@ -4541,8 +4539,6 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                     try
                                     {
                                         string destinationFolderdoc = $@"\\Srv-arb\documents_achats$\{nodoc}";
-                                       
-
                                         if (!Directory.Exists(destinationFolderdoc))
                                         {
                                             Directory.CreateDirectory(destinationFolderdoc);
