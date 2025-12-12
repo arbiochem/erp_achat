@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmReglementFrns));
             this.layoutControl1 = new DevExpress.XtraLayout.LayoutControl();
             this.btnCancelRegle = new DevExpress.XtraEditors.SimpleButton();
             this.btnSaveRegle = new DevExpress.XtraEditors.SimpleButton();
@@ -231,7 +230,6 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1519, 406);
             this.Controls.Add(this.layoutControl1);
-            this.IconOptions.Icon = ((System.Drawing.Icon)(resources.GetObject("frmReglementFrns.IconOptions.Icon")));
             this.Name = "frmReglementFrns";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Saisie des règlement fournisseurs";

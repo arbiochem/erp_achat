@@ -29,15 +29,9 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmEditInfos));
             this.layoutControl1 = new DevExpress.XtraLayout.LayoutControl();
             this.simpleButton1 = new DevExpress.XtraEditors.SimpleButton();
-            this.btnEnregistrer = new DevExpress.XtraEditors.SimpleButton();
-            this.Root = new DevExpress.XtraLayout.LayoutControlGroup();
-            this.layoutControlItem4 = new DevExpress.XtraLayout.LayoutControlItem();
-            this.emptySpaceItem3 = new DevExpress.XtraLayout.EmptySpaceItem();
-            this.layoutControlItem2 = new DevExpress.XtraLayout.LayoutControlItem();
-            this.layoutControlItem6 = new DevExpress.XtraLayout.LayoutControlItem();
+            this.groupControl1 = new DevExpress.XtraEditors.GroupControl();
             this.layoutControl2 = new DevExpress.XtraLayout.LayoutControl();
             this.layoutControl4 = new DevExpress.XtraLayout.LayoutControl();
             this.gridControlDevises = new DevExpress.XtraGrid.GridControl();
@@ -58,14 +52,19 @@
             this.layoutControlItem5 = new DevExpress.XtraLayout.LayoutControlItem();
             this.layoutControlItem3 = new DevExpress.XtraLayout.LayoutControlItem();
             this.layoutControlItem11 = new DevExpress.XtraLayout.LayoutControlItem();
+            this.btnEnregistrer = new DevExpress.XtraEditors.SimpleButton();
+            this.Root = new DevExpress.XtraLayout.LayoutControlGroup();
+            this.layoutControlItem4 = new DevExpress.XtraLayout.LayoutControlItem();
+            this.emptySpaceItem3 = new DevExpress.XtraLayout.EmptySpaceItem();
+            this.layoutControlItem2 = new DevExpress.XtraLayout.LayoutControlItem();
+            this.layoutControlItem6 = new DevExpress.XtraLayout.LayoutControlItem();
             this.fDEVISEBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.aRBIOCHEMDataSet = new arbioApp.ARBIOCHEMDataSet();
+            this.f_DEVISETableAdapter = new arbioApp.ARBIOCHEMDataSetTableAdapters.F_DEVISETableAdapter();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControl1)).BeginInit();
             this.layoutControl1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.Root)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem4)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.emptySpaceItem3)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem6)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.groupControl1)).BeginInit();
+            this.groupControl1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControl2)).BeginInit();
             this.layoutControl2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControl4)).BeginInit();
@@ -83,12 +82,19 @@
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem5)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem11)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Root)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem4)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.emptySpaceItem3)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem6)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.fDEVISEBindingSource)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.aRBIOCHEMDataSet)).BeginInit();
             this.SuspendLayout();
             // 
             // layoutControl1
             // 
             this.layoutControl1.Controls.Add(this.simpleButton1);
+            this.layoutControl1.Controls.Add(this.groupControl1);
             this.layoutControl1.Controls.Add(this.btnEnregistrer);
             this.layoutControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.layoutControl1.Location = new System.Drawing.Point(0, 0);
@@ -110,66 +116,15 @@
             this.simpleButton1.TabIndex = 12;
             this.simpleButton1.Text = "Annuler";
             // 
-            // btnEnregistrer
+            // groupControl1
             // 
-            this.btnEnregistrer.Location = new System.Drawing.Point(999, 813);
-            this.btnEnregistrer.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
-            this.btnEnregistrer.Name = "btnEnregistrer";
-            this.btnEnregistrer.Size = new System.Drawing.Size(89, 27);
-            this.btnEnregistrer.StyleController = this.layoutControl1;
-            this.btnEnregistrer.TabIndex = 7;
-            this.btnEnregistrer.Text = "Enregistrer";
-            this.btnEnregistrer.Click += new System.EventHandler(this.btnEnregistrer_Click);
-            // 
-            // Root
-            // 
-            this.Root.EnableIndentsWithoutBorders = DevExpress.Utils.DefaultBoolean.True;
-            this.Root.GroupBordersVisible = false;
-            this.Root.Items.AddRange(new DevExpress.XtraLayout.BaseLayoutItem[] {
-            this.layoutControlItem4,
-            this.emptySpaceItem3,
-            this.layoutControlItem2,
-            this.layoutControlItem6});
-            this.Root.Name = "Root";
-            this.Root.Size = new System.Drawing.Size(1195, 852);
-            this.Root.TextVisible = false;
-            // 
-            // layoutControlItem4
-            // 
-            this.layoutControlItem4.Control = this.btnEnregistrer;
-            this.layoutControlItem4.Location = new System.Drawing.Point(987, 801);
-            this.layoutControlItem4.Name = "layoutControlItem4";
-            this.layoutControlItem4.Size = new System.Drawing.Size(93, 31);
-            this.layoutControlItem4.TextSize = new System.Drawing.Size(0, 0);
-            this.layoutControlItem4.TextVisible = false;
-            // 
-            // emptySpaceItem3
-            // 
-            this.emptySpaceItem3.AllowHotTrack = false;
-            this.emptySpaceItem3.Location = new System.Drawing.Point(0, 801);
-            this.emptySpaceItem3.MaxSize = new System.Drawing.Size(0, 31);
-            this.emptySpaceItem3.MinSize = new System.Drawing.Size(10, 31);
-            this.emptySpaceItem3.Name = "emptySpaceItem3";
-            this.emptySpaceItem3.Size = new System.Drawing.Size(987, 31);
-            this.emptySpaceItem3.SizeConstraintsType = DevExpress.XtraLayout.SizeConstraintsType.Custom;
-            this.emptySpaceItem3.TextSize = new System.Drawing.Size(0, 0);
-            // 
-            // layoutControlItem2
-            // 
-            this.layoutControlItem2.Location = new System.Drawing.Point(0, 0);
-            this.layoutControlItem2.Name = "layoutControlItem2";
-            this.layoutControlItem2.Size = new System.Drawing.Size(1175, 801);
-            this.layoutControlItem2.TextSize = new System.Drawing.Size(0, 0);
-            this.layoutControlItem2.TextVisible = false;
-            // 
-            // layoutControlItem6
-            // 
-            this.layoutControlItem6.Control = this.simpleButton1;
-            this.layoutControlItem6.Location = new System.Drawing.Point(1080, 801);
-            this.layoutControlItem6.Name = "layoutControlItem6";
-            this.layoutControlItem6.Size = new System.Drawing.Size(95, 31);
-            this.layoutControlItem6.TextSize = new System.Drawing.Size(0, 0);
-            this.layoutControlItem6.TextVisible = false;
+            this.groupControl1.Controls.Add(this.layoutControl2);
+            this.groupControl1.Location = new System.Drawing.Point(12, 12);
+            this.groupControl1.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
+            this.groupControl1.Name = "groupControl1";
+            this.groupControl1.Size = new System.Drawing.Size(1171, 797);
+            this.groupControl1.TabIndex = 11;
+            this.groupControl1.Text = "INFORMATIONS";
             // 
             // layoutControl2
             // 
@@ -200,6 +155,7 @@
             // 
             // gridControlDevises
             // 
+            this.gridControlDevises.EmbeddedNavigator.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.gridControlDevises.Location = new System.Drawing.Point(12, 36);
             this.gridControlDevises.MainView = this.gd_devise;
             this.gridControlDevises.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
@@ -261,8 +217,30 @@
             // simpleLabelItem2
             // 
             this.simpleLabelItem2.AllowHotTrack = false;
+            this.simpleLabelItem2.AppearanceItemCaption.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.simpleLabelItem2.AppearanceItemCaption.Font = new System.Drawing.Font("Verdana", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.simpleLabelItem2.AppearanceItemCaption.ForeColor = System.Drawing.Color.Blue;
+            this.simpleLabelItem2.AppearanceItemCaption.Options.UseBackColor = true;
+            this.simpleLabelItem2.AppearanceItemCaption.Options.UseFont = true;
+            this.simpleLabelItem2.AppearanceItemCaption.Options.UseForeColor = true;
+            this.simpleLabelItem2.AppearanceItemCaption.Options.UseTextOptions = true;
+            this.simpleLabelItem2.AppearanceItemCaption.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+            this.simpleLabelItem2.AppearanceItemCaptionDisabled.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.simpleLabelItem2.AppearanceItemCaptionDisabled.Options.UseFont = true;
             this.simpleLabelItem2.Location = new System.Drawing.Point(0, 0);
             this.simpleLabelItem2.Name = "simpleLabelItem2";
+            this.simpleLabelItem2.OptionsPrint.AppearanceItem.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.simpleLabelItem2.OptionsPrint.AppearanceItem.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.simpleLabelItem2.OptionsPrint.AppearanceItem.ForeColor = System.Drawing.Color.Blue;
+            this.simpleLabelItem2.OptionsPrint.AppearanceItem.Options.UseBackColor = true;
+            this.simpleLabelItem2.OptionsPrint.AppearanceItem.Options.UseFont = true;
+            this.simpleLabelItem2.OptionsPrint.AppearanceItem.Options.UseForeColor = true;
+            this.simpleLabelItem2.OptionsPrint.AppearanceItemText.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.simpleLabelItem2.OptionsPrint.AppearanceItemText.BorderColor = System.Drawing.Color.White;
+            this.simpleLabelItem2.OptionsPrint.AppearanceItemText.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.simpleLabelItem2.OptionsPrint.AppearanceItemText.Options.UseBackColor = true;
+            this.simpleLabelItem2.OptionsPrint.AppearanceItemText.Options.UseBorderColor = true;
+            this.simpleLabelItem2.OptionsPrint.AppearanceItemText.Options.UseFont = true;
             this.simpleLabelItem2.Size = new System.Drawing.Size(1010, 24);
             this.simpleLabelItem2.Text = "COURS DEVISE";
             this.simpleLabelItem2.TextSize = new System.Drawing.Size(143, 20);
@@ -287,6 +265,7 @@
             // 
             // gridControlFrais
             // 
+            this.gridControlFrais.EmbeddedNavigator.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.gridControlFrais.Location = new System.Drawing.Point(12, 379);
             this.gridControlFrais.MainView = this.gridViewFrais;
             this.gridControlFrais.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
@@ -378,9 +357,81 @@
             this.layoutControlItem11.TextSize = new System.Drawing.Size(0, 0);
             this.layoutControlItem11.TextVisible = false;
             // 
+            // btnEnregistrer
+            // 
+            this.btnEnregistrer.Location = new System.Drawing.Point(999, 813);
+            this.btnEnregistrer.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
+            this.btnEnregistrer.Name = "btnEnregistrer";
+            this.btnEnregistrer.Size = new System.Drawing.Size(89, 27);
+            this.btnEnregistrer.StyleController = this.layoutControl1;
+            this.btnEnregistrer.TabIndex = 7;
+            this.btnEnregistrer.Text = "Enregistrer";
+            this.btnEnregistrer.Click += new System.EventHandler(this.btnEnregistrer_Click);
+            // 
+            // Root
+            // 
+            this.Root.EnableIndentsWithoutBorders = DevExpress.Utils.DefaultBoolean.True;
+            this.Root.GroupBordersVisible = false;
+            this.Root.Items.AddRange(new DevExpress.XtraLayout.BaseLayoutItem[] {
+            this.layoutControlItem4,
+            this.emptySpaceItem3,
+            this.layoutControlItem2,
+            this.layoutControlItem6});
+            this.Root.Name = "Root";
+            this.Root.Size = new System.Drawing.Size(1195, 852);
+            this.Root.TextVisible = false;
+            // 
+            // layoutControlItem4
+            // 
+            this.layoutControlItem4.Control = this.btnEnregistrer;
+            this.layoutControlItem4.Location = new System.Drawing.Point(987, 801);
+            this.layoutControlItem4.Name = "layoutControlItem4";
+            this.layoutControlItem4.Size = new System.Drawing.Size(93, 31);
+            this.layoutControlItem4.TextSize = new System.Drawing.Size(0, 0);
+            this.layoutControlItem4.TextVisible = false;
+            // 
+            // emptySpaceItem3
+            // 
+            this.emptySpaceItem3.AllowHotTrack = false;
+            this.emptySpaceItem3.Location = new System.Drawing.Point(0, 801);
+            this.emptySpaceItem3.MaxSize = new System.Drawing.Size(0, 31);
+            this.emptySpaceItem3.MinSize = new System.Drawing.Size(10, 31);
+            this.emptySpaceItem3.Name = "emptySpaceItem3";
+            this.emptySpaceItem3.Size = new System.Drawing.Size(987, 31);
+            this.emptySpaceItem3.SizeConstraintsType = DevExpress.XtraLayout.SizeConstraintsType.Custom;
+            this.emptySpaceItem3.TextSize = new System.Drawing.Size(0, 0);
+            // 
+            // layoutControlItem2
+            // 
+            this.layoutControlItem2.Control = this.groupControl1;
+            this.layoutControlItem2.Location = new System.Drawing.Point(0, 0);
+            this.layoutControlItem2.Name = "layoutControlItem2";
+            this.layoutControlItem2.Size = new System.Drawing.Size(1175, 801);
+            this.layoutControlItem2.TextSize = new System.Drawing.Size(0, 0);
+            this.layoutControlItem2.TextVisible = false;
+            // 
+            // layoutControlItem6
+            // 
+            this.layoutControlItem6.Control = this.simpleButton1;
+            this.layoutControlItem6.Location = new System.Drawing.Point(1080, 801);
+            this.layoutControlItem6.Name = "layoutControlItem6";
+            this.layoutControlItem6.Size = new System.Drawing.Size(95, 31);
+            this.layoutControlItem6.TextSize = new System.Drawing.Size(0, 0);
+            this.layoutControlItem6.TextVisible = false;
+            // 
             // fDEVISEBindingSource
             // 
             this.fDEVISEBindingSource.DataMember = "F_DEVISE";
+            this.fDEVISEBindingSource.DataSource = this.aRBIOCHEMDataSet;
+            // 
+            // aRBIOCHEMDataSet
+            // 
+            this.aRBIOCHEMDataSet.DataSetName = "ARBIOCHEMDataSet";
+            this.aRBIOCHEMDataSet.SchemaSerializationMode = System.Data.SchemaSerializationMode.IncludeSchema;
+            // 
+            // f_DEVISETableAdapter
+            // 
+            this.f_DEVISETableAdapter.ClearBeforeFill = true;
             // 
             // frmEditInfos
             // 
@@ -388,7 +439,6 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1195, 852);
             this.Controls.Add(this.layoutControl1);
-            this.IconOptions.Icon = ((System.Drawing.Icon)(resources.GetObject("frmEditInfos.IconOptions.Icon")));
             this.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.Name = "frmEditInfos";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -397,11 +447,8 @@
             this.Load += new System.EventHandler(this.frmEditInfos_Load);
             ((System.ComponentModel.ISupportInitialize)(this.layoutControl1)).EndInit();
             this.layoutControl1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.Root)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem4)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.emptySpaceItem3)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem6)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.groupControl1)).EndInit();
+            this.groupControl1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.layoutControl2)).EndInit();
             this.layoutControl2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.layoutControl4)).EndInit();
@@ -419,7 +466,13 @@
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem5)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem3)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem11)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Root)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem4)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.emptySpaceItem3)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem6)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.fDEVISEBindingSource)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.aRBIOCHEMDataSet)).EndInit();
             this.ResumeLayout(false);
 
         }

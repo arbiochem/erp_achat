@@ -1915,7 +1915,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
 
                 string connectionStringArbapp = $"Server={FrmMdiParent.DataSourceNameValueParent};" +
-                                 $"Database=ARBIOCHEM;" +
+                                 $"Database=ARBIOCHEM_ACHAT;" +
                                  $"User ID=Dev;" +
                                  $"Password=1234;" +
                                  $"TrustServerCertificate=True;" +
@@ -4237,184 +4237,261 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         ExcelDataSource excelDataSource;
         private void hyperlinkLabelControl5_Click(object sender, EventArgs e)
         {
-                try
+            try
+            {
+                using (OpenFileDialog openFileDialog = new OpenFileDialog())
                 {
-                    xtraOpenFileDialog1.Filter = "Microsoft Excel Files (*.xlsx)|*.xlsx";
-                    if (xtraOpenFileDialog1.ShowDialog() != DialogResult.OK) return;
+                    openFileDialog.Filter = "Tous les fichiers (*.*)|*.*|Images (*.jpg;*.png)|*.jpg;*.png";
+                    openFileDialog.Title = "Sélectionner un fichier";
+                    openFileDialog.Multiselect = false;
 
-                    string filePath = xtraOpenFileDialog1.FileName;
-
-                    // Charger les données depuis Excel
-                    Workbook workbook = new Workbook();
-                    workbook.LoadDocument(filePath);
-                    string sheetName = workbook.Worksheets[0].Name;
-
-                    ExcelDataSource excelDataSource = new ExcelDataSource
+                    if (openFileDialog.ShowDialog() == DialogResult.OK)
                     {
-                        FileName = filePath,
-                        SourceOptions = new ExcelSourceOptions(new ExcelWorksheetSettings(sheetName, "A:E"))
-                    };
-
-                    excelDataSource.Schema.AddRange(new FieldInfo[]
-                    {
-                        new FieldInfo { Name = "CT_Num", Type = typeof(string) },
-                        new FieldInfo { Name = "AR_Ref", Type = typeof(string) },
-                        new FieldInfo { Name = "DL_Design", Type = typeof(string) },
-                        new FieldInfo { Name = "DL_PrixUnitaire", Type = typeof(decimal) },
-                        new FieldInfo { Name = "DL_Qte", Type = typeof(decimal) }
-                    });
-
-                    excelDataSource.Fill();
-                    DataTable dataDocLigneImport = excelDataSource.ToDataTable();
-
-
-                    if (dataDocLigneImport.Rows.Count == 0)
-                    {
-                        XtraMessageBox.Show("Aucune ligne trouvée dans le fichier Excel.");
-                        return;
-                    }
-
-                   
-                string rec_arref = "";
-                bool t_ok = false;
-                using (SqlConnection conn = new SqlConnection(connectionString))
-                {
-                    conn.Open();
-
-                    int total = dataDocLigneImport.Rows.Count;
-                    int current = 0;
-
-                    foreach (DataRow row in dataDocLigneImport.Rows)
-                    {
-                       
-
-                        int dotype = 10;
-                        string arRef = row["AR_Ref"]?.ToString() ?? "";
-                        string ctNum = row["CT_Num"]?.ToString() ?? "";
-                        rec_arref = row["AR_Ref"]?.ToString() ?? "";
-
-                        decimal dlQte = row["DL_Qte"] != DBNull.Value ? Convert.ToDecimal(row["DL_Qte"]) : 0;
-
-                        decimal DLTaxe1 = 0;
-
-                        if (not_existence_ref(arRef.ToString()))
+                        string filePath = openFileDialog.FileName;
+                        if (!File.Exists(filePath))
                         {
-                            MessageBox.Show("La référence : " + arRef.ToString() +" n'existe pas dans la base, veuillez vous rapprocher du service informatique, merci!!!!", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            break;
+                            XtraMessageBox.Show("Le fichier sélectionné n'existe pas.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
                         }
-                        else
+
+                        // Charger les données depuis Excel
+                        Workbook workbook = new Workbook();
+                        workbook.LoadDocument(filePath);
+
+                        if (workbook.Worksheets.Count == 0)
                         {
-                            current++;
-                            SplashScreenManager.ShowForm(this, typeof(WaitForm1), true, true, false);
-                            SplashScreenManager.Default.SetWaitFormDescription($"{current}/{total}");
-                            
+                            XtraMessageBox.Show("Le fichier Excel ne contient aucune feuille.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
 
-                            F_ARTICLE articleChoisi = _f_ARTICLERepository.GetF_ARTICLEByAR_Ref(arRef);
-                            int? DE_No = Convert.ToInt32(lkDepot.EditValue);
-                            int? dl_Ligne = 0;
-                            decimal previousQuantite = 0;
-                            decimal remisePourcent = 0;
-                            string arDesign = row["DL_Design"]?.ToString() ?? "";
-                            decimal puBrut = row["DL_PrixUnitaire"] != DBNull.Value ? Convert.ToDecimal(row["DL_PrixUnitaire"]) : 0;
-                            decimal puNet = puBrut * (1 - remisePourcent / 100);
-                            decimal montantHT = dlQte * puNet;
-                            decimal montantTTC = montantHT * (1 + DLTaxe1 / 100);
-                            int retenu = 1;
-                            F_DOCENTETE docEnCours = _f_DOCENTETERepository.GetBy_DO_Piece_And_Type(dopiecetxt.Text);
-                            F_COLLABORATEUR collab = _listeCollaborateurs.Where(c => c.CO_No == (int)lkEdCollaborateur.EditValue).FirstOrDefault();
-                            DateTime DO_Date = dateSaisie.DateTime;
-                            DateTime DO_DateLivr;
-                            if (datelivrprev.EditValue == null || !(datelivrprev.EditValue is DateTime))
-                            {
-                                DO_DateLivr = new DateTime(1753, 01, 01);
-                            }
-                            else
-                            {
-                                DO_DateLivr = (DateTime)datelivrprev.EditValue;
-                            }
-                            DateTime dateLivrReal;
-                            if (datelivrprev.EditValue == null || !(datelivrprev.EditValue is DateTime))
-                            {
-                                dateLivrReal = new DateTime(1753, 01, 01);
-                            }
-                            else
-                            {
-                                dateLivrReal = (DateTime)datelivrprev.EditValue;
-                            }
-                            //string doAffaire = caNum;
+                        string sheetName = workbook.Worksheets[0].Name;
 
-                            int? maxValueDL_Ligne = 0;
+                        ExcelDataSource excelDataSource = new ExcelDataSource
+                        {
+                            FileName = filePath,
+                            SourceOptions = new ExcelSourceOptions(new ExcelWorksheetSettings(sheetName, "A:E"))
+                        };
 
-                            for (int i = 0; i < gvLigneEdit.RowCount; i++)
+                        excelDataSource.Schema.AddRange(new FieldInfo[]
+                        {
+        new FieldInfo { Name = "CT_Num", Type = typeof(string) },
+        new FieldInfo { Name = "AR_Ref", Type = typeof(string) },
+        new FieldInfo { Name = "DL_Design", Type = typeof(string) },
+        new FieldInfo { Name = "DL_PrixUnitaire", Type = typeof(decimal) },
+        new FieldInfo { Name = "DL_Qte", Type = typeof(decimal) }
+                        });
+
+                        excelDataSource.Fill();
+                        DataTable dataDocLigneImport = excelDataSource.ToDataTable();
+
+                        if (dataDocLigneImport == null || dataDocLigneImport.Rows.Count == 0)
+                        {
+                            XtraMessageBox.Show("Aucune ligne trouvée dans le fichier Excel.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            return;
+                        }
+
+                        // Validation des données avant traitement
+                        List<string> erreursValidation = new List<string>();
+                        for (int i = 0; i < dataDocLigneImport.Rows.Count; i++)
+                        {
+                            DataRow row = dataDocLigneImport.Rows[i];
+
+                            if (string.IsNullOrWhiteSpace(row["AR_Ref"]?.ToString()))
                             {
-                                object dlligne = gvLigneEdit.GetRowCellValue(i, "DL_Ligne");
-                                if (dlligne != null && int.TryParse(dlligne.ToString(), out int val))
+                                erreursValidation.Add($"Ligne {i + 2}: AR_Ref manquant");
+                            }
+                            if (string.IsNullOrWhiteSpace(row["CT_Num"]?.ToString()))
+                            {
+                                erreursValidation.Add($"Ligne {i + 2}: CT_Num manquant");
+                            }
+                            if (row["DL_Qte"] == DBNull.Value || Convert.ToDecimal(row["DL_Qte"]) <= 0)
+                            {
+                                erreursValidation.Add($"Ligne {i + 2}: Quantité invalide");
+                            }
+                        }
+
+                        if (erreursValidation.Count > 0)
+                        {
+                            string message = "Erreurs de validation détectées:\n" + string.Join("\n", erreursValidation.Take(10));
+                            if (erreursValidation.Count > 10)
+                            {
+                                message += $"\n... et {erreursValidation.Count - 10} autres erreurs";
+                            }
+                            XtraMessageBox.Show(message, "Erreurs de validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+
+                        string rec_arref = "";
+                        bool t_ok = false;
+                        int lignesTraitees = 0;
+                        int lignesErreur = 0;
+
+                        using (SqlConnection conn = new SqlConnection(connectionString))
+                        {
+                            conn.Open();
+
+                            int total = dataDocLigneImport.Rows.Count;
+                            int current = 0;
+
+                            foreach (DataRow row in dataDocLigneImport.Rows)
+                            {
+                                try
                                 {
-                                    if (val > maxValueDL_Ligne)
+                                    int dotype = 10;
+                                    string arRef = row["AR_Ref"]?.ToString()?.Trim() ?? "";
+                                    string ctNum = row["CT_Num"]?.ToString()?.Trim() ?? "";
+                                    rec_arref = arRef;
+
+                                    decimal dlQte = row["DL_Qte"] != DBNull.Value ? Convert.ToDecimal(row["DL_Qte"]) : 0;
+                                    decimal DLTaxe1 = 0;
+
+                                    // Vérifier l'existence de la référence
+                                    if (not_existence_ref(arRef))
                                     {
-                                        maxValueDL_Ligne = val;
+                                        lignesErreur++;
+                                        XtraMessageBox.Show($"La référence : {arRef} n'existe pas dans la base, veuillez vous rapprocher du service informatique!",
+                                            "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                        break;
                                     }
+
+                                    current++;
+                                    SplashScreenManager.ShowForm(this, typeof(WaitForm1), true, true, false);
+                                    SplashScreenManager.Default.SetWaitFormDescription($"Traitement: {current}/{total}");
+
+                                    F_ARTICLE articleChoisi = _f_ARTICLERepository.GetF_ARTICLEByAR_Ref(arRef);
+
+                                    if (articleChoisi == null)
+                                    {
+                                        lignesErreur++;
+                                        SplashScreenManager.CloseForm();
+                                        XtraMessageBox.Show($"Article introuvable pour la référence : {arRef}", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                        break;
+                                    }
+
+                                    int? DE_No = Convert.ToInt32(lkDepot.EditValue);
+                                    decimal remisePourcent = 0;
+                                    string arDesign = row["DL_Design"]?.ToString()?.Trim() ?? "";
+                                    decimal puBrut = row["DL_PrixUnitaire"] != DBNull.Value ? Convert.ToDecimal(row["DL_PrixUnitaire"]) : 0;
+                                    decimal puNet = puBrut * (1 - remisePourcent / 100);
+                                    decimal montantHT = dlQte * puNet;
+                                    decimal montantTTC = montantHT * (1 + DLTaxe1 / 100);
+                                    int retenu = 1;
+
+                                    F_DOCENTETE docEnCours = _f_DOCENTETERepository.GetBy_DO_Piece_And_Type(dopiecetxt.Text);
+
+                                    if (docEnCours == null)
+                                    {
+                                        lignesErreur++;
+                                        SplashScreenManager.CloseForm();
+                                        XtraMessageBox.Show($"Document en-tête introuvable : {dopiecetxt.Text}", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                        break;
+                                    }
+
+                                    F_COLLABORATEUR collab = _listeCollaborateurs?.FirstOrDefault(c => c.CO_No == (int)lkEdCollaborateur.EditValue);
+
+                                    DateTime DO_Date = dateSaisie.DateTime;
+                                    DateTime DO_DateLivr = (datelivrprev.EditValue is DateTime)
+                                        ? (DateTime)datelivrprev.EditValue
+                                        : new DateTime(1753, 01, 01);
+
+                                    // Calcul du numéro de ligne
+                                    int? maxValueDL_Ligne = 0;
+                                    for (int i = 0; i < gvLigneEdit.RowCount; i++)
+                                    {
+                                        object dlligne = gvLigneEdit.GetRowCellValue(i, "DL_Ligne");
+                                        if (dlligne != null && int.TryParse(dlligne.ToString(), out int val))
+                                        {
+                                            if (val > maxValueDL_Ligne)
+                                            {
+                                                maxValueDL_Ligne = val;
+                                            }
+                                        }
+                                    }
+
+                                    int? numeroLigneDL_Ligne = maxValueDL_Ligne + 1000;
+                                    string reference = txtDoRef.Text;
+                                    short typeDoc = (short)_f_DOCENTETEService.GetDocTypeNo(_prefix);
+                                    short DL_NoRef = (short)(gvLigneEdit.RowCount + current);
+                                    int dlno = GetMaxDLNo() + current;
+
+                                    _f_DOCLIGNEService.AjouterF_DOCLIGNE(
+                                        typeDoc,
+                                        ctNum,
+                                        dopiecetxt.Text,
+                                        DO_Date,
+                                        numeroLigneDL_Ligne,
+                                        docEnCours,
+                                        arRef,
+                                        arDesign,
+                                        DLTaxe1,
+                                        dlQte,
+                                        typeDoc.ToString(),
+                                        articleChoisi,
+                                        Convert.ToString(dlQte),
+                                        remisePourcent.ToString(),
+                                        puNet.ToString(),
+                                        collab,
+                                        DL_NoRef,
+                                        puBrut,
+                                        DO_DateLivr,
+                                        comboBoxAffaire.Text,
+                                        montantTTC.ToString(),
+                                        montantHT.ToString(),
+                                        DateTime.Now,
+                                        DE_No,
+                                        dlno,
+                                        retenu);
+
+                                    lignesTraitees++;
+                                    t_ok = true;
+                                }
+                                catch (Exception exRow)
+                                {
+                                    lignesErreur++;
+                                    SplashScreenManager.CloseForm();
+                                    XtraMessageBox.Show($"Erreur lors du traitement de la ligne {current}:\n{exRow.Message}",
+                                        "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    break;
                                 }
                             }
 
-                            int? numeroLigneDL_Ligne = maxValueDL_Ligne + 1000;
-                            string reference = txtDoRef.Text;
-                            short typeDoc = (short)_f_DOCENTETEService.GetDocTypeNo(_prefix);
-                            short DL_NoRef = (short)(gvLigneEdit.RowCount + 1);
-                            int dlno = GetMaxDLNo() + 1;
+                            // Mise à jour finale
+                            if (t_ok && lignesTraitees > 0)
+                            {
+                                try
+                                {
+                                    MettreAJourTotauxDepuisBD(dopiecetxt.Text);
+                                    string _currentDocPieceNo = dopiecetxt.Text;
+                                    InitializeGrid(gcLigneEdit, _currentDocPieceNo);
 
-                            _f_DOCLIGNEService.AjouterF_DOCLIGNE(
-                                typeDoc,
-                                ctNum,
-                                dopiecetxt.Text,
-                                DO_Date,
-                                numeroLigneDL_Ligne,
-                                docEnCours,
-                                arRef,
-                                arDesign,
-                                DLTaxe1,
-                                dlQte,
-                                typeDoc.ToString(),
-                                articleChoisi,
-                                Convert.ToString(dlQte),
-                                remisePourcent.ToString(),
-                                puNet.ToString(),
-                                collab,
-                                DL_NoRef,
-                                puBrut,
-                                DO_DateLivr,
-                                comboBoxAffaire.Text,
-                                montantTTC.ToString(),
-                                montantHT.ToString(),
-                                DateTime.Now,
-                                DE_No,
-                                dlno,
-                                retenu);
-
-
-                            //UPDATE LES PRIX DANS F_DOCENTETE
-
-
-                            MettreAJourTotauxDepuisBD(dopiecetxt.Text);
-                            conn.Close();
-                            string _currentDocPieceNo = dopiecetxt.Text;
-                            InitializeGrid(gcLigneEdit, _currentDocPieceNo);
-                            SplashScreenManager.CloseForm();
-                            t_ok = true;
+                                    SplashScreenManager.CloseForm();
+                                    XtraMessageBox.Show($"Importation terminée avec succès.\n{lignesTraitees} ligne(s) importée(s).",
+                                        "Succès", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                }
+                                catch (Exception exFinal)
+                                {
+                                    SplashScreenManager.CloseForm();
+                                    XtraMessageBox.Show($"Erreur lors de la mise à jour finale:\n{exFinal.Message}",
+                                        "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
+                            }
+                            else if (lignesErreur > 0)
+                            {
+                                SplashScreenManager.CloseForm();
+                                XtraMessageBox.Show($"Importation interrompue. {lignesTraitees} ligne(s) traitée(s), {lignesErreur} erreur(s).",
+                                    "Information", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            }
                         }
                     }
-
-                    if (t_ok)
-                    {
-                        XtraMessageBox.Show("Importation terminée avec succès.", "Succès", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
                 }
+
             }
             catch (Exception ex)
             {
                 SplashScreenManager.CloseForm();
                 MethodBase m = MethodBase.GetCurrentMethod();
-                MessageBox.Show($"Une erreur est survenue : {ex.Message}, {m}", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);            
+                XtraMessageBox.Show($"Une erreur est survenue:\n{ex.Message}\n\nMéthode: {m.Name}\n\nStack Trace:\n{ex.StackTrace}",
+                    "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         private void MettreAJourTotauxDepuisBD(string doPiece)

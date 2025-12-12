@@ -182,7 +182,6 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             this.Root = new DevExpress.XtraLayout.LayoutControlGroup();
             this.layoutControlItem6 = new DevExpress.XtraLayout.LayoutControlItem();
             this.ribbonPage2 = new DevExpress.XtraBars.Ribbon.RibbonPage();
-            this.xtraOpenFileDialog1 = new DevExpress.XtraEditors.XtraOpenFileDialog(this.components);
             this.dockManager1 = new DevExpress.XtraBars.Docking.DockManager(this.components);
             this.hideContainerRight = new DevExpress.XtraBars.Docking.AutoHideContainer();
             this.dockPanel1 = new DevExpress.XtraBars.Docking.DockPanel();
@@ -192,6 +191,8 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             this.layoutControlGroup4 = new DevExpress.XtraLayout.LayoutControlGroup();
             this.layoutControlItem2 = new DevExpress.XtraLayout.LayoutControlItem();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
+            this.xtraOpenFileDialog1 = new DevExpress.XtraEditors.XtraOpenFileDialog(this.components);
+            this.xtraOpenFileDialog2 = new DevExpress.XtraEditors.XtraOpenFileDialog(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.layoutControl1)).BeginInit();
             this.layoutControl1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.xtraTabControl1)).BeginInit();
@@ -1901,10 +1902,6 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             this.ribbonPage2.Name = "ribbonPage2";
             this.ribbonPage2.Text = "ribbonPage2";
             // 
-            // xtraOpenFileDialog1
-            // 
-            this.xtraOpenFileDialog1.FileName = "xtraOpenFileDialog1";
-            // 
             // dockManager1
             // 
             this.dockManager1.AutoHideContainers.AddRange(new DevExpress.XtraBars.Docking.AutoHideContainer[] {
@@ -2004,6 +2001,14 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             this.imageList1.ColorDepth = System.Windows.Forms.ColorDepth.Depth8Bit;
             this.imageList1.ImageSize = new System.Drawing.Size(16, 16);
             this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
+            // 
+            // xtraOpenFileDialog1
+            // 
+            this.xtraOpenFileDialog1.FileName = "xtraOpenFileDialog1";
+            // 
+            // xtraOpenFileDialog2
+            // 
+            this.xtraOpenFileDialog2.FileName = "xtraOpenFileDialog2";
             // 
             // frmEditDocument
             // 
@@ -2234,7 +2239,6 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         private DevExpress.XtraLayout.EmptySpaceItem emptySpaceItem4;
         private DevExpress.XtraBars.Ribbon.RibbonPageGroup ribbonPageGroup3;
         private DevExpress.XtraBars.BarButtonItem barBtnInfo;
-        private DevExpress.XtraEditors.XtraOpenFileDialog xtraOpenFileDialog1;
         private DevExpress.XtraBars.BarButtonItem barBtnDocLie;
         private DevExpress.XtraBars.Ribbon.RibbonPageGroup ribbonPageGroup4;
         private DevExpress.XtraBars.Docking.DockManager dockManager1;
@@ -2313,5 +2317,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         private DevExpress.XtraLayout.LayoutControlGroup layoutControlGroup7;
         private DevExpress.XtraLayout.LayoutControlItem layoutControlItem52;
         private DevExpress.XtraLayout.LayoutControlItem layoutControlItem14;
+        private DevExpress.XtraEditors.XtraOpenFileDialog xtraOpenFileDialog1;
+        private DevExpress.XtraEditors.XtraOpenFileDialog xtraOpenFileDialog2;
     }
 }

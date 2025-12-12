@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmAutorisations_achat));
             this.dataLayoutControl1 = new DevExpress.XtraDataLayout.DataLayoutControl();
             this.hyperlinkLabelControl1 = new DevExpress.XtraEditors.HyperlinkLabelControl();
             this.gd_autorisation_achat = new DevExpress.XtraGrid.GridControl();
@@ -207,7 +206,6 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1211, 545);
             this.Controls.Add(this.dataLayoutControl1);
-            this.IconOptions.Icon = ((System.Drawing.Icon)(resources.GetObject("frmAutorisations_achat.IconOptions.Icon")));
             this.Name = "frmAutorisations_achat";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Autorisations type de documents";
