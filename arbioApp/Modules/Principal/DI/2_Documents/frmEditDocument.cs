@@ -16,6 +16,7 @@ using DevExpress.DataAccess.DataFederation;
 using DevExpress.DataAccess.Excel;
 using DevExpress.DataAccess.Sql;
 using DevExpress.DataAccess.UI.Excel;
+using DevExpress.DataProcessing.InMemoryDataProcessor;
 using DevExpress.DataProcessing.InMemoryDataProcessor.GraphGenerator;
 using DevExpress.Pdf.Xmp;
 using DevExpress.Spreadsheet;
@@ -3815,6 +3816,8 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                         }
 
                         //MAJ Qte
+
+                        int? DE_No = Convert.ToInt32(lkDepot.EditValue);
                         for (int i = 0; i < gvLigneEdit.RowCount; i++)
                         {
                             string reference = gvLigneEdit.GetRowCellValue(i, "AR_Ref")?.ToString();
@@ -3822,75 +3825,82 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
                             try
                             {
-                                using (AppDbContext context = new AppDbContext())
+                                string connectionString = "Server=26.71.34.164;Database=TRANSIT;Trusted_Connection=True;";
+
+                                using (SqlConnection connection = new SqlConnection(connectionString))
                                 {
-                                    // Pour un AJOUT (vérifier que l'enregistrement n'existe pas déjà)
-                                    var existingStock = context.F_ARTSTOCK
-                                        .FirstOrDefault(s => s.AR_Ref == reference && s.DE_No == 1);
+                                    connection.Open();
 
-                                    if (existingStock == null)
+                                    string existingStock = @"
+                                    SELECT TOP 1 AS_QteSto
+                                    FROM F_ARTSTOCK
+                                    WHERE AR_Ref = @AR_Ref AND DE_No = @DE_No";
+
+                                    decimal? existingQte = null;
+
+                                    using (SqlCommand checkCmd = new SqlCommand(existingStock, connection))
                                     {
-                                        string sql = @"
-                                        INSERT INTO F_ARTSTOCK (
-                                            AR_Ref,
-                                            DE_No,
-                                            DP_NoPrincipal,
-                                            AS_QteSto,
-                                            AS_QteRes,
-                                            AS_QteCom,
-                                            AS_QtePrepa,
-                                            AS_MontSto,
-                                            AS_QteMini,
-                                            AS_QteMaxi
-                                        )
-                                        VALUES (
-                                            @AR_Ref,
-                                            @DE_No,
-                                            @DP_NoPrincipal,
-                                            @DL_Qte,
-                                            0,0,0,0,0,0
-                                        );";
+                                        checkCmd.Parameters.AddWithValue("@AR_Ref", reference);
+                                        checkCmd.Parameters.AddWithValue("@DE_No", DE_No);
 
+                                        var result = checkCmd.ExecuteScalar();
+                                        if (result != null && result != DBNull.Value)
+                                            existingQte = Convert.ToDecimal(result);
+                                    }
+                                    if (existingQte == null)
+                                    {
+                                        string insertSql = @"
+                                            INSERT INTO F_ARTSTOCK (
+                                                AR_Ref,
+                                                DE_No,
+                                                DP_NoPrincipal,
+                                                AS_QteSto,
+                                                AS_QteRes,
+                                                AS_QteCom,
+                                                AS_QtePrepa,
+                                                AS_MontSto,
+                                                AS_QteMini,
+                                                AS_QteMaxi
+                                            )
+                                            VALUES (
+                                                @AR_Ref,
+                                                @DE_No,
+                                                @DP_NoPrincipal,
+                                                @Qte,
+                                                0, 0, 0, 0, 0, 0
+                                            )";
 
-                                        try
+                                        using (SqlCommand insertCmd = new SqlCommand(insertSql, connection))
                                         {
-                                            using (var contexts = new AppDbContext())
-                                            {
-                                                contexts.Database.ExecuteSqlCommand(
-                                                    sql,
-                                                    new SqlParameter("@AR_Ref", reference),
-                                                    new SqlParameter("@DE_No", 1),
-                                                    new SqlParameter("@DP_NoPrincipal", 1), // si utilisé dans ta BDD
-                                                    new SqlParameter("@DL_Qte", qte)
-                                                );
-                                            }
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            MessageBox.Show(ex.Message);
+                                            insertCmd.Parameters.AddWithValue("@AR_Ref", reference);
+                                            insertCmd.Parameters.AddWithValue("@DE_No", DE_No);
+                                            insertCmd.Parameters.AddWithValue("@DP_NoPrincipal", 1);
+                                            insertCmd.Parameters.AddWithValue("@Qte", qte);
+
+                                            insertCmd.ExecuteNonQuery();
                                         }
                                     }
                                     else
                                     {
-                                        // MISE À JOUR si existe déjà
-                                        existingStock.AS_QteSto += Convert.ToDecimal(qte);
-                                        context.SaveChanges();
+                                            string updateSql = @"
+                                            UPDATE F_ARTSTOCK
+                                            SET AS_QteSto = AS_QteSto + @Qte
+                                            WHERE AR_Ref = @AR_Ref AND DE_No = @DE_No";
+
+                                            using (SqlCommand updateCmd = new SqlCommand(updateSql, connection))
+                                            {
+                                                updateCmd.Parameters.AddWithValue("@AR_Ref", reference);
+                                                updateCmd.Parameters.AddWithValue("@DE_No", DE_No);
+                                                updateCmd.Parameters.AddWithValue("@Qte", qte);
+
+                                                updateCmd.ExecuteNonQuery();
+                                            }
                                     }
                                 }
                             }
                             catch (System.Data.Entity.Infrastructure.DbUpdateException ex)
                             {
-                                // Afficher l'erreur interne
-                                var innerException = ex.InnerException;
-                                while (innerException != null)
-                                {
-                                    Console.WriteLine(innerException.Message);
-                                    MessageBox.Show(innerException.Message, "Erreur détaillée");
-                                    innerException = innerException.InnerException;
-                                }
-
-                                // Log complet
-                                Console.WriteLine(ex.ToString());
+                               
                             }
                             catch (Exception ex)
                             {
@@ -4274,11 +4284,11 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
                         excelDataSource.Schema.AddRange(new FieldInfo[]
                         {
-        new FieldInfo { Name = "CT_Num", Type = typeof(string) },
-        new FieldInfo { Name = "AR_Ref", Type = typeof(string) },
-        new FieldInfo { Name = "DL_Design", Type = typeof(string) },
-        new FieldInfo { Name = "DL_PrixUnitaire", Type = typeof(decimal) },
-        new FieldInfo { Name = "DL_Qte", Type = typeof(decimal) }
+                            new FieldInfo { Name = "CT_Num", Type = typeof(string) },
+                            new FieldInfo { Name = "AR_Ref", Type = typeof(string) },
+                            new FieldInfo { Name = "DL_Design", Type = typeof(string) },
+                            new FieldInfo { Name = "DL_PrixUnitaire", Type = typeof(decimal) },
+                            new FieldInfo { Name = "DL_Qte", Type = typeof(decimal) }
                         });
 
                         excelDataSource.Fill();

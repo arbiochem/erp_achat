@@ -172,7 +172,6 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         public BindingSource BindingEntetes = new BindingSource();
         public void ChargerDonneesDepuisBDD()
         {
-
             try
             {
                 if (listBox1.SelectedItem != null)
