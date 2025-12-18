@@ -997,153 +997,165 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                     {
                         DataTable dt = (DataTable)gcLigneEdit.DataSource;
 
-                        DataRow newRow = dt.NewRow();
+                        bool exists = dt.AsEnumerable()
+                        .Any(r => r.Field<string>("AR_Ref") == AR_Ref);
 
-                        newRow["DO_Domaine"] = 1; //ACHAT = 1
-                        newRow["DO_Type"] = 10; // NOUVEAU DOCUMENT TSY MAINTSY 10
-                        newRow["CT_Num"] = CT_Num;
-                        newRow["DO_Piece"] = DO_Piece;
-                        //newRow["cbDO_Piece"] = CT_Num;
-                        newRow["DL_PieceBC"] = "";
-                        //newRow["cbDL_PieceBC"] = CT_Num;
-                        newRow["DL_PieceBL"] = "";
-                        //newRow["cbDL_PieceBL"] = CT_Num;
-                        newRow["DO_Date"] = DO_Date;
-                        //newRow["DL_DateBC"] = CT_Num;
-                        //newRow["DL_DateBL"] = CT_Num;
-                        //newRow["DL_Ligne"] = CT_Num;
-                        newRow["DO_Ref"] = DO_Ref;
-                        //newRow["cbDO_Ref"] = CT_Num;
-                        newRow["DL_TNomencl"] = 0;
-                        newRow["DL_TRemPied"] = 0;
-                        newRow["DL_TRemExep"] = 0;
-                        newRow["AR_Ref"] = AR_Ref;
-                        //newRow["cbAR_Ref"] = CT_Num;
-                        newRow["DL_Design"] = DL_Design;
-                        newRow["DL_Qte"] = 0;
-                        newRow["DL_QteBC"] = 0;
-                        newRow["DL_QteBL"] = 0;
-                        //newRow["DL_PoidsNet"] = CT_Num;
-                        newRow["DL_Valorise"] = 0;
-                        newRow["DL_PoidsBrut"] = 0;
-                        newRow["DL_Remise01REM_Valeur"] = 0;
-                        newRow["DL_Remise01REM_Type"] = 0;
-                        newRow["DL_Remise02REM_Valeur"] = 0;
-                        newRow["DL_Remise02REM_Type"] = 0;
-                        newRow["DL_Remise03REM_Valeur"] = 0;
-                        newRow["DL_Remise03REM_Type"] = 0;
-                        newRow["DL_PUBC"] = 0;
-                        newRow["DL_PrixUnitaire"] = pr_achat;
-                        newRow["DL_Taxe1"] = tauxTVA;
-                        newRow["DL_TypeTaux1"] = 0;
-                        newRow["DL_TypeTaxe1"] = 0;
-                        newRow["DL_Taxe2"] = 0;
-                        newRow["DL_TypeTaux2"] = 0;
-                        newRow["DL_TypeTaxe2"] = 0;
-                        newRow["CO_No"] = 0;
-                        //newRow["cbCO_No"] = CT_Num;
-                        newRow["AG_No1"] = 0;
-                        newRow["AG_No2"] = 0;
-                        newRow["DL_PrixRU"] = 0;
-                        newRow["DL_CMUP"] = pr_achat;
-                        newRow["DL_MvtStock"] = 0;
-                        newRow["DT_No"] = 0;
-                        //newRow["cbDT_No"] = CT_Num;
-                        //newRow["cbAF_RefFourniss"] = CT_Num;
-                        newRow["EU_Enumere"] = "";
-                        newRow["EU_Qte"] = 0;
-                        newRow["DL_TTC"] = 0;
-                        newRow["DE_No"] = Convert.ToInt32(lkDepot.EditValue);
-                        newRow["cbDE_No"] = Convert.ToInt32(lkDepot.EditValue);
-                        newRow["DL_NoRef"] = 0;
-                        newRow["DL_TypePL"] = 0;
-                        newRow["DL_PUDevise"] = 0;
-                        newRow["DL_PUTTC"] = pr_achat;
-                        //newRow["DL_No"] = 0;
-                        //newRow["DO_DateLivr"] = CT_Num;
-                        newRow["CA_Num"] = "";
-                        //newRow["cbCA_Num"] = CT_Num;
-                        newRow["DL_Taxe3"] = 0;
-                        newRow["DL_TypeTaux3"] = 0;
-                        newRow["DL_TypeTaxe3"] = 0;
-                        //newRow["cbAR_RefCompose"] = CT_Num;
-                        newRow["AC_RefClient"] = "";
-                        newRow["DL_MontantHT"] = DL_MontantHT;
-                        newRow["DL_MontantTTC"] = DL_MontantTTC;
-                        newRow["DL_FactPoids"] = 0;
-                        newRow["DL_Escompte"] = 0;
-                        newRow["DL_PiecePL"] = "";
-                        //newRow["cbDL_PiecePL"] = CT_Num;
-                        //newRow["DL_DatePL"] = CT_Num;
-                        newRow["DL_QtePL"] = 0;
-                        newRow["DL_NoColis"] = "";
-                        newRow["DL_NoLink"] = 0;
-                        //newRow["cbDL_NoLink"] = CT_Num;
-                        //newRow["RP_Code"] = "";
-                        //newRow["cbRP_Code"] = CT_Num;
-                        newRow["DL_QteRessource"] = 0;
-                        //newRow["DL_DateAvancement"] = CT_Num;
-                        newRow["PF_Num"] = "";
-                        newRow["DL_Frais"] = 0;
-                        //newRow["cbPF_Num"] = CT_Num;
-                        newRow["DL_CodeTaxe1"] = "";
-                        newRow["DL_CodeTaxe2"] = "";
-                        newRow["DL_CodeTaxe3"] = "";
-                        newRow["DL_PieceOFProd"] = 0;
-                        newRow["DL_PieceDE"] = "";
-                        //newRow["cbDL_PieceDE"] = CT_Num;
-                        //newRow["DL_DateDE"] = CT_Num;
-                        newRow["DL_QteDE"] = 0;
-                        newRow["DL_Operation"] = "";
-                        newRow["DL_NoSousTotal"] = 0;
-                        newRow["CA_No"] = 0;
-                        //newRow["cbCA_No"] = CT_Num;
-                        newRow["DO_DocType"] = 10;
-                        //newRow["cbProt"] = CT_Num;
-                        //newRow["cbMarq"] = CT_Num;
-                        //newRow["cbCreateur"] = CT_Num;
-                        //newRow["cbModification"] = CT_Num;
-                        //newRow["cbReplication"] = CT_Num;
-                        //newRow["cbFlag"] = CT_Num;
-                        //newRow["cbCreation"] = CT_Num;
-                        //newRow["cbCreationUser"] = CT_Num;
-                        //newRow["cbHash"] = CT_Num;
-                        //newRow["cbHashVersion"] = CT_Num;
-                        //newRow["cbHashDate"] = CT_Num;
-                        //newRow["cbHashOrder"] = CT_Num;          
-                        newRow["Retenu"] = 1;
-                        newRow["Action"] = "Remove";
-                        newRow["Validation"] = "Update";
-                        //newRow["Insertion"] = "Add";
-
-
-                        dt.Rows.Add(newRow);
-                        gvLigneEdit.FocusedRowHandle = dt.Rows.IndexOf(newRow);
-                        lkEdFrns.Text = CT_Num;
-                        gvLigneEdit.BestFitColumns();
-
-                        // MessageBox.Show($"Ligne cliquée:\nREFERENCE: {AR_Ref}\nFRNS: {CT_Num}");
-                        AddLigne();
-
-                        //Récupération unité
-                        var recup = _context.F_ARTFOURNISS
-                        .FirstOrDefault(x => x.AR_Ref == AR_Ref);
-
-                        if (recup != null)
+                        if (exists)
                         {
-                            string uniteLibelle = _context.P_UNITE
-                             .Where(u => u.cbMarq == recup.AF_Unite)
-                             .Select(u => u.U_Intitule)
-                             .FirstOrDefault();
+                            MessageBox.Show("Cette référence existe déjà dans la liste.","Message d'erreur",MessageBoxButtons.OK,MessageBoxIcon.Error);
+                            return;
+                        }
+                        else
+                        {
 
-                            gvLigneEdit.CustomColumnDisplayText += (s,e) =>
+                            DataRow newRow = dt.NewRow();
+
+                            newRow["DO_Domaine"] = 1; //ACHAT = 1
+                            newRow["DO_Type"] = 10; // NOUVEAU DOCUMENT TSY MAINTSY 10
+                            newRow["CT_Num"] = CT_Num;
+                            newRow["DO_Piece"] = DO_Piece;
+                            //newRow["cbDO_Piece"] = CT_Num;
+                            newRow["DL_PieceBC"] = "";
+                            //newRow["cbDL_PieceBC"] = CT_Num;
+                            newRow["DL_PieceBL"] = "";
+                            //newRow["cbDL_PieceBL"] = CT_Num;
+                            newRow["DO_Date"] = DO_Date;
+                            //newRow["DL_DateBC"] = CT_Num;
+                            //newRow["DL_DateBL"] = CT_Num;
+                            //newRow["DL_Ligne"] = CT_Num;
+                            newRow["DO_Ref"] = DO_Ref;
+                            //newRow["cbDO_Ref"] = CT_Num;
+                            newRow["DL_TNomencl"] = 0;
+                            newRow["DL_TRemPied"] = 0;
+                            newRow["DL_TRemExep"] = 0;
+                            newRow["AR_Ref"] = AR_Ref;
+                            //newRow["cbAR_Ref"] = CT_Num;
+                            newRow["DL_Design"] = DL_Design;
+                            newRow["DL_Qte"] = 0;
+                            newRow["DL_QteBC"] = 0;
+                            newRow["DL_QteBL"] = 0;
+                            //newRow["DL_PoidsNet"] = CT_Num;
+                            newRow["DL_Valorise"] = 0;
+                            newRow["DL_PoidsBrut"] = 0;
+                            newRow["DL_Remise01REM_Valeur"] = 0;
+                            newRow["DL_Remise01REM_Type"] = 0;
+                            newRow["DL_Remise02REM_Valeur"] = 0;
+                            newRow["DL_Remise02REM_Type"] = 0;
+                            newRow["DL_Remise03REM_Valeur"] = 0;
+                            newRow["DL_Remise03REM_Type"] = 0;
+                            newRow["DL_PUBC"] = 0;
+                            newRow["DL_PrixUnitaire"] = pr_achat;
+                            newRow["DL_Taxe1"] = tauxTVA;
+                            newRow["DL_TypeTaux1"] = 0;
+                            newRow["DL_TypeTaxe1"] = 0;
+                            newRow["DL_Taxe2"] = 0;
+                            newRow["DL_TypeTaux2"] = 0;
+                            newRow["DL_TypeTaxe2"] = 0;
+                            newRow["CO_No"] = 0;
+                            //newRow["cbCO_No"] = CT_Num;
+                            newRow["AG_No1"] = 0;
+                            newRow["AG_No2"] = 0;
+                            newRow["DL_PrixRU"] = 0;
+                            newRow["DL_CMUP"] = pr_achat;
+                            newRow["DL_MvtStock"] = 0;
+                            newRow["DT_No"] = 0;
+                            //newRow["cbDT_No"] = CT_Num;
+                            //newRow["cbAF_RefFourniss"] = CT_Num;
+                            newRow["EU_Enumere"] = "";
+                            newRow["EU_Qte"] = 0;
+                            newRow["DL_TTC"] = 0;
+                            newRow["DE_No"] = Convert.ToInt32(lkDepot.EditValue);
+                            newRow["cbDE_No"] = Convert.ToInt32(lkDepot.EditValue);
+                            newRow["DL_NoRef"] = 0;
+                            newRow["DL_TypePL"] = 0;
+                            newRow["DL_PUDevise"] = 0;
+                            newRow["DL_PUTTC"] = pr_achat;
+                            //newRow["DL_No"] = 0;
+                            //newRow["DO_DateLivr"] = CT_Num;
+                            newRow["CA_Num"] = "";
+                            //newRow["cbCA_Num"] = CT_Num;
+                            newRow["DL_Taxe3"] = 0;
+                            newRow["DL_TypeTaux3"] = 0;
+                            newRow["DL_TypeTaxe3"] = 0;
+                            //newRow["cbAR_RefCompose"] = CT_Num;
+                            newRow["AC_RefClient"] = "";
+                            newRow["DL_MontantHT"] = DL_MontantHT;
+                            newRow["DL_MontantTTC"] = DL_MontantTTC;
+                            newRow["DL_FactPoids"] = 0;
+                            newRow["DL_Escompte"] = 0;
+                            newRow["DL_PiecePL"] = "";
+                            //newRow["cbDL_PiecePL"] = CT_Num;
+                            //newRow["DL_DatePL"] = CT_Num;
+                            newRow["DL_QtePL"] = 0;
+                            newRow["DL_NoColis"] = "";
+                            newRow["DL_NoLink"] = 0;
+                            //newRow["cbDL_NoLink"] = CT_Num;
+                            //newRow["RP_Code"] = "";
+                            //newRow["cbRP_Code"] = CT_Num;
+                            newRow["DL_QteRessource"] = 0;
+                            //newRow["DL_DateAvancement"] = CT_Num;
+                            newRow["PF_Num"] = "";
+                            newRow["DL_Frais"] = 0;
+                            //newRow["cbPF_Num"] = CT_Num;
+                            newRow["DL_CodeTaxe1"] = "";
+                            newRow["DL_CodeTaxe2"] = "";
+                            newRow["DL_CodeTaxe3"] = "";
+                            newRow["DL_PieceOFProd"] = 0;
+                            newRow["DL_PieceDE"] = "";
+                            //newRow["cbDL_PieceDE"] = CT_Num;
+                            //newRow["DL_DateDE"] = CT_Num;
+                            newRow["DL_QteDE"] = 0;
+                            newRow["DL_Operation"] = "";
+                            newRow["DL_NoSousTotal"] = 0;
+                            newRow["CA_No"] = 0;
+                            //newRow["cbCA_No"] = CT_Num;
+                            newRow["DO_DocType"] = 10;
+                            //newRow["cbProt"] = CT_Num;
+                            //newRow["cbMarq"] = CT_Num;
+                            //newRow["cbCreateur"] = CT_Num;
+                            //newRow["cbModification"] = CT_Num;
+                            //newRow["cbReplication"] = CT_Num;
+                            //newRow["cbFlag"] = CT_Num;
+                            //newRow["cbCreation"] = CT_Num;
+                            //newRow["cbCreationUser"] = CT_Num;
+                            //newRow["cbHash"] = CT_Num;
+                            //newRow["cbHashVersion"] = CT_Num;
+                            //newRow["cbHashDate"] = CT_Num;
+                            //newRow["cbHashOrder"] = CT_Num;          
+                            newRow["Retenu"] = 1;
+                            newRow["Action"] = "Remove";
+                            newRow["Validation"] = "Update";
+                            //newRow["Insertion"] = "Add";
+
+
+                            dt.Rows.Add(newRow);
+                            gvLigneEdit.FocusedRowHandle = dt.Rows.IndexOf(newRow);
+                            lkEdFrns.Text = CT_Num;
+                            gvLigneEdit.BestFitColumns();
+
+                            // MessageBox.Show($"Ligne cliquée:\nREFERENCE: {AR_Ref}\nFRNS: {CT_Num}");
+                            AddLigne();
+
+                            //Récupération unité
+                            var recup = _context.F_ARTFOURNISS
+                            .FirstOrDefault(x => x.AR_Ref == AR_Ref);
+
+                            if (recup != null)
                             {
-                                if (e.Column.FieldName == "Unite")
-                                {
-                                    e.DisplayText = uniteLibelle ?? ""; // juste la string
-                                }
-                            };
+                                string uniteLibelle = _context.P_UNITE
+                                 .Where(u => u.cbMarq == recup.AF_Unite)
+                                 .Select(u => u.U_Intitule)
+                                 .FirstOrDefault();
 
+                                gvLigneEdit.CustomColumnDisplayText += (s, e) =>
+                                {
+                                    if (e.Column.FieldName == "Unite")
+                                    {
+                                        e.DisplayText = uniteLibelle ?? ""; // juste la string
+                                    }
+                                };
+
+                            }
                         }
                     }
                     else
@@ -3048,6 +3060,15 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                     newdocpiece = dopiece.Replace(docpiece.Substring(0, 3), "ABR");
                     break;
             }
+
+            var f_fs = _context.F_FRETS.FirstOrDefault(x => x.DO_PIECE == dopiece);
+
+            if (f_fs != null)
+            {
+                f_fs.DO_PIECE =newdocpiece;
+                _context.SaveChanges();
+            }
+
             return newdocpiece;
         }
         private string TransformDoType(string doctype, string docpiece)
@@ -3817,7 +3838,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
                         //MAJ Qte
 
-                        int? DE_No = Convert.ToInt32(lkDepot.EditValue);
+                        /*int? DE_No = Convert.ToInt32(lkDepot.EditValue);
                         for (int i = 0; i < gvLigneEdit.RowCount; i++)
                         {
                             string reference = gvLigneEdit.GetRowCellValue(i, "AR_Ref")?.ToString();
@@ -3910,7 +3931,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                             
                         }
                         // Fix for CS0120: Use the instance of ucDocuments instead of trying to call it statically
-                        _ucDocuments.ChargerDonneesDepuisBDD();
+                        _ucDocuments.ChargerDonneesDepuisBDD();*/
                     }
                     else
                     {

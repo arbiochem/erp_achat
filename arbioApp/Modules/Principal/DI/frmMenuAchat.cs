@@ -143,8 +143,10 @@ namespace arbioApp.Modules.Principal.DI
                     object result = command.ExecuteScalar();
                     int currentNumber = result != DBNull.Value ? (int)result : 0;  // Si pas de résultat, commencer à 0
 
+                    connection.Close();
                     return $"{prefix}{year}{currentNumber:D4}";  
                 }
+                
             }
         }
 
@@ -209,24 +211,60 @@ namespace arbioApp.Modules.Principal.DI
             {
                 using (AppDbContext context = new AppDbContext())
                 {
-                    var depots = context.F_DEPOT.ToList();
 
-                    radioGroup1.Properties.Items.Clear();
-
-                    foreach (var depot in depots)
+                    try
                     {
-                        radioGroup1.Properties.Items.Add(
-                            new RadioGroupItem(depot.DE_No, depot.DE_Intitule)   // Value = ID, Label = Nom
-                        );
+                        string connectionString = "Server=26.71.34.164;Database=TRANSIT;Trusted_Connection=True;";
+
+                        using (SqlConnection connection = new SqlConnection(connectionString))
+                        {
+                            connection.Open();
+
+                            var depots = new List<(int DE_No, string DE_Intitule)>();
+
+                            using (var conn = new SqlConnection(connectionString))
+                            using (var cmd = new SqlCommand("SELECT DE_No, DE_Intitule FROM F_DEPOT", conn))
+                            {
+                                conn.Open();
+                                using (var reader = cmd.ExecuteReader())
+                                {
+                                    while (reader.Read())
+                                    {
+                                        depots.Add((reader.GetInt32(0), reader.GetString(1)));
+                                    }
+                                }
+                            }
+
+                            // Vider l'ancien contenu
+                            radioGroup1.Properties.Items.Clear();
+
+                            // Ajouter les dépôts
+                            foreach (var depot in depots)
+                            {
+                                radioGroup1.Properties.Items.Add(
+                                    new RadioGroupItem(depot.DE_No, depot.DE_Intitule)
+                                );
+                            }
+
+                            // Nombre de colonnes
+                            radioGroup1.Properties.Columns = depots.Count;
+
+                            // Valeur par défaut = premier dépôt
+                            if (depots.Any())
+                                radioGroup1.EditValue = depots.First().DE_No;
+
+                            connection.Close();
+                        }
                     }
+                    catch (System.Data.Entity.Infrastructure.DbUpdateException ex)
+                    {
 
-                    // affichage horizontal
-                    radioGroup1.Properties.Columns = depots.Count;
-
-                    // valeur par défaut = premier dépôt
-                    if (depots.Any())
-                        radioGroup1.EditValue = depots.First().DE_No;
-
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message, "Erreur");
+                    }
+                    
                 }
             }
             catch (System.Data.Entity.Infrastructure.DbUpdateException ex)
