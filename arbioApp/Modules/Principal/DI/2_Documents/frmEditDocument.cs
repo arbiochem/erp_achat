@@ -3425,6 +3425,10 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         public static int intcollaborateur;
         private void frmEditDocument_Load_1(object sender, EventArgs e)
         {
+            textSearch.Properties.Appearance.TextOptions.HAlignment =
+            DevExpress.Utils.HorzAlignment.Center;
+
+            treeList1.OptionsFind.ExpandNodesOnIncrementalSearch = true;
             var test_exist = _context.F_DOCENTETE.FirstOrDefault(x => x.DO_Piece == dopiecetxt.Text.ToString());
 
             if (test_exist != null)
@@ -3838,7 +3842,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
                         //MAJ Qte
 
-                        /*int? DE_No = Convert.ToInt32(lkDepot.EditValue);
+                        int? DE_No = Convert.ToInt32(lkDepot.EditValue);
                         for (int i = 0; i < gvLigneEdit.RowCount; i++)
                         {
                             string reference = gvLigneEdit.GetRowCellValue(i, "AR_Ref")?.ToString();
@@ -3846,7 +3850,8 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
                             try
                             {
-                                string connectionString = "Server=26.71.34.164;Database=TRANSIT;Trusted_Connection=True;";
+                                //string connectionString = "Server=26.71.34.164;Database=TRANSIT;Trusted_Connection=True;";
+                                string connectionString = "Server=localhost;Database=TRANSIT;Trusted_Connection=True;";
 
                                 using (SqlConnection connection = new SqlConnection(connectionString))
                                 {
@@ -3931,7 +3936,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                             
                         }
                         // Fix for CS0120: Use the instance of ucDocuments instead of trying to call it statically
-                        _ucDocuments.ChargerDonneesDepuisBDD();*/
+                        _ucDocuments.ChargerDonneesDepuisBDD();
                     }
                     else
                     {
@@ -5371,6 +5376,19 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 val= recup.CT_Num;
             }
             return val;
+        }
+
+        private void textSearch_TextChanged(object sender, EventArgs e)
+        {
+            treeList1.Columns["DESIGNATION"].OptionsFilter.AllowFilter = true;
+            
+            //treeList1.FindFilterText = string.Empty;
+            treeList1.FindFilterText = textSearch.Text;
+        }
+
+        private void textSearch_EditValueChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
