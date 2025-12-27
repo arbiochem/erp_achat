@@ -15,7 +15,7 @@
       "RelativeMoniker": "D:0:0:{78D775A6-87D6-4010-86C9-4DDC40FBCA69}|arbioApp\\arbioApp.csproj|solutionrelative:arbioapp\\modules\\principal\\di\\2_documents\\frmeditdocument.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{78D775A6-87D6-4010-86C9-4DDC40FBCA69}|arbioApp\\arbioApp.csproj|d:\\arbiochem\\travail\\erp\\arbioapp\\modules\\principal\\di\\2_documents\\frmeditdocument.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{78D775A6-87D6-4010-86C9-4DDC40FBCA69}|arbioApp\\arbioApp.csproj|D:\\Arbiochem\\Travail\\erp\\arbioapp\\modules\\principal\\di\\2_documents\\frmeditdocument.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{78D775A6-87D6-4010-86C9-4DDC40FBCA69}|arbioApp\\arbioApp.csproj|solutionrelative:arbioapp\\modules\\principal\\di\\2_documents\\frmeditdocument.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
@@ -35,7 +35,7 @@
       "RelativeMoniker": "D:0:0:{78D775A6-87D6-4010-86C9-4DDC40FBCA69}|arbioApp\\arbioApp.csproj|solutionrelative:arbioapp\\modules\\principal\\di\\2_documents\\frmtransform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{78D775A6-87D6-4010-86C9-4DDC40FBCA69}|arbioApp\\arbioApp.csproj|d:\\arbiochem\\travail\\erp\\arbioapp\\modules\\principal\\di\\2_documents\\ucdocuments.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "AbsoluteMoniker": "D:0:0:{78D775A6-87D6-4010-86C9-4DDC40FBCA69}|arbioApp\\arbioApp.csproj|D:\\Arbiochem\\Travail\\erp\\arbioapp\\modules\\principal\\di\\2_documents\\ucdocuments.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
       "RelativeMoniker": "D:0:0:{78D775A6-87D6-4010-86C9-4DDC40FBCA69}|arbioApp\\arbioApp.csproj|solutionrelative:arbioapp\\modules\\principal\\di\\2_documents\\ucdocuments.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     },
     {
@@ -43,7 +43,7 @@
       "RelativeMoniker": "D:0:0:{78D775A6-87D6-4010-86C9-4DDC40FBCA69}|arbioApp\\arbioApp.csproj|solutionrelative:arbioapp\\modules\\principal\\di\\2_documents\\ucdocuments.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{78D775A6-87D6-4010-86C9-4DDC40FBCA69}|arbioApp\\arbioApp.csproj|d:\\arbiochem\\travail\\erp\\arbioapp\\modules\\principal\\frmmdiparent.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{78D775A6-87D6-4010-86C9-4DDC40FBCA69}|arbioApp\\arbioApp.csproj|D:\\Arbiochem\\Travail\\erp\\arbioapp\\modules\\principal\\frmmdiparent.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{78D775A6-87D6-4010-86C9-4DDC40FBCA69}|arbioApp\\arbioApp.csproj|solutionrelative:arbioapp\\modules\\principal\\frmmdiparent.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
@@ -217,8 +217,7 @@
               "ToolTip": "D:\\Arbiochem\\Travail\\erp\\arbioApp\\Modules\\Principal\\DI\\2_Documents\\frmEditDocument.cs [Design]",
               "RelativeToolTip": "arbioApp\\Modules\\Principal\\DI\\2_Documents\\frmEditDocument.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-08T13:27:49.142Z",
-              "EditorCaption": " [Design]"
+              "WhenOpened": "2025-12-08T13:27:49.142Z"
             },
             {
               "$type": "Document",
@@ -230,8 +229,7 @@
               "RelativeToolTip": "arbioApp\\Modules\\Principal\\DI\\2_Documents\\frmEditDocument.cs",
               "ViewState": "AgIAAFQVAAAAAAAAAAAowGMVAAAxAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-11T06:32:23.229Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-11T06:32:23.229Z"
             },
             {
               "$type": "Document",
@@ -243,8 +241,7 @@
               "RelativeToolTip": "arbioApp\\Modules\\Principal\\DI\\frmMenuAchat.cs",
               "ViewState": "AgIAAIoAAAAAAAAAAAAowJgAAAAiAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-17T12:38:50.648Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-17T12:38:50.648Z"
             },
             {
               "$type": "Document",
@@ -256,8 +253,7 @@
               "RelativeToolTip": "arbioApp\\Modules\\Principal\\DI\\2_Documents\\frmEditInfos.cs",
               "ViewState": "AgIAAJMDAAAAAAAAAAAAAJMDAAAiAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-17T07:36:32.026Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-17T07:36:32.026Z"
             },
             {
               "$type": "Document",
@@ -269,8 +265,7 @@
               "RelativeToolTip": "arbioApp\\Modules\\Principal\\GESTION_COMMERCIALE\\FrmNewPrix.cs",
               "ViewState": "AgIAAGsAAAAAAAAAAAAAAGsAAAAiAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-11T05:11:53.493Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-11T05:11:53.493Z"
             },
             {
               "$type": "Document",
@@ -292,7 +287,7 @@
               "RelativeDocumentMoniker": "arbioApp\\Modules\\Principal\\DI\\2_Documents\\frmLotSerie.cs",
               "ToolTip": "D:\\Arbiochem\\Travail\\erp\\arbioApp\\Modules\\Principal\\DI\\2_Documents\\frmLotSerie.cs",
               "RelativeToolTip": "arbioApp\\Modules\\Principal\\DI\\2_Documents\\frmLotSerie.cs",
-              "ViewState": "AgIAACQAAAAAAAAAAAAowC4AAAAdAAAAAAAAAA==",
+              "ViewState": "AgIAADAAAAAAAAAAAAAowEAAAABGAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-26T05:55:02.002Z",
               "EditorCaption": ""
@@ -306,8 +301,7 @@
               "ToolTip": "D:\\Arbiochem\\Travail\\erp\\arbioApp\\Modules\\Principal\\DI\\2_Documents\\frmTransform.cs [Design]",
               "RelativeToolTip": "arbioApp\\Modules\\Principal\\DI\\2_Documents\\frmTransform.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-16T05:24:08.388Z",
-              "EditorCaption": " [Design]"
+              "WhenOpened": "2025-12-16T05:24:08.388Z"
             },
             {
               "$type": "Document",
@@ -319,8 +313,7 @@
               "RelativeToolTip": "arbioApp\\Modules\\Principal\\DI\\2_Documents\\ucDocuments.cs",
               "ViewState": "AgIAAHwAAAAAAAAAAAAowIoAAAAlAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-11T05:52:55.883Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-11T05:52:55.883Z"
             },
             {
               "$type": "Document",
@@ -332,8 +325,7 @@
               "RelativeToolTip": "arbioApp\\Modules\\Principal\\FrmMdiParent.cs",
               "ViewState": "AgIAALAAAAAAAAAAAAAcwLwAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-26T10:23:00.821Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-26T10:23:00.821Z"
             },
             {
               "$type": "Document",
@@ -344,8 +336,7 @@
               "ToolTip": "D:\\Arbiochem\\Travail\\erp\\arbioApp\\Modules\\Principal\\DI\\2_Documents\\ucDocuments.cs [Design]",
               "RelativeToolTip": "arbioApp\\Modules\\Principal\\DI\\2_Documents\\ucDocuments.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-26T10:53:13.551Z",
-              "EditorCaption": " [Design]"
+              "WhenOpened": "2025-12-26T10:53:13.551Z"
             },
             {
               "$type": "Document",
@@ -357,8 +348,7 @@
               "RelativeToolTip": "arbioApp\\Modules\\Principal\\DI\\Entetes.cs",
               "ViewState": "AgIAABYAAAAAAAAAAAAgwBsAAABLAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-17T08:51:58.791Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-17T08:51:58.791Z"
             },
             {
               "$type": "Document",
@@ -369,8 +359,7 @@
               "ToolTip": "D:\\Arbiochem\\Travail\\erp\\arbioApp\\Modules\\Principal\\DI\\frmMenuAchat.cs [Design]",
               "RelativeToolTip": "arbioApp\\Modules\\Principal\\DI\\frmMenuAchat.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-17T12:38:45.069Z",
-              "EditorCaption": " [Design]"
+              "WhenOpened": "2025-12-17T12:38:45.069Z"
             },
             {
               "$type": "Document",
@@ -381,8 +370,7 @@
               "ToolTip": "D:\\Arbiochem\\Travail\\erp\\arbioApp\\Modules\\Principal\\DI\\2_Documents\\frmSites.cs [Design]",
               "RelativeToolTip": "arbioApp\\Modules\\Principal\\DI\\2_Documents\\frmSites.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-09T05:55:24.725Z",
-              "EditorCaption": " [Design]"
+              "WhenOpened": "2025-12-09T05:55:24.725Z"
             },
             {
               "$type": "Document",
@@ -394,8 +382,7 @@
               "RelativeToolTip": "arbioApp\\Modules\\Principal\\DI\\2_Documents\\frmEditFrns.cs",
               "ViewState": "AgIAAEoAAAAAAAAAAAAkwFcAAAAhAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-22T13:37:39.176Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-22T13:37:39.176Z"
             },
             {
               "$type": "Document",
@@ -407,8 +394,7 @@
               "RelativeToolTip": "arbioApp\\ARBIOCHEMDataSet.Designer.cs",
               "ViewState": "AgIAADsAAAAAAAAAAIBJwD4AAAAaAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-22T13:41:26.715Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-22T13:41:26.715Z"
             },
             {
               "$type": "Document",
@@ -420,8 +406,7 @@
               "RelativeToolTip": "arbioApp\\Modules\\Principal\\DI\\Models\\AppDbContext.cs",
               "ViewState": "AgIAADUAAAAAAAAAAAA8wDwAAAAxAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-17T07:52:07.702Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-17T07:52:07.702Z"
             },
             {
               "$type": "Document",
@@ -433,8 +418,7 @@
               "RelativeToolTip": "arbioApp\\Modules\\Account\\FrmConnex.cs",
               "ViewState": "AgIAACoAAAAAAAAAAIBQwDEAAAA1AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-10T13:41:11.82Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-10T13:41:11.82Z"
             },
             {
               "$type": "Document",
@@ -445,8 +429,7 @@
               "ToolTip": "D:\\Arbiochem\\Travail\\erp\\arbioApp\\Modules\\Account\\FrmConnex.cs [Design]",
               "RelativeToolTip": "arbioApp\\Modules\\Account\\FrmConnex.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-08T13:27:49.508Z",
-              "EditorCaption": " [Design]"
+              "WhenOpened": "2025-12-08T13:27:49.508Z"
             },
             {
               "$type": "Document",
@@ -458,8 +441,7 @@
               "RelativeToolTip": "arbioApp\\Modules\\Helpers\\DateHelper.cs",
               "ViewState": "AgIAAAsAAAAAAAAAAAAAwA4AAAAMAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-17T10:18:26.501Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-17T10:18:26.501Z"
             },
             {
               "$type": "Document",
@@ -470,8 +452,7 @@
               "ToolTip": "D:\\Arbiochem\\Travail\\erp\\arbioApp\\Modules\\Principal\\DI\\2_Documents\\rptDocument.cs [Design]",
               "RelativeToolTip": "arbioApp\\Modules\\Principal\\DI\\2_Documents\\rptDocument.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-17T08:35:03.528Z",
-              "EditorCaption": " [Design]"
+              "WhenOpened": "2025-12-17T08:35:03.528Z"
             },
             {
               "$type": "Document",
@@ -483,8 +464,7 @@
               "RelativeToolTip": "arbioApp\\Program.cs",
               "ViewState": "AgIAACUAAAAAAAAAAAAQwA0AAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-17T08:27:11.132Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-17T08:27:11.132Z"
             },
             {
               "$type": "Document",
@@ -496,8 +476,7 @@
               "RelativeToolTip": "arbioApp\\App.config",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAACGAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000601|",
-              "WhenOpened": "2025-12-17T08:27:20.347Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-17T08:27:20.347Z"
             },
             {
               "$type": "Document",
@@ -508,8 +487,7 @@
               "ToolTip": "D:\\Arbiochem\\Travail\\erp\\arbioApp\\Modules\\Principal\\DI\\2_Documents\\frmEditInfos.cs [Design]",
               "RelativeToolTip": "arbioApp\\Modules\\Principal\\DI\\2_Documents\\frmEditInfos.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-08T13:27:49.676Z",
-              "EditorCaption": " [Design]"
+              "WhenOpened": "2025-12-08T13:27:49.676Z"
             },
             {
               "$type": "Document",
@@ -521,8 +499,7 @@
               "RelativeToolTip": "arbioApp\\packages.config",
               "ViewState": "AgIAAC4AAAAAAAAAAADgvz0AAABIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000601|",
-              "WhenOpened": "2025-12-17T05:00:45.022Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-17T05:00:45.022Z"
             },
             {
               "$type": "Document",
@@ -534,8 +511,7 @@
               "RelativeToolTip": "arbioApp\\Modules\\Principal\\DI\\Models\\F_FRET.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAsAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-17T07:51:49.591Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-17T07:51:49.591Z"
             },
             {
               "$type": "Document",
@@ -546,8 +522,7 @@
               "ToolTip": "D:\\Arbiochem\\Travail\\erp\\arbioApp\\Modules\\Principal\\DI\\2_Documents\\frmReglementFrns.cs [Design]",
               "RelativeToolTip": "arbioApp\\Modules\\Principal\\DI\\2_Documents\\frmReglementFrns.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-09T05:55:16.608Z",
-              "EditorCaption": " [Design]"
+              "WhenOpened": "2025-12-09T05:55:16.608Z"
             },
             {
               "$type": "Document",
@@ -558,8 +533,7 @@
               "ToolTip": "D:\\Arbiochem\\Travail\\erp\\arbioApp\\Modules\\Principal\\DI\\2_Documents\\frmEditArticles.cs [Design]",
               "RelativeToolTip": "arbioApp\\Modules\\Principal\\DI\\2_Documents\\frmEditArticles.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-08T13:27:48.638Z",
-              "EditorCaption": " [Design]"
+              "WhenOpened": "2025-12-08T13:27:48.638Z"
             },
             {
               "$type": "Document",
@@ -570,8 +544,7 @@
               "ToolTip": "D:\\Arbiochem\\Travail\\erp\\arbioApp\\Modules\\Principal\\DI\\2_Documents\\frmEditFrns.cs [Design]",
               "RelativeToolTip": "arbioApp\\Modules\\Principal\\DI\\2_Documents\\frmEditFrns.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-08T13:27:48.332Z",
-              "EditorCaption": " [Design]"
+              "WhenOpened": "2025-12-08T13:27:48.332Z"
             },
             {
               "$type": "Document",
@@ -582,8 +555,7 @@
               "ToolTip": "D:\\Arbiochem\\Travail\\erp\\arbioApp\\Modules\\Principal\\DI\\2_Documents\\frmTarifFrns.cs [Design]",
               "RelativeToolTip": "arbioApp\\Modules\\Principal\\DI\\2_Documents\\frmTarifFrns.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-09T05:55:34.339Z",
-              "EditorCaption": " [Design]"
+              "WhenOpened": "2025-12-09T05:55:34.339Z"
             },
             {
               "$type": "Document",
@@ -595,8 +567,7 @@
               "RelativeToolTip": "arbioApp\\Modules\\Principal\\DI\\2_Documents\\frmSites.cs",
               "ViewState": "AgIAADYAAAAAAAAAAAAMwEQAAAAUAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-12T07:15:05.701Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-12T07:15:05.701Z"
             },
             {
               "$type": "Document",
@@ -607,8 +578,7 @@
               "ToolTip": "D:\\Arbiochem\\Travail\\erp\\arbioApp\\Modules\\Principal\\FrmMdiParent.cs [Design]",
               "RelativeToolTip": "arbioApp\\Modules\\Principal\\FrmMdiParent.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-11T05:39:45.5Z",
-              "EditorCaption": " [Design]"
+              "WhenOpened": "2025-12-11T05:39:45.5Z"
             },
             {
               "$type": "Document",
@@ -620,8 +590,7 @@
               "RelativeToolTip": "arbioApp\\Modules\\Principal\\DI\\Lignes.cs",
               "ViewState": "AgIAALwAAAAAAAAAAAAcwMYAAAARAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-11T06:36:06.387Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-11T06:36:06.387Z"
             },
             {
               "$type": "Document",
@@ -633,8 +602,7 @@
               "RelativeToolTip": "arbioApp\\Modules\\Principal\\DI\\2_Documents\\frmReglementFrns.cs",
               "ViewState": "AgIAADUAAAAAAAAAAAAowEMAAAAeAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-11T07:32:59.537Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-11T07:32:59.537Z"
             },
             {
               "$type": "Document",
@@ -645,8 +613,7 @@
               "ToolTip": "D:\\Arbiochem\\Travail\\erp\\arbioApp\\Modules\\Principal\\Theme\\FrmTheme.cs [Design]",
               "RelativeToolTip": "arbioApp\\Modules\\Principal\\Theme\\FrmTheme.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-09T05:57:22.177Z",
-              "EditorCaption": " [Design]"
+              "WhenOpened": "2025-12-09T05:57:22.177Z"
             },
             {
               "$type": "Document",
@@ -657,8 +624,7 @@
               "ToolTip": "D:\\Arbiochem\\Travail\\erp\\arbioApp\\Modules\\Principal\\GESTION_COMMERCIALE\\FrmNewPrix.cs [Design]",
               "RelativeToolTip": "arbioApp\\Modules\\Principal\\GESTION_COMMERCIALE\\FrmNewPrix.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-09T05:56:24.488Z",
-              "EditorCaption": " [Design]"
+              "WhenOpened": "2025-12-09T05:56:24.488Z"
             },
             {
               "$type": "Document",
@@ -669,8 +635,7 @@
               "ToolTip": "D:\\Arbiochem\\Travail\\erp\\arbioApp\\Modules\\Principal\\GESTION_COMMERCIALE\\FrmNewPrice.cs [Design]",
               "RelativeToolTip": "arbioApp\\Modules\\Principal\\GESTION_COMMERCIALE\\FrmNewPrice.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-09T05:56:19.515Z",
-              "EditorCaption": " [Design]"
+              "WhenOpened": "2025-12-09T05:56:19.515Z"
             },
             {
               "$type": "Document",
@@ -681,8 +646,7 @@
               "ToolTip": "D:\\Arbiochem\\Travail\\erp\\arbioApp\\Modules\\Principal\\DSI\\WaitForm2.cs [Design]",
               "RelativeToolTip": "arbioApp\\Modules\\Principal\\DSI\\WaitForm2.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-09T05:56:13.393Z",
-              "EditorCaption": " [Design]"
+              "WhenOpened": "2025-12-09T05:56:13.393Z"
             },
             {
               "$type": "Document",
@@ -693,8 +657,7 @@
               "ToolTip": "D:\\Arbiochem\\Travail\\erp\\arbioApp\\Form1.cs [Design]",
               "RelativeToolTip": "arbioApp\\Form1.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-09T05:57:36.038Z",
-              "EditorCaption": " [Design]"
+              "WhenOpened": "2025-12-09T05:57:36.038Z"
             },
             {
               "$type": "Document",
@@ -705,8 +668,7 @@
               "ToolTip": "D:\\Arbiochem\\Travail\\erp\\arbioApp\\Modules\\Principal\\DSI\\FrmNewUser.cs [Design]",
               "RelativeToolTip": "arbioApp\\Modules\\Principal\\DSI\\FrmNewUser.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-09T05:56:00.261Z",
-              "EditorCaption": " [Design]"
+              "WhenOpened": "2025-12-09T05:56:00.261Z"
             },
             {
               "$type": "Document",
@@ -717,8 +679,7 @@
               "ToolTip": "D:\\Arbiochem\\Travail\\erp\\arbioApp\\Modules\\Principal\\DI\\2_Documents\\frmAutorisations_achat.cs [Design]",
               "RelativeToolTip": "arbioApp\\Modules\\Principal\\DI\\2_Documents\\frmAutorisations_achat.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-08T13:27:48.213Z",
-              "EditorCaption": " [Design]"
+              "WhenOpened": "2025-12-08T13:27:48.213Z"
             },
             {
               "$type": "Document",
@@ -729,8 +690,7 @@
               "ToolTip": "D:\\Arbiochem\\Travail\\erp\\arbioApp\\Modules\\Principal\\DI\\2_Documents\\frmAutorisation.cs [Design]",
               "RelativeToolTip": "arbioApp\\Modules\\Principal\\DI\\2_Documents\\frmAutorisation.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-08T13:27:49.838Z",
-              "EditorCaption": " [Design]"
+              "WhenOpened": "2025-12-08T13:27:49.838Z"
             },
             {
               "$type": "Document",
@@ -742,8 +702,7 @@
               "RelativeToolTip": "arbioApp\\Modules\\Principal\\Dashboard\\clsMultiDataTable.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-09T05:54:01.664Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-09T05:54:01.664Z"
             },
             {
               "$type": "Document",
@@ -754,8 +713,7 @@
               "ToolTip": "D:\\Arbiochem\\Travail\\erp\\arbioApp\\Modules\\Principal\\Dashboard\\RECOUVREMENT\\ucRecouvrement.cs [Design]",
               "RelativeToolTip": "arbioApp\\Modules\\Principal\\Dashboard\\RECOUVREMENT\\ucRecouvrement.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-09T05:53:57.89Z",
-              "EditorCaption": " [Design]"
+              "WhenOpened": "2025-12-09T05:53:57.89Z"
             },
             {
               "$type": "Document",
@@ -766,8 +724,7 @@
               "ToolTip": "D:\\Arbiochem\\Travail\\erp\\arbioApp\\Modules\\Infos\\FrmHelp.cs [Design]",
               "RelativeToolTip": "arbioApp\\Modules\\Infos\\FrmHelp.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-09T05:53:15.201Z",
-              "EditorCaption": " [Design]"
+              "WhenOpened": "2025-12-09T05:53:15.201Z"
             },
             {
               "$type": "Document",
@@ -778,8 +735,7 @@
               "ToolTip": "D:\\Arbiochem\\Travail\\erp\\arbioApp\\Modules\\Account\\FrmChangePassword.cs [Design]",
               "RelativeToolTip": "arbioApp\\Modules\\Account\\FrmChangePassword.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-08T13:27:49.344Z",
-              "EditorCaption": " [Design]"
+              "WhenOpened": "2025-12-08T13:27:49.344Z"
             },
             {
               "$type": "Document",
@@ -790,8 +746,7 @@
               "ToolTip": "D:\\Arbiochem\\Travail\\erp\\arbioApp\\Modules\\Account\\FrmProfil.cs [Design]",
               "RelativeToolTip": "arbioApp\\Modules\\Account\\FrmProfil.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-08T13:27:48.829Z",
-              "EditorCaption": " [Design]"
+              "WhenOpened": "2025-12-08T13:27:48.829Z"
             },
             {
               "$type": "Document",
@@ -802,8 +757,7 @@
               "ToolTip": "D:\\Arbiochem\\Travail\\erp\\arbioApp\\Modules\\Account\\WaitForm3.cs [Design]",
               "RelativeToolTip": "arbioApp\\Modules\\Account\\WaitForm3.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-08T13:27:49.007Z",
-              "EditorCaption": " [Design]"
+              "WhenOpened": "2025-12-08T13:27:49.007Z"
             }
           ]
         }
