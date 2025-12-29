@@ -373,7 +373,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             {
 
                 //Enregistrer session
-                string connectionStringArbio = $"Server=26.53.123.231;Database=ARBIOCHEM_ACHAT;" +
+                string connectionStringArbio = $"Server=26.71.34.164;Database=TRANSIT;" +
                                                  $"User ID=Dev;Password=1234;TrustServerCertificate=True;" +
                                                  $"Connection Timeout=240;";
 
@@ -419,7 +419,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             bool b_test = false;
 
             string connectionStringArbio =
-                "Server=26.53.123.231;Database=ARBIOCHEM_ACHAT;User ID=Dev;Password=1234;";
+                "Server=26.71.34.164;Database=TRANSIT;User ID=Dev;Password=1234;";
 
             using (SqlConnection connection = new SqlConnection(connectionStringArbio))
             {

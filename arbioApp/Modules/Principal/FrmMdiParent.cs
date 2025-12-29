@@ -154,7 +154,7 @@ namespace arbioApp
             if (MessageBox.Show("Voulez-vous vraiment vous déconnecter ?", "Déconnexion",
         MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
-                string connectionStringArbio = $"Server=26.53.123.231;Database=ARBIOCHEM_ACHAT;" +
+                string connectionStringArbio = $"Server=26.71.34.164;Database=TRANSIT;" +
                                                  $"User ID=Dev;Password=1234;TrustServerCertificate=True;" +
                                                  $"Connection Timeout=240;";
 
