@@ -7,14 +7,14 @@
     <framework targetVersion="4.8" profile="Full" supportedRuntime="4.0.30319" />
   </compatibleFrameworks>
   <dependency>
-    <dependentAssembly dependencyType="install" codebase="arbioApp.exe.manifest" size="151757">
+    <dependentAssembly dependencyType="install" codebase="arbioApp.exe.manifest" size="149340">
       <assemblyIdentity name="arbioApp.exe" version="1.0.0.0" publicKeyToken="0000000000000000" language="neutral" processorArchitecture="amd64" type="win32" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>0f2TH3qAOYmRH695T7/zZzcuIOkVoUIgVB4+cDKNGvU=</dsig:DigestValue>
+        <dsig:DigestValue>he5DHRW441oI48KEAHe/uuN3u6NzRya9JhNt8738kgg=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

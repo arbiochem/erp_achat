@@ -16,48 +16,53 @@ namespace arbioApp.Modules.Principal
 
         public static DataTable ExecuteQueryOnMultipleServers(string mainConnectionString, string query)
         {
-            DataTable combinedResults = new DataTable();
-
-            using (SqlConnection mainConnection = new SqlConnection(mainConnectionString))
+            try
             {
-                mainConnection.Open();
+                DataTable combinedResults = new DataTable();
 
-                string serverQuery = "SELECT ADDRESS_IP, BDD FROM dbo.T_SERVER_DEPOT WHERE actif = 1";
-                SqlCommand serverCommand = new SqlCommand(serverQuery, mainConnection);
-
-                using (SqlDataReader reader = serverCommand.ExecuteReader())
+                using (SqlConnection mainConnection = new SqlConnection(mainConnectionString))
                 {
-                    while (reader.Read())
+                    mainConnection.Open();
+
+                    string serverQuery = "SELECT ADDRESS_IP, BDD FROM dbo.T_SERVER_DEPOT WHERE actif = 1";
+                    SqlCommand serverCommand = new SqlCommand(serverQuery, mainConnection);
+
+                    using (SqlDataReader reader = serverCommand.ExecuteReader())
                     {
-                        string serverAddress = reader["ADDRESS_IP"].ToString();
-                        string databaseName = reader["BDD"].ToString();
-
-                        string targetConnectionString = $"Data Source={serverAddress};Initial Catalog={databaseName};User ID=Dev;Password=1234;TrustServerCertificate=True;Connection Timeout=120;";
-
-                        using (SqlConnection targetConnection = new SqlConnection(targetConnectionString))
+                        while (reader.Read())
                         {
-                            try
+                            string serverAddress = reader["ADDRESS_IP"].ToString();
+                            string databaseName = reader["BDD"].ToString();
+
+                            string targetConnectionString = $"Data Source={serverAddress};Initial Catalog={databaseName};User ID=Dev;Password=1234;TrustServerCertificate=True;Connection Timeout=120;";
+
+                            using (SqlConnection targetConnection = new SqlConnection(targetConnectionString))
                             {
-                                targetConnection.Open();
+                                try
+                                {
+                                    targetConnection.Open();
 
-                                SqlDataAdapter adapter = new SqlDataAdapter(query, targetConnection);
-                                DataTable serverResult = new DataTable();
-                                adapter.Fill(serverResult);
+                                    SqlDataAdapter adapter = new SqlDataAdapter(query, targetConnection);
+                                    DataTable serverResult = new DataTable();
+                                    adapter.Fill(serverResult);
 
-                                combinedResults.Merge(serverResult);
+                                    combinedResults.Merge(serverResult);
 
-                            }
-                            catch (Exception ex)
-                            {
-                                MethodBase m = MethodBase.GetCurrentMethod();
-                                MessageBox.Show($"Une erreur est survenue : {ex.Message}, {m}", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
+                                catch (Exception ex)
+                                {
+                                    MethodBase m = MethodBase.GetCurrentMethod();
+                                    MessageBox.Show($"Une erreur est survenue : {ex.Message}, {m}", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            return combinedResults;
+                return combinedResults;
+            }catch(Exception ex) {
+                throw;
+            }
         }
     }
 }

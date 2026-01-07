@@ -39,7 +39,7 @@ namespace arbioApp.Modules.Principal.Dashboard.CIAL
                 return _instance;
             }
         }
-        private static string connectionString = $"Server=26.53.123.231;Database=arbapp;" +
+        private static string connectionString = $"Server=SRV-ARB;Database=arbapp;" +
                                                  $"User ID=Dev;Password=1234;TrustServerCertificate=True;" +
                                                  $"Connection Timeout=120;";
         

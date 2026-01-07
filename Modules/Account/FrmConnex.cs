@@ -194,8 +194,6 @@ namespace arbioApp
             changePasswordForm.ShowDialog();
         }
 
-        
-
         private bool VerifyLogin(string username, string inputPassword)
         {
             using (SqlConnection connection = new SqlConnection(

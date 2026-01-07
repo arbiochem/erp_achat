@@ -10,6 +10,7 @@ using DevExpress.Charts.Native;
 using DevExpress.CodeParser;
 using DevExpress.DashboardCommon.Viewer;
 using DevExpress.Utils;
+using DevExpress.Utils.Text;
 using DevExpress.Xpo;
 using DevExpress.XtraBars;
 using DevExpress.XtraCharts.Native;
@@ -23,6 +24,7 @@ using DevExpress.XtraGrid.Views.Grid;
 using DevExpress.XtraRichEdit.Fields;
 using DevExpress.XtraTreeList;
 using DevExpress.XtraVerticalGrid;
+using Microsoft.ReportingServices.ReportProcessing.ReportObjectModel;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -172,7 +174,6 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         public BindingSource BindingEntetes = new BindingSource();
         public void ChargerDonneesDepuisBDD()
         {
-
             try
             {
                 if (listBox1.SelectedItem != null)
@@ -345,8 +346,106 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
         private void Hyperlink_Click(object sender, EventArgs e)
         {
-            btnOuvrirDoc_Click(sender, e);
-            btnRefresh_Click(sender, e);
+            
+            string doPiece = "";
+            try
+            {
+                if (gvEntete.FocusedRowHandle >= 0)
+                {
+                    // Récupérer la valeur de la colonne "DO_Piece" pour la ligne sélectionnée
+                    object value = gvEntete.GetRowCellValue(gvEntete.FocusedRowHandle, "DO_Piece");
+
+                    // Convertir en string si nécessaire
+                    doPiece = value?.ToString();
+                }
+            }
+            catch (System.Exception ex)
+            {
+                MethodBase m = MethodBase.GetCurrentMethod();
+                MessageBox.Show($"Une erreur est survenue : {ex.Message}, {m}", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            if (tester_utilisateur(FrmMdiParent.IDName, doPiece))
+            {
+                MessageBox.Show("Ce document est déjà ouvert par un autre utilisateur", "En cours d'utilisation", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            else
+            {
+
+                //Enregistrer session
+                string connectionStringArbio = $"Server=26.71.34.164;Database=TRANSIT;" +
+                                                 $"User ID=Dev;Password=1234;TrustServerCertificate=True;" +
+                                                 $"Connection Timeout=240;";
+
+                using (SqlConnection connection = new SqlConnection(connectionStringArbio))
+                {
+                    connection.Open();
+
+                    using (SqlTransaction tran = connection.BeginTransaction())
+                    {
+                        try
+                        {
+                            // ✅ INSERT
+                            string sql = @"
+                            INSERT INTO encoursutilisation
+                            (utilisateur,numero_doc)
+                            VALUES
+                            (@utilisateur, @numero_doc)";
+
+                            using (SqlCommand cmd = new SqlCommand(sql, connection, tran))
+                            {
+                                cmd.Parameters.Add("@utilisateur", SqlDbType.VarChar).Value = FrmMdiParent.IDName;
+                                cmd.Parameters.Add("@numero_doc", SqlDbType.VarChar).Value = doPiece;
+
+                                cmd.ExecuteNonQuery();
+                            }
+
+                            tran.Commit();
+                        }
+                        catch (Exception ex)
+                        {
+                            tran.Rollback();
+                            MessageBox.Show(ex.Message, "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
+                }
+                btnOuvrirDoc_Click(sender, e);
+                btnRefresh_Click(sender, e);
+            }
+        }
+
+        private bool tester_utilisateur(string cond,string cond1)
+        {
+            bool b_test = false;
+
+            string connectionStringArbio =
+                "Server=26.71.34.164;Database=TRANSIT;User ID=Dev;Password=1234;";
+
+            using (SqlConnection connection = new SqlConnection(connectionStringArbio))
+            {
+                connection.Open();
+
+                string sql = @"
+            SELECT TOP 1 *
+            FROM encoursutilisation
+            WHERE utilisateur = @utilisateur
+              AND numero_doc = @numero_doc";
+
+                using (SqlCommand cmd = new SqlCommand(sql, connection))
+                {
+                    cmd.Parameters.Add("@utilisateur", SqlDbType.VarChar).Value = cond;
+                    cmd.Parameters.Add("@numero_doc", SqlDbType.VarChar).Value = cond1;
+
+                    object result = cmd.ExecuteScalar();
+
+                    if (result != null && result != DBNull.Value)
+                    {
+                        b_test=true;
+                    }
+                }
+            }
+
+            return b_test;
         }
 
         private void gvEntete_CustomColumnDisplayText(object sender, DevExpress.XtraGrid.Views.Base.CustomColumnDisplayTextEventArgs e)

@@ -111,13 +111,12 @@ namespace arbioApp
             this.cboServers.Name = "cboServers";
             this.cboServers.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
             new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.cboServers.Properties.TextEditStyle = DevExpress.XtraEditors.Controls.TextEditStyles.DisableTextEditor;
             this.cboServers.Size = new System.Drawing.Size(366, 22);
             this.cboServers.StyleController = this.layoutControl1;
             this.cboServers.TabIndex = 9;
             this.cboServers.SelectedIndexChanged += new System.EventHandler(this.cboServers_SelectedIndexChanged);
             this.cboServers.EditValueChanged += new System.EventHandler(this.cboServers_EditValueChanged_1);
-            this.cboServers.Properties.TextEditStyle = DevExpress.XtraEditors.Controls.TextEditStyles.DisableTextEditor;
-
             // 
             // textPwd
             // 

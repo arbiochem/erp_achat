@@ -955,7 +955,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         {
             double val = 0;
 
-            string connectionString = $"Data Source=26.53.123.231;Initial Catalog=ARBIOCHEM_ACHAT;User ID=Dev;Password=1234;TrustServerCertificate=True";
+            string connectionString = $"Data Source=SRV-ARB;Initial Catalog=ARBIOCHEM_ACHAT;User ID=Dev;Password=1234;TrustServerCertificate=True";
 
             string query = "SELECT valeur FROM F_DEVISE WHERE devise=@devise";
 
@@ -980,7 +980,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         {
             bool test = false;
 
-            string connectionString = $"Data Source=26.53.123.231;Initial Catalog=ARBIOCHEM;User ID=Dev;Password=1234;TrustServerCertificate=True";
+            string connectionString = $"Data Source=SRV-ARB;Initial Catalog=ARBIOCHEM;User ID=Dev;Password=1234;TrustServerCertificate=True";
 
             string query = "SELECT * FROM F_DEVISE WHERE devise=@devise";
 

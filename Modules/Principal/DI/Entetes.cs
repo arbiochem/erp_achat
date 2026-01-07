@@ -31,6 +31,10 @@ namespace arbioApp.Modules.Principal.DI
         private static string connectionString = $"Server={ServerIpPrincipale};Database={DbPrincipale};" +
                                                  $"User ID=Dev;Password=1234;TrustServerCertificate=True;" +
                                                  $"Connection Timeout=240;";
+
+        private static string connectionStrings = $"Server=26.71.34.164;Database=TRANSIT;" +
+                                                 $"User ID=Dev;Password=1234;TrustServerCertificate=True;" +
+                                                 $"Connection Timeout=240;";
         private static SqlDataAdapter dataAdapter;
 
         public static void AfficherEntetes(GridControl gc, int achattype, BindingSource bs)
@@ -88,7 +92,7 @@ namespace arbioApp.Modules.Principal.DI
             string query = "SELECT DE_No, DE_Intitule FROM F_DEPOT";
 
 
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            using (SqlConnection conn = new SqlConnection(connectionStrings))
             {
                 try
                 {

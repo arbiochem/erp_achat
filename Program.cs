@@ -1,4 +1,5 @@
-﻿using DevExpress.LookAndFeel;
+﻿using DevExpress.Data;
+using DevExpress.LookAndFeel;
 using DevExpress.Skins;
 using DevExpress.UserSkins;
 using System;
@@ -19,7 +20,9 @@ namespace arbioApp
         [STAThread]
         static void Main()
         {
-			Application.EnableVisualStyles();
+            DevExpress.Data.CurrencyDataController.DisableThreadingProblemsDetection = true;
+
+            Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
             //string appName = Process.GetCurrentProcess().ProcessName;
 
@@ -39,6 +42,7 @@ namespace arbioApp
             //        return; // Quitter si on ne peut pas fermer l'instance
             //    }
             //}
+            
             Application.Run(new FrmConnex());
         }
     }

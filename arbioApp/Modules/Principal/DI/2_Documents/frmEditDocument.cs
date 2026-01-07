@@ -1,64 +1,66 @@
-﻿using DevExpress.XtraEditors;
+﻿using arbioApp.DTO;
+using arbioApp.Models;
+using arbioApp.Models.Json;
+using arbioApp.Modules.Helpers;
+using arbioApp.Modules.Principal.Dashboard.CIAL;
+using arbioApp.Modules.Principal.DI.Repositories.ModelsRepository;
+using arbioApp.Modules.Principal.DI.Services;
+using arbioApp.Repositories.ModelsRepository;
+using arbioApp.Services;
+using DevExpress.ChartRangeControlClient.Core;
+using DevExpress.CodeParser;
+using DevExpress.DashboardWin.Design;
+using DevExpress.Data;
+using DevExpress.DataAccess.DataFederation;
+using DevExpress.DataAccess.Excel;
+using DevExpress.DataAccess.Sql;
+using DevExpress.DataAccess.UI.Excel;
+using DevExpress.DataProcessing.InMemoryDataProcessor.GraphGenerator;
+using DevExpress.Pdf.Xmp;
+using DevExpress.Spreadsheet;
+using DevExpress.Utils.About;
+using DevExpress.XtraBars.Customization;
+using DevExpress.XtraCharts.Native;
+using DevExpress.XtraEditors;
+using DevExpress.XtraEditors.Controls;
+using DevExpress.XtraEditors.Repository;
+using DevExpress.XtraExport.Helpers;
+using DevExpress.XtraGrid;
+using DevExpress.XtraGrid.Columns;
+using DevExpress.XtraGrid.Views.Grid;
+using DevExpress.XtraPrinting;
+using DevExpress.XtraReports.UI;
+using DevExpress.XtraRichEdit.Import.Doc;
+using DevExpress.XtraSplashScreen;
+using DevExpress.XtraSpreadsheet;
+using DevExpress.XtraSpreadsheet.Import.Xls;
+using DevExpress.XtraTab;
+using DevExpress.XtraTreeList.Columns;
+using DevExpress.XtraTreeList.Nodes;
+using Objets100cLib;
+using Syncfusion.Windows.Forms.Maps;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using arbioApp.Modules.Principal.Dashboard.CIAL;
-using DevExpress.XtraGrid;
-using arbioApp.Models;
-using System.Reflection;
-using DevExpress.XtraEditors.Repository;
-using DevExpress.XtraTreeList.Nodes;
-using DevExpress.XtraGrid.Views.Grid;
 using System.Globalization;
-using DevExpress.XtraEditors.Controls;
-using Objets100cLib;
-using arbioApp.DTO;
-using arbioApp.Services;
-using arbioApp.Repositories.ModelsRepository;
-using arbioApp.Models.Json;
-using arbioApp.Modules.Principal.DI.Services;
-using DevExpress.DataAccess.DataFederation;
-using DevExpress.ChartRangeControlClient.Core;
-using arbioApp.Modules.Principal.DI.Repositories.ModelsRepository;
-using DevExpress.XtraBars.Customization;
-using DevExpress.Data;
-using DevExpress.XtraReports.UI;
+using System.IO;
+using System.Linq;
 ////using Microsoft.Office.Interop.Outlook;
 using System.Net;
-using DevExpress.Pdf.Xmp;
-using System.Data.Entity;
-using DevExpress.DataProcessing.InMemoryDataProcessor.GraphGenerator;
-using DevExpress.XtraExport.Helpers;
-using DevExpress.DashboardWin.Design;
-using Exception = System.Exception;
-using DevExpress.XtraGrid.Columns;
-using DevExpress.DataAccess.Excel;
-using System.IO;
-using DevExpress.Spreadsheet;
-using FieldInfo = DevExpress.DataAccess.Excel.FieldInfo;
-using DevExpress.DataAccess.UI.Excel;
-using System.Collections;
-using DevExpress.XtraSplashScreen;
-using System.Threading;
-using DevExpress.DataAccess.Sql;
-using DevExpress.CodeParser;
-using DevExpress.Utils.About;
-using DevExpress.XtraTab;
-using arbioApp.Modules.Helpers;
-using DevExpress.XtraCharts.Native;
-using DevExpress.XtraSpreadsheet;
+using System.Reflection;
 using System.Security.AccessControl;
-using DevExpress.XtraPrinting;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
-using DevExpress.XtraSpreadsheet.Import.Xls;
-using Syncfusion.Windows.Forms.Maps;
+using Exception = System.Exception;
+using FieldInfo = DevExpress.DataAccess.Excel.FieldInfo;
 
 
 namespace arbioApp.Modules.Principal.DI._2_Documents
@@ -1578,105 +1580,147 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
         public void ExecuteStockAlert()
         {
-            string query1 = @"SELECT * FROM dbo.VW_ETAT_STOCK";
+            const string ConnectionUser = "Dev";
+            const string ConnectionPassword = "1234"; // ⚠️ À externaliser (config, vault, etc.)
 
-            string connectionStringArbapp = $"Server={FrmMdiParent.DataSourceNameValueParent};" +
-                                            $"Database=arbapp;User ID=Dev;Password=1234;" +
-                                            $"TrustServerCertificate=True;Connection Timeout=120;";
-
-            DataTable dtMaster =
-                arbioApp.Modules.Principal.BrowsSites.ExecuteQueryOnMultipleServers(connectionStringArbapp, query1);
-
-            treeList1.BeginUpdate();
-            treeList1.ClearNodes();
-            treeList1.Columns.Clear();
-
-            var parentColumns = new[]
-                { "SITE", "FAMILLE", "REFERENCE", "DESIGNATION", "CT_Num", "CT_Intitule", "PURCHASE", "AF_PrixAch" };
-            var childColumns = new[] { "DEPOT", "STOCK REEL", "STOCK MINI", "STOCK MAXI" };
-
-            foreach (string col in parentColumns)
+            try
             {
-                treeList1.Columns.AddVisible(col);
-            }
+                // 🔒 Construction sécurisée de la chaîne de connexion (évitez les concaténations brutes si possible)
+                string connectionString = $"Server = tcp:{ FrmMdiParent.DataSourceNameValueParent},1433;"+
+                                          $"Database=arbapp;" +
+                                          $"User ID={ConnectionUser};" +
+                                          $"Password={ConnectionPassword};" +
+                                          "TrustServerCertificate=True;" +
+                                          "Connection Timeout=120;";
 
-            foreach (string col in childColumns)
-            {
-                treeList1.Columns.AddVisible(col);
-            }
+                string query = "SELECT * FROM dbo.VW_ETAT_STOCK";
 
-            var groupedData = dtMaster.AsEnumerable()
-                .GroupBy(r => new
+                // ⚙️ Exécution de la requête
+                DataTable stockData = arbioApp.Modules.Principal.BrowsSites.ExecuteQueryOnMultipleServers(connectionString, query);
+
+                if (stockData?.Rows.Count == 0)
                 {
-                    Site = r["SITE"],
-                    Famille = r["FAMILLE"],
-                    Reference = r["REFERENCE"],
-                    Designation = r["DESIGNATION"],
-                    CtNum = r["CT_Num"],
-                    CtIntitule = r["CT_Intitule"],
-                    Purchase = r["PURCHASE"],
-                    AF_PrixAch = r["AF_PrixAch"]
-                });
-
-            foreach (var group in groupedData)
-            {
-                // Calcul des sommes des enfants
-                decimal totalStockReel = group.Sum(r => r.Field<decimal>("STOCK REEL"));
-                decimal totalStockMini = group.Sum(r => r.Field<decimal>("STOCK MINI"));
-                decimal totalStockMaxi = group.Sum(r => r.Field<decimal>("STOCK MAXI"));
-
-                TreeListNode parentNode = treeList1.AppendNode(new object[]
-                {
-                    group.Key.Site,
-                    group.Key.Famille,
-                    group.Key.Reference,
-                    group.Key.Designation,
-                    group.Key.CtNum,
-                    group.Key.CtIntitule,
-                    group.Key.Purchase,
-                    group.Key.AF_PrixAch,
-                    "Tous", // DEPOT
-                    totalStockReel, // STOCK REEL total
-                    totalStockMini, // STOCK MINI total
-                    totalStockMaxi // STOCK MAXI total
-                }, null);
-
-                foreach (DataRow childRow in group)
-                {
-                    treeList1.AppendNode(new object[]
-                    {
-                        null, // SITE
-                        null, // FAMILLE
-                        null, // REFERENCE
-                        null, // DESIGNATION
-                        null, // CT_Num
-                        null, // CT_Intitule
-                        null, // PURCHASE
-                        null, // AF_PrixAch
-                        childRow["DEPOT"],
-                        childRow["STOCK REEL"],
-                        childRow["STOCK MINI"],
-                        childRow["STOCK MAXI"]
-                    }, parentNode);
+                    MessageBox.Show("Aucune donnée de stock disponible.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    treeList1.ClearNodes();
+                    return;
                 }
+
+                // 🧹 Préparation du TreeList
+                treeList1.BeginUpdate();
+                treeList1.ClearNodes();
+                treeList1.Columns.Clear();
+
+                // 🔢 Définition des colonnes (meilleure lisibilité)
+                var parentColumns = new[]
+                {
+            "SITE", "FAMILLE", "REFERENCE", "DESIGNATION", "CT_Num", "CT_Intitule", "PURCHASE", "AF_PrixAch"
+        };
+
+                var childColumns = new[]
+                {
+            "DEPOT", "STOCK_REEL", "STOCK_MINI", "STOCK_MAXI" // ⚠️ Adaptez les noms si la vue utilise des espaces
+        };
+
+                // Ajout des colonnes visibles
+                foreach (string col in parentColumns.Concat(childColumns))
+                {
+                    treeList1.Columns.AddVisible(col);
+                }
+
+                // 📊 Regroupement des données
+                var groupedArticles = stockData.AsEnumerable()
+                    .GroupBy(row => new
+                    {
+                        Site = row.Field<string>("SITE"),
+                        Famille = row.Field<string>("FAMILLE"),
+                        Reference = row.Field<string>("REFERENCE"),
+                        Designation = row.Field<string>("DESIGNATION"),
+                        CtNum = row.Field<string>("CT_Num"),
+                        CtIntitule = row.Field<string>("CT_Intitule"),
+                        Purchase = row.Field<string>("PURCHASE"),
+                        PrixAchat = row.Field<decimal?>("AF_PrixAch")
+                    },
+                    row => new
+                    {
+                        Depot = row.Field<string>("DEPOT"),
+                        StockReel = row.Field<decimal?>("STOCK REEL") ?? 0m,
+                        StockMini = row.Field<decimal?>("STOCK MINI") ?? 0m,
+                        StockMaxi = row.Field<decimal?>("STOCK MAXI") ?? 0m
+                    });
+
+                foreach (var articleGroup in groupedArticles)
+                {
+                    // 🔢 Calcul des totaux (sécurisé contre null)
+                    decimal totalReel = articleGroup.Sum(x => x.StockReel);
+                    decimal totalMini = articleGroup.Sum(x => x.StockMini);
+                    decimal totalMaxi = articleGroup.Sum(x => x.StockMaxi);
+
+                    // 👨‍💼 Nœud parent
+                    TreeListNode parentNode = treeList1.AppendNode(new object[]
+                    {
+                articleGroup.Key.Site,
+                articleGroup.Key.Famille,
+                articleGroup.Key.Reference,
+                articleGroup.Key.Designation,
+                articleGroup.Key.CtNum,
+                articleGroup.Key.CtIntitule,
+                articleGroup.Key.Purchase,
+                articleGroup.Key.PrixAchat,
+                "Tous les dépôts",
+                totalReel,
+                totalMini,
+                totalMaxi
+                    }, null);
+
+                    // 🧒 Nœuds enfants (dépôts)
+                    foreach (var depot in articleGroup)
+                    {
+                        treeList1.AppendNode(new object[]
+                        {
+                    null, null, null, null, null, null, null, null, // Colonnes masquées
+                    depot.Depot,
+                    depot.StockReel,
+                    depot.StockMini,
+                    depot.StockMaxi
+                        }, parentNode);
+                    }
+                }
+
+                // 🔗 Configuration du lien hypertexte
+                var hyperlinkEdit = treeList1.RepositoryItems.OfType<RepositoryItemHyperLinkEdit>()
+                    .FirstOrDefault() ?? new RepositoryItemHyperLinkEdit();
+
+                if (treeList1.RepositoryItems.IndexOf(hyperlinkEdit) == -1)
+                {
+                    treeList1.RepositoryItems.Add(hyperlinkEdit);
+                }
+
+                treeList1.Columns["PURCHASE"].ColumnEdit = hyperlinkEdit;
+                hyperlinkEdit.Click -= Purchase_HyperlinkClick; // Éviter les doublons
+                hyperlinkEdit.Click += Purchase_HyperlinkClick;
+
+                // 📏 Formatage numérique
+
+                // 👁️ Amélioration UX : masquer les cellules vides dans les enfants
+                treeList1.CustomDrawNodeCell += (s, e) =>
+                {
+                    if (e.Node.HasChildren == false && e.Column.VisibleIndex < 8) // Colonnes parent masquées
+                    {
+                        e.Appearance.ForeColor = Color.Transparent; // ou e.Handled = true;
+                    }
+                };
             }
-
-            RepositoryItemHyperLinkEdit repo = new RepositoryItemHyperLinkEdit();
-            treeList1.RepositoryItems.Add(repo);
-            treeList1.Columns["PURCHASE"].ColumnEdit = repo;
-            repo.Click += Purchase_HyperlinkClick;
-
-            treeList1.Columns["STOCK REEL"].Format.FormatType = DevExpress.Utils.FormatType.Numeric;
-            treeList1.Columns["STOCK REEL"].Format.FormatString = "N2";
-            treeList1.Columns["STOCK MINI"].Format.FormatType = DevExpress.Utils.FormatType.Numeric;
-            treeList1.Columns["STOCK MINI"].Format.FormatString = "N2";
-            treeList1.Columns["STOCK MAXI"].Format.FormatType = DevExpress.Utils.FormatType.Numeric;
-            treeList1.Columns["STOCK MAXI"].Format.FormatString = "N2";
-
-
-
-            treeList1.EndUpdate();
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erreur lors du chargement des stocks :\n{ex.Message}",
+                                "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                treeList1.EndUpdate();
+            }
         }
+
         private void hyperlinkLabelControl1_Click(object sender, EventArgs e)
         {
             frmSites frmsite = new frmSites(this);

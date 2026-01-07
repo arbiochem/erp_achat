@@ -154,7 +154,52 @@ namespace arbioApp
             if (MessageBox.Show("Voulez-vous vraiment vous déconnecter ?", "Déconnexion",
         MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
-                Application.Exit();
+                string connectionStringArbio = $"Server=26.71.34.164;Database=TRANSIT;" +
+                                                 $"User ID=Dev;Password=1234;TrustServerCertificate=True;" +
+                                                 $"Connection Timeout=240;";
+
+                using (SqlConnection connection = new SqlConnection(connectionStringArbio))
+                {
+                    connection.Open();
+
+                    using (SqlTransaction tran = connection.BeginTransaction())
+                    {
+                        try
+                        {
+                            string sql = @"
+                            DELETE FROM encoursutilisation
+                            WHERE utilisateur = @utilisateur";
+
+                            using (SqlCommand cmd = new SqlCommand(sql, connection, tran))
+                            {
+                                cmd.Parameters.Add("@utilisateur", SqlDbType.VarChar)
+                                              .Value = FrmMdiParent.IDName;
+
+                                cmd.ExecuteNonQuery();
+                            }
+
+                            // Validation
+                            tran.Commit();
+                        }
+                        catch (Exception ex)
+                        {
+                            // Annulation si erreur
+                            if (tran != null)
+                                tran.Rollback();
+
+                            MessageBox.Show(
+                                ex.Message,
+                                "Erreur",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error
+                            );
+                        }
+                    }
+                }
+                this.Hide();
+
+                FrmConnex frm = new FrmConnex();
+                frm.ShowDialog();
             }
             Process.Start(appPath);
         }

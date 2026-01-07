@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmChangePassword));
             this.layoutControl1 = new DevExpress.XtraLayout.LayoutControl();
             this.txtNewPassword = new DevExpress.XtraEditors.TextEdit();
             this.txtConfirm = new DevExpress.XtraEditors.TextEdit();
@@ -39,8 +40,6 @@
             this.layoutControlItem3 = new DevExpress.XtraLayout.LayoutControlItem();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControl1)).BeginInit();
             this.layoutControl1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.txtNewPassword.Properties)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.txtConfirm.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Root)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem4)).BeginInit();
@@ -67,7 +66,6 @@
             this.txtNewPassword.EditValue = "";
             this.txtNewPassword.Location = new System.Drawing.Point(108, 12);
             this.txtNewPassword.Name = "txtNewPassword";
-            this.txtNewPassword.Properties.PasswordChar = '*';
             this.txtNewPassword.Size = new System.Drawing.Size(221, 22);
             this.txtNewPassword.StyleController = this.layoutControl1;
             this.txtNewPassword.TabIndex = 5;
@@ -77,7 +75,6 @@
             this.txtConfirm.EditValue = "";
             this.txtConfirm.Location = new System.Drawing.Point(108, 38);
             this.txtConfirm.Name = "txtConfirm";
-            this.txtConfirm.Properties.PasswordChar = '*';
             this.txtConfirm.Size = new System.Drawing.Size(221, 22);
             this.txtConfirm.StyleController = this.layoutControl1;
             this.txtConfirm.TabIndex = 5;
@@ -107,8 +104,6 @@
             // 
             // layoutControlItem2
             // 
-            this.layoutControlItem2.AppearanceItemCaption.Font = new System.Drawing.Font("Tahoma", 8.25F);
-            this.layoutControlItem2.AppearanceItemCaption.Options.UseFont = true;
             this.layoutControlItem2.Control = this.txtConfirm;
             this.layoutControlItem2.ControlAlignment = System.Drawing.ContentAlignment.TopLeft;
             this.layoutControlItem2.CustomizationFormText = "layoutControlItem2";
@@ -121,8 +116,6 @@
             // 
             // layoutControlItem4
             // 
-            this.layoutControlItem4.AppearanceItemCaption.Font = new System.Drawing.Font("Tahoma", 8.25F);
-            this.layoutControlItem4.AppearanceItemCaption.Options.UseFont = true;
             this.layoutControlItem4.Control = this.btnChangePassword;
             this.layoutControlItem4.ControlAlignment = System.Drawing.ContentAlignment.TopLeft;
             this.layoutControlItem4.CustomizationFormText = "layoutControlItem4";
@@ -136,8 +129,6 @@
             // emptySpaceItem1
             // 
             this.emptySpaceItem1.AllowHotTrack = false;
-            this.emptySpaceItem1.AppearanceItemCaption.Font = new System.Drawing.Font("Tahoma", 8.25F);
-            this.emptySpaceItem1.AppearanceItemCaption.Options.UseFont = true;
             this.emptySpaceItem1.CustomizationFormText = "emptySpaceItem1";
             this.emptySpaceItem1.Location = new System.Drawing.Point(0, 52);
             this.emptySpaceItem1.MaxSize = new System.Drawing.Size(96, 34);
@@ -163,14 +154,13 @@
             this.ClientSize = new System.Drawing.Size(341, 106);
             this.ControlBox = false;
             this.Controls.Add(this.layoutControl1);
+            this.IconOptions.Icon = ((System.Drawing.Icon)(resources.GetObject("FrmChangePassword.IconOptions.Icon")));
             this.Name = "FrmChangePassword";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "FrmChangePassword";
             this.TopMost = true;
             ((System.ComponentModel.ISupportInitialize)(this.layoutControl1)).EndInit();
             this.layoutControl1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.txtNewPassword.Properties)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.txtConfirm.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.Root)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem4)).EndInit();
