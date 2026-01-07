@@ -32,9 +32,9 @@ namespace arbioApp.Modules.Principal.DI
                                                  $"User ID=Dev;Password=1234;TrustServerCertificate=True;" +
                                                  $"Connection Timeout=240;";
 
-        private static string connectionStrings = $"Server=26.71.34.164;Database=TRANSIT;" +
-                                                 $"User ID=Dev;Password=1234;TrustServerCertificate=True;" +
-                                                 $"Connection Timeout=240;";
+        private static string connectionStrings = $"Server={ServerIpPrincipale};" +
+                                $"Database=TRANSIT;User ID=Dev;Password=1234;" +
+                                $"TrustServerCertificate=True;Connection Timeout=120;";
         private static SqlDataAdapter dataAdapter;
 
         public static void AfficherEntetes(GridControl gc, int achattype, BindingSource bs)

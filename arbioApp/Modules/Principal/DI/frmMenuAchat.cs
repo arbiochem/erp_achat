@@ -214,7 +214,9 @@ namespace arbioApp.Modules.Principal.DI
 
                     try
                     {
-                        string connectionString = "Server=26.71.34.164;Database=TRANSIT;User ID=Dev;Password=1234;";
+                        string connectionString = $"Server={serveripPrincipale};" +
+                                $"Database=TRANSIT;User ID=Dev;Password=1234;" +
+                                $"TrustServerCertificate=True;Connection Timeout=120;";
 
                         using (SqlConnection connection = new SqlConnection(connectionString))
                         {

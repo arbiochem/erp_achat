@@ -3736,9 +3736,9 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             }
             else
             {
-                string connectionStringArbio = $"Server=26.71.34.164;Database=TRANSIT;" +
-                                                 $"User ID=Dev;Password=1234;TrustServerCertificate=True;" +
-                                                 $"Connection Timeout=240;";
+                string connectionStringArbio = $"Server={serveripPrincipale};" +
+                                $"Database=TRANSIT;User ID=Dev;Password=1234;" +
+                                $"TrustServerCertificate=True;Connection Timeout=120;";
 
                 using (SqlConnection connection = new SqlConnection(connectionStringArbio))
                 {
