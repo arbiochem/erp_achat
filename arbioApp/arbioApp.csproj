@@ -285,6 +285,12 @@
     <Compile Include="Modules\Principal\DI\2_Documents\frmLotSerie.Designer.cs">
       <DependentUpon>frmLotSerie.cs</DependentUpon>
     </Compile>
+    <Compile Include="Modules\Principal\DI\2_Documents\frmPrix.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Modules\Principal\DI\2_Documents\frmPrix.Designer.cs">
+      <DependentUpon>frmPrix.cs</DependentUpon>
+    </Compile>
     <Compile Include="Modules\Principal\DI\2_Documents\frmQuery.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -705,6 +711,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Modules\Principal\DI\2_Documents\frmLotSerie.resx">
       <DependentUpon>frmLotSerie.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\Principal\DI\2_Documents\frmPrix.resx">
+      <DependentUpon>frmPrix.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Modules\Principal\DI\2_Documents\frmQuery.resx">
       <DependentUpon>frmQuery.cs</DependentUpon>

@@ -385,6 +385,18 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                     {
                         try
                         {
+                            // ✅ DELETE
+                            string sqldelete = @"
+                            DELETE FROM encoursutilisation WHERE utilisateur=@utilisateur AND numero_doc= @numero_doc";
+
+                            using (SqlCommand cmd = new SqlCommand(sqldelete, connection, tran))
+                            {
+                                cmd.Parameters.Add("@utilisateur", SqlDbType.VarChar).Value = FrmMdiParent.IDName;
+                                cmd.Parameters.Add("@numero_doc", SqlDbType.VarChar).Value = doPiece;
+
+                                cmd.ExecuteNonQuery();
+                            }
+
                             // ✅ INSERT
                             string sql = @"
                             INSERT INTO encoursutilisation
@@ -429,7 +441,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 string sql = @"
             SELECT TOP 1 *
             FROM encoursutilisation
-            WHERE utilisateur = @utilisateur
+            WHERE utilisateur != @utilisateur
               AND numero_doc = @numero_doc";
 
                 using (SqlCommand cmd = new SqlCommand(sql, connection))

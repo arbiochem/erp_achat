@@ -744,10 +744,10 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             Lignes.AfficherLignes(gcLigneEdit, DoPiece);
             Lignes.cacherColonnes(gvLigneEdit);
 
-            if (gvLigneEdit.Columns["DL_Frais"] != null)
+            if (gvLigneEdit.Columns["Montant Total en devise"] != null)
             {
-                gvLigneEdit.Columns["DL_Frais"].SummaryItem.SummaryType = DevExpress.Data.SummaryItemType.Custom;
-                gvLigneEdit.Columns["DL_Frais"].SummaryItem.DisplayFormat = "{0:n2}";
+                gvLigneEdit.Columns["Montant Total en devise"].SummaryItem.SummaryType = DevExpress.Data.SummaryItemType.Custom;
+                gvLigneEdit.Columns["Montant Total en devise"].SummaryItem.DisplayFormat = "{0:n2}";
             }
 
             if (gvLigneEdit.Columns["DL_MontantHT"] != null)
@@ -779,6 +779,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             gvLigneEdit.Columns["DL_PUDevise"].DisplayFormat.FormatString = "N2";
             gvLigneEdit.Columns["DL_Frais"].DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
             gvLigneEdit.Columns["DL_Frais"].DisplayFormat.FormatString = "N2";
+
             gvLigneEdit.Columns["DL_NonLivre"].DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
             gvLigneEdit.Columns["DL_NonLivre"].DisplayFormat.FormatString = "N0";
 
@@ -800,7 +801,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
             
             gvLigneEdit.BestFitColumns();
-
+            gvLigneEdit.UpdateSummary();
         }
         public GridControl GridLigneEdit => gcLigneEdit;
         private void checkEdit_CheckedChanged(object sender, EventArgs e)
@@ -3175,12 +3176,6 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 
         }
 
-
-
-        private void gvLigneEdit_ShownEditor(object sender, EventArgs e)
-        {
-
-        }
         private void Editor_CheckedChanged(object sender, EventArgs e)
         {
             CheckEdit editor = sender as CheckEdit;
@@ -3395,12 +3390,26 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         {
             GridView view = sender as GridView;
             int row = view.FocusedRowHandle;
-            if (view.FocusedColumn.FieldName == "DL_Qte")
-            {
-                UPdateLigne(row);
 
+            // Seulement pour la colonne DL_PrixUnitaire
+            if (view.FocusedColumn.FieldName == "DL_PrixUnitaire")
+            {
+                e.Cancel = true; // ❌ Bloque l’éditeur DevExpress
+                decimal prixActuel = Convert.ToDecimal(
+                    view.GetRowCellValue(row, "DL_PrixUnitaire")
+                );
+
+                frmPrix f = new frmPrix(prixActuel);
+
+                if (f.ShowDialog() == DialogResult.OK)
+                {
+                    // Écrire la valeur dans la cellule
+                    view.SetRowCellValue(row, "DL_PrixUnitaire", f.Prix);
+                    view.UpdateCurrentRow();
+                }
             }
         }
+
         public int deno;
         private void lkDepot_EditValueChanged(object sender, EventArgs e)
         {
@@ -3431,9 +3440,6 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         public static int intcollaborateur;
         private void frmEditDocument_Load_1(object sender, EventArgs e)
         {
-            textSearch.Properties.Appearance.TextOptions.HAlignment =
-            DevExpress.Utils.HorzAlignment.Center;
-
             treeList1.OptionsFind.ExpandNodesOnIncrementalSearch = true;
 
             var test_exist = _context.F_DOCENTETE.FirstOrDefault(x => x.DO_Piece == dopiecetxt.Text.ToString());
@@ -3494,15 +3500,31 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 }
 
                 // === Total Frais ===
-                GridColumn col1 = gvLigneEdit.Columns["Total Frais"];
+                GridColumn col1 = gvLigneEdit.Columns["TotalFrais"];
+
                 if (col1 == null)
                 {
-                    col1 = gvLigneEdit.Columns.AddField("Total Frais");
-                    col1.Caption = "Total Frais";
+                    col1 = gvLigneEdit.Columns.AddField("TotalFrais"); // 👈 SANS espace
+                    col1.Caption = "Total Frais";                      // 👈 affiché
                     col1.UnboundType = DevExpress.Data.UnboundColumnType.Decimal;
                     col1.Visible = true;
+
+                    col1.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
+                    col1.DisplayFormat.FormatString = "N2";
                 }
 
+                GridColumn col_htdevise = gvLigneEdit.Columns["Montant Total en devise"];
+                if (col_htdevise == null)
+                {
+                    col_htdevise = gvLigneEdit.Columns.AddField("Montant Total en devise");
+                    col_htdevise.Caption = "Montant Total en devise";
+                    col_htdevise.UnboundType = DevExpress.Data.UnboundColumnType.Decimal;
+                    col_htdevise.Visible = true;
+                    col_htdevise.BestFit();
+                    col_htdevise.OptionsColumn.AllowEdit = false;
+                    col_htdevise.OptionsColumn.ReadOnly = true;
+                    col_htdevise.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+                }
 
                 // === POSITIONNEMENT ===
                 int indexFrais = gvLigneEdit.Columns["DL_Frais"].VisibleIndex;
@@ -3511,6 +3533,9 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
                 int indexPrixUnitaire = gvLigneEdit.Columns["DL_PrixUnitaire"].VisibleIndex;
                 col_unite.VisibleIndex = indexPrixUnitaire - 1;
+
+                int indexMontantHT = gvLigneEdit.Columns["DL_MontantHT"].VisibleIndex;
+                col_htdevise.VisibleIndex = indexMontantHT + 1;
 
 
                 gvLigneEdit.CustomUnboundColumnData += (sender, e) =>
@@ -3534,8 +3559,27 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                 }
                             }
                             catch (Exception es) { }
+                        }else if (e.Column.FieldName == "Montant Total en devise")
+                        {
+                            try
+                            {
+                                decimal PUHT = Convert.ToDecimal(gvLigneEdit.GetListSourceRowCellValue(e.ListSourceRowIndex, "DL_MontantHT"));
+                                if (txtCours.Text != "" && Convert.ToDecimal(txtCours.Text.ToString()) > 0)
+                                {
+                                    decimal cours_devise = Convert.ToDecimal(txtCours.Text);
+                                    decimal m_devise = PUHT / cours_devise;
+                                    if (m_devise < 0) m_devise = 0m;
+
+                                    e.Value = m_devise.ToString("N2");
+
+                                    col_htdevise.SummaryItem.SummaryType = DevExpress.Data.SummaryItemType.Sum;
+                                    col_htdevise.SummaryItem.DisplayFormat = "{0:n2}";
+                                    gvLigneEdit.Appearance.FooterPanel.TextOptions.HAlignment =DevExpress.Utils.HorzAlignment.Center;
+                                }
+                            }
+                            catch (Exception es) { }
                         }
-                        else if (e.Column.FieldName == "Total Frais")
+                        else if (e.Column.FieldName == "TotalFrais" && e.IsGetData)
                         {
                             decimal fret = Convert.ToDecimal(gvLigneEdit.GetListSourceRowCellValue(e.ListSourceRowIndex, "FRET"));
                             decimal dlFrais = 0m;
@@ -3568,6 +3612,10 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                             e.DisplayText = uniteLibelle ?? ""; // juste la string
                                         }
                                     };
+
+                                    col1.SummaryItem.SummaryType = DevExpress.Data.SummaryItemType.Sum;
+                                    col1.SummaryItem.DisplayFormat = "{0:n2}";
+                                    gvLigneEdit.Appearance.FooterPanel.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
 
                                 }
                             }
@@ -3650,6 +3698,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                         if (val != DBNull.Value && val != null)
                             e.TotalValue = (decimal)e.TotalValue + Convert.ToDecimal(val);
                     }
+
 
                     // MontantTTC
                     if (e.IsTotalSummary && e.Item is GridSummaryItem summaryItemTTC &&
@@ -5239,25 +5288,12 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 col.OptionsColumn.ReadOnly = false;
             }
 
-            // === Total Frais ===
-            GridColumn col1 = gvLigneEdit.Columns["Total Frais"];
-            if (col1 == null)
-            {
-                col1 = gvLigneEdit.Columns.AddField("Total Frais");
-                col1.Caption = "Total Frais";
-                col1.UnboundType = DevExpress.Data.UnboundColumnType.Decimal;
-                col1.Visible = true;
-            }
-
-
             // === POSITIONNEMENT ===
             int indexFrais = gvLigneEdit.Columns["DL_Frais"].VisibleIndex;
             col.VisibleIndex = indexFrais;
-            col1.VisibleIndex = indexFrais + 2;
 
             int indexPrixUnitaire = gvLigneEdit.Columns["DL_PrixUnitaire"].VisibleIndex;
             col_unite.VisibleIndex = indexPrixUnitaire - 1;
-
         }
 
         private void lkDevise_EditValueChanged_1(object sender, EventArgs e)
@@ -5433,13 +5469,6 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             return val;
         }
 
-        private void textSearch_TextChanged(object sender, EventArgs e)
-        {
-            treeList1.Columns["DESIGNATION"].OptionsFilter.AllowFilter = true;
-
-            treeList1.FindFilterText = textSearch.Text;
-        }
-
         private void simpleButton2_Click(object sender, EventArgs e)
         {
             int? DE_No = Convert.ToInt32(lkDepot.EditValue);
@@ -5502,10 +5531,10 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 connection.Open();
 
                 string sql = @"
-            SELECT TOP 1 DL_No
-            FROM F_DOCLIGNE
-            WHERE AR_Ref = @AR_Ref
-              AND DO_PIECE = @DO_PIECE";
+                SELECT TOP 1 DL_No
+                FROM F_DOCLIGNE
+                WHERE AR_Ref = @AR_Ref
+                AND DO_PIECE = @DO_PIECE";
 
                 using (SqlCommand cmd = new SqlCommand(sql, connection))
                 {

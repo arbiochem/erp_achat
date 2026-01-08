@@ -419,30 +419,11 @@
         nOccAdABIDXXE1nzAAAAAElFTkSuQmCC
 </value>
   </data>
-  <data name="layoutControlItem23.ImageOptions.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABkAAAAWCAYAAAA1vze2AAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAS
-        cQAAEnEB89x6jgAAAyFJREFUSEu9lf1PUnscx/vD7m9UZiUoCSgKIrTUZXatSG05lLr4gJAkhGWmlpk5
-        a5LVyh5W4cPMrFvak2vTZtM8QGSutnbF1x21qHNAbLd2X9v7l7Nz3q9zzud7vmcdqzAzG+BU9z3KbD3o
-        d52g1NKFu+0Wz6besLKyIj09KeukB6KUH+4hVe1kg7EFWeVlZI0jyKquITOdIkXloNDczuLSJ+llqxIn
-        0e7wIi9sJ7VtEuXtEBp/iOyhIFn+INvuhEjtesnWkrModS4CoQ/SyxMikuwyt5NW3Ini6gLa4SDGhwLb
-        //6eo5MhOifCqG8G2VzRR16Bl+XlyI8VCYlJbvufotI4kfdOkzsSEJV/S+/zMN3PwpjHg6RfmUOZ4+H0
-        eT+RSPIZxSSFJS2kH/SRNZhYEE3pkwDVE0EKHgtohwMo6m6hM7nXfJqYJCfbibJ5lLyx+PJEyR8XUHY8
-        QZ1p59PHz+JWCTGJQe0g49xzTJI5JEtG/zR6lZO5uXfiVgkxyQ6V48udbX8UX7ZalL0vMWU6CL9bErdK
-        iEnMeU1kuYbIf7AQV5YopkcCqtZxdqqdLP/zkzM5WduH0Xgc7Z25uMJEyR1eIK/4NPb9nUR+dvBL7z+y
-        V+0g134DwxpPE51blnuQEmU9r6fmWWuXEX2MAz3DlChq0bgHMYwlFkVXlbrtITvT69ktP8TejZVYNXbe
-        C4s/VomI21YueAcwK+rQ7etG0/cC3aiAYSyA/r6Apv8VWouPUnkNexSHKfpjH2UbreyXWTi45S+Cq6yy
-        OEmUiaEpGopOYJbb+DOjnoKiDnZnNmBOs2HL99DT6KM4pQyLvJZqRR2Vm22Ur6+mYtMh3k4HQPL6Ekq+
-        EV5YZOTSAwY67uK/OMrbGeFLwfzMPAc0Vuo1LhqyXdQoHVi21FC+voqKFCuLAfHGmVSSjGZLKw6dC7fe
-        i0vrpm6bk+qtX0WXPFeJRL6vuP8sidLVcB5Pvpdmw3Gacj3YVUewptXS7/6Nkii9jRfwGo/RamrBqz+G
-        K6cJ4bV4Lr8siXL9zA06q87gc/iYnZyN+z3/Fsla/C+SfwGFonWE39RTpwAAAABJRU5ErkJggg==
-</value>
-  </data>
   <metadata name="dockManager1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>214, 17</value>
   </metadata>
   <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>37</value>
+    <value>25</value>
   </metadata>
   <metadata name="imageList1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>373, 17</value>
