@@ -329,12 +329,6 @@ namespace arbioApp.Modules.Principal.DI.Services
                     MessageBox.Show("Ligne de document introuvable !");
                 }
 
-
-
-
-
-
-
                 var QteEtMontantArticle = _context.F_ARTSTOCK.Where(artStck => artStck.AR_Ref == AR_Ref && artStck.DE_No == f_DOCLIGNEToUpdate.DE_No)
                                                     .Select(artStck => new { artStck.AS_QteSto, artStck.AS_MontSto }).FirstOrDefault();
 

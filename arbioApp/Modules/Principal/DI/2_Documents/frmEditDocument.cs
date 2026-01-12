@@ -16,6 +16,7 @@ using DevExpress.DataAccess.DataFederation;
 using DevExpress.DataAccess.Excel;
 using DevExpress.DataAccess.Sql;
 using DevExpress.DataAccess.UI.Excel;
+using DevExpress.DataProcessing;
 using DevExpress.DataProcessing.InMemoryDataProcessor;
 using DevExpress.DataProcessing.InMemoryDataProcessor.GraphGenerator;
 using DevExpress.Pdf.Xmp;
@@ -32,6 +33,7 @@ using DevExpress.XtraEditors.Repository;
 using DevExpress.XtraExport.Helpers;
 using DevExpress.XtraGrid;
 using DevExpress.XtraGrid.Columns;
+using DevExpress.XtraGrid.Views.Base;
 using DevExpress.XtraGrid.Views.Grid;
 using DevExpress.XtraPrinting;
 using DevExpress.XtraReports.UI;
@@ -46,6 +48,8 @@ using DevExpress.XtraTreeList.Nodes;
 using MailKit.Search;
 using Microsoft.Office.Interop.Outlook;
 using Org.BouncyCastle.Tls;
+using Org.BouncyCastle.Tsp;
+
 //using Syncfusion.Windows.Forms.Maps;
 using System;
 using System.Collections;
@@ -3036,6 +3040,40 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                     }
                 }
                 //////////////////////////////////////////////////////////////////////////////////////////////////
+                string connectionString2 =
+                                    $"Server={serveripPrincipale};Database={dbPrincipale};" +
+                                    $"User ID=Dev;Password=1234;TrustServerCertificate=True;" +
+                                    $"Connection Timeout=240;";
+
+                string UPDATESql = @"UPDATE F_MODE_PAIEMENT SET do_piece=@do_pieces WHERE do_piece=@do_piece";
+
+                using (SqlConnection conn = new SqlConnection(connectionString2))
+                using (SqlCommand cmd = new SqlCommand(UPDATESql, conn))
+                {
+                    cmd.Parameters.Add("@do_piece", SqlDbType.VarChar, 50)
+                        .Value = dopiecetxt.Text.Trim();
+
+                    cmd.Parameters.Add("@do_pieces", SqlDbType.VarChar, 20)
+                        .Value = newDocPieceNo;
+
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                }
+
+                string UPDATESql1 = @"UPDATE F_PACKING_LIST SET dopiece=@do_pieces WHERE dopiece=@do_piece";
+
+                using (SqlConnection conn = new SqlConnection(connectionString2))
+                using (SqlCommand cmd = new SqlCommand(UPDATESql1, conn))
+                {
+                    cmd.Parameters.Add("@do_piece", SqlDbType.VarChar, 50)
+                        .Value = dopiecetxt.Text.Trim();
+
+                    cmd.Parameters.Add("@do_pieces", SqlDbType.VarChar, 20)
+                        .Value = newDocPieceNo;
+
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                }
 
                 this.Close();
             }
@@ -3189,10 +3227,32 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             }
         }
 
-
+        private bool isUpdating = false;
 
         private void gvLigneEdit_CellValueChanged(object sender, DevExpress.XtraGrid.Views.Base.CellValueChangedEventArgs e)
         {
+            if (isUpdating) return; // éviter boucle infinie
+            isUpdating = true;
+
+            GridView view = sender as GridView;
+
+            if (e.Column.FieldName == "PU par tonne")
+            {
+                if (decimal.TryParse(view.GetRowCellValue(e.RowHandle, "PU par tonne")?.ToString(), out decimal prixTonne))
+                {
+                    decimal val = prixTonne * 1000;
+                    view.SetRowCellValue(e.RowHandle, "DL_PrixUnitaire", val); // prix par kg
+                }
+            }
+            else if (e.Column.FieldName == "DL_PrixUnitaire")
+            {
+                if (decimal.TryParse(view.GetRowCellValue(e.RowHandle, "DL_PrixUnitaire")?.ToString(), out decimal prixKg))
+                {
+                    view.SetRowCellValue(e.RowHandle, "PU par tonne", prixKg / 1000); // prix par tonne
+                }
+            }
+
+            isUpdating = false;
 
             gvLigneEdit.PostEditor();
 
@@ -3228,7 +3288,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             if (e.Column.FieldName == "DL_Qte" || e.Column.FieldName == "DL_Remise01REM_Valeur" || e.Column.FieldName == "DL_PrixUnitaire"
                 || e.Column.FieldName == "DL_Taxe1" || e.Column.FieldName == "DL_PUDevise" || e.Column.FieldName == "DL_PoidsNet" || e.Column.FieldName == "DL_Frais")
             {
-                GridView view = sender as GridView;
+                //GridView view = sender as GridView;
 
                 // Récupérer les valeurs
                 object prixUnitaireObj = view.GetRowCellValue(e.RowHandle, "DL_PrixUnitaire");
@@ -3321,10 +3381,11 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                     };
                 }
             }
-
+            
             gvLigneEdit.UpdateSummary();
             gvLigneEdit.RefreshData();
         }
+
         private decimal GetArticlePU(string arRef)
         {
             decimal puAch = 0;
@@ -3394,19 +3455,19 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             // Seulement pour la colonne DL_PrixUnitaire
             if (view.FocusedColumn.FieldName == "DL_PrixUnitaire")
             {
-                e.Cancel = true; // ❌ Bloque l’éditeur DevExpress
+                //e.Cancel = true; // ❌ Bloque l’éditeur DevExpress
                 decimal prixActuel = Convert.ToDecimal(
                     view.GetRowCellValue(row, "DL_PrixUnitaire")
                 );
 
-                frmPrix f = new frmPrix(prixActuel);
+                /*frmPrix f = new frmPrix(prixActuel);
 
                 if (f.ShowDialog() == DialogResult.OK)
                 {
                     // Écrire la valeur dans la cellule
                     view.SetRowCellValue(row, "DL_PrixUnitaire", f.Prix);
                     view.UpdateCurrentRow();
-                }
+                }*/
             }
         }
 
@@ -3436,10 +3497,114 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
         }
 
+        private void lister_packing(String cond)
+        {
+            lblval1.Text = "";
+            string connectionString2 =
+                                    $"Server={serveripPrincipale};Database={dbPrincipale};" +
+                                    $"User ID=Dev;Password=1234;TrustServerCertificate=True;" +
+                                    $"Connection Timeout=240;";
+
+            string query = "SELECT * FROM F_PACKING_LIST WHERE dopiece = @do_piece";
+
+            using (SqlConnection conn = new SqlConnection(connectionString2))
+            {
+                try
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.Add("@do_piece", SqlDbType.VarChar, 50)
+                       .Value = dopiecetxt.Text.Trim();
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.HasRows == true)
+                            {
+                                lblval1.Text = "1";
+                                while (reader.Read())
+                                {
+                                    cmb_type.Text = reader.GetString(1).ToString();
+                                    txtnbr.Text = reader.GetString(2);
+                                    if (!reader.IsDBNull(3))
+                                        dteta.Value = Convert.ToDateTime(reader.GetValue(3));
+
+                                    if (!reader.IsDBNull(4))
+                                        dtetd.Value = Convert.ToDateTime(reader.GetValue(4));
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    MethodBase m = MethodBase.GetCurrentMethod();
+                    MessageBox.Show($"Une erreur est survenue : {ex.Message}, {m}", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
 
         public static int intcollaborateur;
+        private Dictionary<int, decimal> puTonneValues = new Dictionary<int, decimal>();
+
         private void frmEditDocument_Load_1(object sender, EventArgs e)
         {
+            lister_packing(dopiecetxt.Text);
+            if (dopiecetxt.Text.StartsWith("AFA"))
+            {
+                groupControl4.Enabled = true;
+            }
+            else
+            {
+                groupControl4.Enabled = false;
+            }
+
+            lbl_val.Text = "";
+            string connectionString2 =
+                                    $"Server={serveripPrincipale};Database={dbPrincipale};" +
+                                    $"User ID=Dev;Password=1234;TrustServerCertificate=True;" +
+                                    $"Connection Timeout=240;";
+
+            string query = "SELECT mode_paiement,date_echeance FROM F_MODE_PAIEMENT WHERE do_piece = @do_piece";
+
+            using (SqlConnection conn = new SqlConnection(connectionString2))
+            {
+                try
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.Add("@do_piece", SqlDbType.VarChar, 50)
+                       .Value = dopiecetxt.Text.Trim();
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            if(reader.HasRows==true)
+                            {
+                                lbl_val.Text = "1";
+                                while (reader.Read())
+                                {
+                                    cmbmdp.Text= reader.GetString(0).ToString();
+                                    dtecheance.Value = reader.GetDateTime(1);
+                                }
+                            } 
+                        }
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    MethodBase m = MethodBase.GetCurrentMethod();
+                    MessageBox.Show($"Une erreur est survenue : {ex.Message}, {m}", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+
+            if (dopiecetxt.Text.Contains("ABC") || dopiecetxt.Text.Contains("AFA"))
+            {
+                groupControl3.Enabled = true;
+            }
+            else
+            {
+                groupControl3.Enabled = false;
+            }
+
             treeList1.OptionsFind.ExpandNodesOnIncrementalSearch = true;
 
             var test_exist = _context.F_DOCENTETE.FirstOrDefault(x => x.DO_Piece == dopiecetxt.Text.ToString());
@@ -3473,6 +3638,68 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 }
 
                 LkDevise_EditValueChanged(sender, e);
+
+                //=== PU en tonne ===
+                GridColumn pu_tonne = gvLigneEdit.Columns["PU par tonne"];
+                if (pu_tonne == null)
+                {
+                    pu_tonne = gvLigneEdit.Columns.AddField("PU par tonne");
+                    pu_tonne.Caption = "PU par tonne";
+                    pu_tonne.UnboundType = DevExpress.Data.UnboundColumnType.Decimal;
+                    pu_tonne.Visible = true;
+                    pu_tonne.FieldName = "PU par tonne";
+                    pu_tonne.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+                }
+
+                int indexDesign = gvLigneEdit.Columns["DL_Design"].VisibleIndex;
+                pu_tonne.VisibleIndex = indexDesign + 1;
+
+                RepositoryItemSpinEdit spin = new RepositoryItemSpinEdit();
+                spin.IsFloatValue = true;
+                spin.Mask.MaskType = DevExpress.XtraEditors.Mask.MaskType.Numeric;
+                spin.Mask.EditMask = "n2";
+                spin.Mask.UseMaskAsDisplayFormat = true;
+
+                // IMPORTANT : Gérer l'événement EditValueChanged du SpinEdit
+                spin.EditValueChanged += (s, e) =>
+                {
+                    gvLigneEdit.PostEditor();  // Force la validation immédiate
+                    gvLigneEdit.UpdateCurrentRow();
+                };
+
+                gvLigneEdit.GridControl.RepositoryItems.Add(spin);
+                pu_tonne.ColumnEdit = spin;
+
+                // Événement CustomUnboundColumnData
+                gvLigneEdit.CustomUnboundColumnData += (sender, e) =>
+                {
+                    if (e.Column.FieldName == "PU par tonne")
+                    {
+                        int row = e.ListSourceRowIndex;
+
+                        if (e.IsGetData)
+                        {
+                            if (puTonneValues.ContainsKey(row))
+                                e.Value = puTonneValues[row];
+                            else
+                                e.Value = 0m;
+                        }
+                        else if (e.IsSetData)
+                        {
+                            if (e.Value != null && e.Value != DBNull.Value)
+                            {
+                                puTonneValues[row] = Convert.ToDecimal(e.Value);
+                            }
+                        }
+                    }
+                };
+
+                // Forcer la mise à jour quand on change de cellule
+                gvLigneEdit.FocusedColumnChanged += (sender, e) =>
+                {
+                    gvLigneEdit.PostEditor();
+                    gvLigneEdit.UpdateCurrentRow();
+                };
 
                 // === UNITE ===
                 GridColumn col_unite = gvLigneEdit.Columns["Unite"];
@@ -3537,7 +3764,6 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 int indexMontantHT = gvLigneEdit.Columns["DL_MontantHT"].VisibleIndex;
                 col_htdevise.VisibleIndex = indexMontantHT + 1;
 
-
                 gvLigneEdit.CustomUnboundColumnData += (sender, e) =>
                 {
                     if (e.IsGetData)
@@ -3559,7 +3785,8 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                 }
                             }
                             catch (Exception es) { }
-                        }else if (e.Column.FieldName == "Montant Total en devise")
+                        }
+                        else if (e.Column.FieldName == "Montant Total en devise")
                         {
                             try
                             {
@@ -3574,7 +3801,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
                                     col_htdevise.SummaryItem.SummaryType = DevExpress.Data.SummaryItemType.Sum;
                                     col_htdevise.SummaryItem.DisplayFormat = "{0:n2}";
-                                    gvLigneEdit.Appearance.FooterPanel.TextOptions.HAlignment =DevExpress.Utils.HorzAlignment.Center;
+                                    gvLigneEdit.Appearance.FooterPanel.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
                                 }
                             }
                             catch (Exception es) { }
@@ -3656,6 +3883,8 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 txt_prix.EditValue = txt_poids.EditValue = "0";
             }
 
+            gvLigneEdit.Columns["DL_PrixUnitaire"].Caption = "PU par Kg";
+            RecalculerPrix(gvLigneEdit);
         }
 
         private void datelivrprev_EditValueChanged(object sender, EventArgs e)
@@ -5254,7 +5483,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         private void frmEditDocument_Activated(object sender, EventArgs e)
         {
             bindingNavigator1.Visible=false;
-            if (dopiecetxt.Text.StartsWith("AFA") || dopiecetxt.Text.StartsWith("ABR"))
+            if (dopiecetxt.Text.StartsWith("AFA") || dopiecetxt.Text.StartsWith("ABR") || dopiecetxt.Text.StartsWith("APC"))
             {
                 gvLigneEdit.OptionsBehavior.Editable = false;
             }
@@ -5294,6 +5523,33 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
             int indexPrixUnitaire = gvLigneEdit.Columns["DL_PrixUnitaire"].VisibleIndex;
             col_unite.VisibleIndex = indexPrixUnitaire - 1;
+        }
+
+        private void RecalculerPrix(GridView view)
+        {
+            for (int i = 0; i < view.RowCount; i++)
+            {
+                if (view.IsGroupRow(i)) continue;
+
+                decimal prixKg = 0;
+                decimal prixTonne = 0;
+
+                object objKg = view.GetRowCellValue(i, "DL_PrixUnitaire");
+                object objTonne = view.GetRowCellValue(i, "PU par tonne");
+
+                if (decimal.TryParse(objKg?.ToString(), out prixKg))
+                {
+                    // kg → tonne
+                    prixTonne = prixKg / 1000;
+                    view.SetRowCellValue(i, "PU par tonne", prixTonne);
+                }
+                else if (decimal.TryParse(objTonne?.ToString(), out prixTonne))
+                {
+                    // tonne → kg
+                    prixKg = prixTonne * 1000;
+                    view.SetRowCellValue(i, "DL_PrixUnitaire", prixKg);
+                }
+            }
         }
 
         private void lkDevise_EditValueChanged_1(object sender, EventArgs e)
@@ -5552,5 +5808,163 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
             return dlNo;
         }
+
+        private void simpleButton3_Click(object sender, EventArgs e)
+        {
+            string connectionString2 =
+                                    $"Server={serveripPrincipale};Database={dbPrincipale};" +
+                                    $"User ID=Dev;Password=1234;TrustServerCertificate=True;" +
+                                    $"Connection Timeout=240;";
+
+            if (string.IsNullOrWhiteSpace(lbl_val.Text))
+            {
+                lbl_val.Text = "1";
+                string insertSql = @"
+                    INSERT INTO F_MODE_PAIEMENT
+                    (
+                        do_piece,
+                        mode_paiement,
+                        date_echeance
+                    )
+                    VALUES
+                    (
+                        @do_piece,
+                        @mode_paiement,
+                        @date_echeance
+                    )";
+
+                using (SqlConnection conn = new SqlConnection(connectionString2))
+                using (SqlCommand cmd = new SqlCommand(insertSql, conn))
+                {
+                    // Paramètres TYPÉS (bonne pratique)
+                    cmd.Parameters.Add("@do_piece", SqlDbType.VarChar, 50)
+                        .Value = dopiecetxt.Text.Trim();
+
+                    cmd.Parameters.Add("@mode_paiement", SqlDbType.VarChar, 20)
+                        .Value = cmbmdp.Text?.ToString();
+                    // OU cmbmdp.Text selon ton binding
+
+                    cmd.Parameters.Add("@date_echeance", SqlDbType.DateTime)
+                        .Value = dtecheance.Value;
+
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+            else
+            {
+                lbl_val.Text = "1";
+                string UPDATESql = @"
+                   UPDATE F_MODE_PAIEMENT
+                        SET mode_paiement=@mode_paiement,
+                        date_echeance=@date_echeance
+                   WHERE do_piece=@do_piece 
+                   ";
+
+                using (SqlConnection conn = new SqlConnection(connectionString2))
+                using (SqlCommand cmd = new SqlCommand(UPDATESql, conn))
+                {
+                    // Paramètres TYPÉS (bonne pratique)
+                    cmd.Parameters.Add("@do_piece", SqlDbType.VarChar, 50)
+                        .Value = dopiecetxt.Text.Trim();
+
+                    cmd.Parameters.Add("@mode_paiement", SqlDbType.VarChar, 20)
+                        .Value = cmbmdp.Text?.ToString();
+                    // OU cmbmdp.Text selon ton binding
+
+                    cmd.Parameters.Add("@date_echeance", SqlDbType.DateTime)
+                        .Value = dtecheance.Value;
+
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        private void simpleButton5_Click(object sender, EventArgs e)
+        {
+            string connectionString2 =
+                                    $"Server={serveripPrincipale};Database={dbPrincipale};" +
+                                    $"User ID=Dev;Password=1234;TrustServerCertificate=True;" +
+                                    $"Connection Timeout=240;";
+
+            if (string.IsNullOrWhiteSpace(lblval1.Text))
+            {
+                lblval1.Text = "1";
+                string insertSql = @"
+                    INSERT INTO F_PACKING_LIST
+                    (
+                        dopiece,
+                        type,
+                        nombre,
+                        eta,
+                        etd
+                    )
+                    VALUES
+                    (
+                        @do_piece,
+                        @type,
+                        @nombre,
+                        @eta,
+                        @etd
+                    )";
+
+                using (SqlConnection conn = new SqlConnection(connectionString2))
+                using (SqlCommand cmd = new SqlCommand(insertSql, conn))
+                {
+                    cmd.Parameters.Add("@do_piece", SqlDbType.VarChar, 50)
+                        .Value = dopiecetxt.Text.Trim();
+
+                    cmd.Parameters.Add("@type", SqlDbType.VarChar, 20)
+                        .Value = cmb_type.Text?.ToString();
+
+                    cmd.Parameters.Add("@nombre", SqlDbType.VarChar)
+                        .Value = txtnbr.Text;
+
+                    cmd.Parameters.Add("@eta", SqlDbType.DateTime)
+                        .Value = dteta.Value;
+
+                    cmd.Parameters.Add("@etd", SqlDbType.DateTime)
+                        .Value = dtetd.Value;
+
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+            else
+            {
+                lblval1.Text = "1";
+                string UPDATESql = @"
+                UPDATE F_PACKING_LIST
+                    SET type=@type,
+                    nombre=@nombre,
+                    eta=@eta,
+                    etd=@etd
+                    WHERE dopiece=@do_piece 
+                ";
+
+                using (SqlConnection conn = new SqlConnection(connectionString2))
+                    using (SqlCommand cmd = new SqlCommand(UPDATESql, conn))
+                    {
+                        cmd.Parameters.Add("@do_piece", SqlDbType.VarChar, 50)
+                            .Value = dopiecetxt.Text.Trim();
+
+                        cmd.Parameters.Add("@type", SqlDbType.VarChar, 20)
+                            .Value = cmb_type.Text?.ToString();
+
+                        cmd.Parameters.Add("@nombre", SqlDbType.VarChar)
+                            .Value = txtnbr.Text;
+
+                        cmd.Parameters.Add("@eta", SqlDbType.DateTime)
+                            .Value = dteta.Value;
+
+                        cmd.Parameters.Add("@etd", SqlDbType.DateTime)
+                            .Value = dtetd.Value;
+
+                        conn.Open();
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
     }
 }

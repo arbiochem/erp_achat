@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmTransform));
             this.layoutControl1 = new DevExpress.XtraLayout.LayoutControl();
             this.simpleButton2 = new DevExpress.XtraEditors.SimpleButton();
             this.simpleButton1 = new DevExpress.XtraEditors.SimpleButton();
@@ -99,7 +100,6 @@
             this.radioGroup1.Properties.Items.AddRange(new DevExpress.XtraEditors.Controls.RadioGroupItem[] {
             new DevExpress.XtraEditors.Controls.RadioGroupItem(null, "Bon de commande", true, null, "rdBC"),
             new DevExpress.XtraEditors.Controls.RadioGroupItem(null, "Facture", true, null, "rdFA"),
-            new DevExpress.XtraEditors.Controls.RadioGroupItem(null, "Packing List", true, null, "rdBL"),
             new DevExpress.XtraEditors.Controls.RadioGroupItem(null, "Bon de réception", true, null, "BDR")});
             this.radioGroup1.Size = new System.Drawing.Size(437, 136);
             this.radioGroup1.TabIndex = 0;
@@ -160,11 +160,12 @@
             this.Controls.Add(this.layoutControl1);
             this.FormBorderEffect = DevExpress.XtraEditors.FormBorderEffect.Shadow;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.IconOptions.Image = ((System.Drawing.Image)(resources.GetObject("frmTransform.IconOptions.Image")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "frmTransform";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "frmTransform";
+            this.Text = "Transformation de document";
             ((System.ComponentModel.ISupportInitialize)(this.layoutControl1)).EndInit();
             this.layoutControl1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.groupControl1)).EndInit();

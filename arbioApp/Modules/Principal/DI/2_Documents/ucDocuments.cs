@@ -710,10 +710,21 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             BarSubItem fileMenu = new BarSubItem();
             fileMenu.Caption = "Fichier";
 
-            barManager1.Items.Add(fileMenu);
-            barManager1.MainMenu.LinksPersistInfo.Add(new LinkPersistInfo(fileMenu));
+            BarSubItem fileMenu1 = new BarSubItem();
+            fileMenu1.Caption = "Etat";
 
-           
+            barManager1.Items.Add(fileMenu);
+            barManager1.Items.Add(fileMenu1);
+            barManager1.MainMenu.LinksPersistInfo.Add(new LinkPersistInfo(fileMenu));
+            barManager1.MainMenu.LinksPersistInfo.Add(new LinkPersistInfo(fileMenu1));
+
+            BarButtonItem dbItem1 = new BarButtonItem();
+            dbItem1.Caption = "Etat général";
+
+            dbItem1.ItemClick += DbItem_Item1Click;
+
+            fileMenu1.AddItem(dbItem1);
+
             foreach (DataRow row in databases.Rows)
             {
                 BarButtonItem dbItem = new BarButtonItem();
@@ -814,6 +825,12 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 MessageBox.Show($"Une erreur est survenue : {ex.Message}, {m}", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             
+        }
+
+        private void DbItem_Item1Click(object sender, ItemClickEventArgs e)
+        {
+            frm_Etat_general frmEtat = new frm_Etat_general();
+            frmEtat.ShowDialog();
         }
 
         private void btnRefresh_Click(object sender, EventArgs e)
