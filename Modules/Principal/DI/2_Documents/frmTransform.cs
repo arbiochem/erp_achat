@@ -24,7 +24,8 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 case "Facture":
                     radioGroup1.Properties.Items[0].Enabled = false;
                     radioGroup1.Properties.Items[1].Enabled = false;
-                    radioGroup1.Properties.Items[2].Enabled = false;
+                    radioGroup1.Properties.Items[2].Enabled = true;
+                    //radioGroup1.Properties.Items[2].Enabled = false;
                     break;
 
                 case "Bon de livraison":

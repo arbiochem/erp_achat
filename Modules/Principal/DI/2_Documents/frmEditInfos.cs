@@ -808,7 +808,8 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
             // Rafraîchit le pied de page après la boucle
             gridViewFrais.RefreshData();
-            gridViewFrais.InvalidateFooter();*/
+            gridViewFrais.Invalidate
+            ();*/
 
         }
 
