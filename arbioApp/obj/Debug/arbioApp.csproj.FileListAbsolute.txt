@@ -327,5 +327,4 @@ D:\Arbiochem\Travail\ERP\arbioApp\obj\Debug\arbioApp.csproj.Up2Date
 D:\Arbiochem\Travail\ERP\arbioApp\obj\Debug\arbioApp.exe
 D:\Arbiochem\Travail\ERP\arbioApp\obj\Debug\arbioApp.pdb
 D:\Arbiochem\Travail\ERP\arbioApp\obj\Debug\arbioApp.Modules.Principal.DI._2_Documents.frmLotSerie.resources
-D:\Arbiochem\Travail\ERP\arbioApp\obj\Debug\arbioApp.Modules.Principal.DI._2_Documents.frmPrix.resources
 D:\Arbiochem\Travail\ERP\arbioApp\obj\Debug\arbioApp.Modules.Principal.DI._2_Documents.frm_Etat_general.resources

@@ -703,6 +703,8 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
             };
 
+        BarSubItem fileMenu1;
+
         private void CreateDatabaseMenu()
         {
            DataTable databases = GetDatabasesFromF_ACHATFILES();
@@ -710,8 +712,9 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             BarSubItem fileMenu = new BarSubItem();
             fileMenu.Caption = "Fichier";
 
-            BarSubItem fileMenu1 = new BarSubItem();
+            fileMenu1 = new BarSubItem();
             fileMenu1.Caption = "Etat";
+            fileMenu1.Enabled = false;
 
             barManager1.Items.Add(fileMenu);
             barManager1.Items.Add(fileMenu1);
@@ -719,7 +722,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             barManager1.MainMenu.LinksPersistInfo.Add(new LinkPersistInfo(fileMenu1));
 
             BarButtonItem dbItem1 = new BarButtonItem();
-            dbItem1.Caption = "Etat général";
+            dbItem1.Caption = "Etat global";
 
             dbItem1.ItemClick += DbItem_Item1Click;
 
@@ -803,7 +806,8 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 {
                     
                     if (buttonItem.Tag != null)
-                    {                                              
+                    {
+                        fileMenu1.Enabled = true;
                         dynamic tag = buttonItem.Tag;
                         ucDocuments.dbNamePrincipale = buttonItem.Caption;
                         ucDocuments.serverNamePrincipale = tag.ServerName;

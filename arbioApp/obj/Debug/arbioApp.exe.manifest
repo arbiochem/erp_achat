@@ -43,14 +43,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="arbioApp.exe" size="2890752">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="arbioApp.exe" size="2885632">
       <assemblyIdentity name="arbioApp" version="1.0.0.0" language="neutral" processorArchitecture="amd64" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>zvQD8g0jKqsjB4pCHIX60MGP2Eg4zJrhyk9scqpm+98=</dsig:DigestValue>
+        <dsig:DigestValue>bwrK8On+1PN35wmgqRNYf+EmkO09sDOr620ZijzDnwc=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
