@@ -3240,7 +3240,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             {
                 if (decimal.TryParse(view.GetRowCellValue(e.RowHandle, "PU par tonne")?.ToString(), out decimal prixTonne))
                 {
-                    decimal val = prixTonne * 1000;
+                    decimal val = prixTonne / 1000;
                     view.SetRowCellValue(e.RowHandle, "DL_PrixUnitaire", val); // prix par kg
                 }
             }
@@ -3248,7 +3248,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             {
                 if (decimal.TryParse(view.GetRowCellValue(e.RowHandle, "DL_PrixUnitaire")?.ToString(), out decimal prixKg))
                 {
-                    view.SetRowCellValue(e.RowHandle, "PU par tonne", prixKg / 1000); // prix par tonne
+                    view.SetRowCellValue(e.RowHandle, "PU par tonne", prixKg * 1000); // prix par tonne
                 }
             }
 
@@ -5540,13 +5540,13 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 if (decimal.TryParse(objKg?.ToString(), out prixKg))
                 {
                     // kg → tonne
-                    prixTonne = prixKg / 1000;
+                    prixTonne = prixKg * 1000;
                     view.SetRowCellValue(i, "PU par tonne", prixTonne);
                 }
                 else if (decimal.TryParse(objTonne?.ToString(), out prixTonne))
                 {
                     // tonne → kg
-                    prixKg = prixTonne * 1000;
+                    prixKg = prixTonne / 1000;
                     view.SetRowCellValue(i, "DL_PrixUnitaire", prixKg);
                 }
             }
