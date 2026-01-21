@@ -50,7 +50,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>rw1708f2Oj88aE5Xm/eJQdXh0135xfzBRQkYpBbkufA=</dsig:DigestValue>
+        <dsig:DigestValue>AR3It8Zv48WwXuDWmoPuSuuQHInvDFT6vk+ixsbp+jg=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -2358,13 +2358,13 @@
       </hash>
     </dependentAssembly>
   </dependency>
-  <file name="arbioApp.exe.config" size="5506">
+  <file name="arbioApp.exe.config" size="5872">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>YHfjzofM3P1arZYn8a50qjujXYbH0+rnzhlFDJuZc78=</dsig:DigestValue>
+      <dsig:DigestValue>Ew6/MoQ/PFufqUllRCMJSANyuMm9ITmS4C+h8ziV+lw=</dsig:DigestValue>
     </hash>
   </file>
   <file name="logo.ico" size="6699">

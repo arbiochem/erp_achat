@@ -322,5 +322,7 @@ namespace arbioApp.Models
         //public string Divers { get; set; }
 
         //public short? DO_Conversion { get; set; }
+        public string? Produit { get; set; }
+
     }
 }
