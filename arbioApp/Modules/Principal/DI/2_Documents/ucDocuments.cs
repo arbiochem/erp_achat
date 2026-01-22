@@ -254,15 +254,26 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         private bool tester_cloturer(string doPiece)
         {
             bool test = false;
-            using (AppDbContext context = new AppDbContext())
-            {
-                var lst = context.F_DOCENTETE.FirstOrDefault(doc => doc.DO_Piece == doPiece);
 
-                if (lst.DO_Cloture == 1)
+            try
+            {
+                using (AppDbContext context = new AppDbContext())
                 {
-                    test = true;
+                    var lst = context.F_DOCENTETE.FirstOrDefault(doc => doc.DO_Piece == doPiece);
+
+                    if (lst != null && lst.DO_Cloture == 1)
+                    {
+                        test = true;
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                // Gérer l'exception : par exemple loguer l'erreur
+                Console.WriteLine($"Erreur : {ex.Message}");
+                // Tu peux aussi rethrow si nécessaire : throw;
+            }
+
             return test;
         }
 

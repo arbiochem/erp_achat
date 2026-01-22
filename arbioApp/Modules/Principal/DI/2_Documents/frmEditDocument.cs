@@ -1956,7 +1956,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
 
                 string connectionStringArbapp = $"Server={FrmMdiParent.DataSourceNameValueParent};" +
-                                 $"Database={ucDocuments.dbNamePrincipale};" +
+                                 $"Database=TRANSIT;" +
                                  $"User ID=Dev;" +
                                  $"Password=1234;" +
                                  $"TrustServerCertificate=True;" +
@@ -2136,7 +2136,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         }
         private void hyperlinkLabelControl1_Click(object sender, EventArgs e)
         {
-            frmSites frmsite = new frmSites(this);
+            frmSites frmsite = new frmSites(this,dbPrincipale);
             frmsite.ShowDialog();
             
         }
@@ -2303,7 +2303,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                                 gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
                                                 StatutActuel = Convert.ToInt32(lkStatut.EditValue);
                                                 MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                                //frmSites frmsite = new frmSites(this);
+                                                //frmSites frmsite = new frmSites(this,dbPrincipale);
                                                // frmsite.ShowDialog();
                                             }
                                             else
@@ -2330,7 +2330,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                                     gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
                                                     StatutActuel = Convert.ToInt32(lkStatut.EditValue);
                                                     MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                                    frmSites frmsite = new frmSites(this);
+                                                    frmSites frmsite = new frmSites(this,dbPrincipale);
                                                     frmsite.ShowDialog();
                                                     list_depot();
                                                     ExecuteStockAlert();
@@ -2367,7 +2367,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                                 gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
                                                 StatutActuel = Convert.ToInt32(lkStatut.EditValue);
                                                 MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                                frmSites frmsite = new frmSites(this);
+                                                frmSites frmsite = new frmSites(this,dbPrincipale);
                                                 frmsite.ShowDialog();
                                                 list_depot();
                                                 ExecuteStockAlert();
@@ -2394,7 +2394,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                                 gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
                                                 StatutActuel = Convert.ToInt32(lkStatut.EditValue);
                                                 MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                                frmSites frmsite = new frmSites(this);
+                                                frmSites frmsite = new frmSites(this,dbPrincipale);
                                                 frmsite.ShowDialog();
                                                 list_depot();
                                                 ExecuteStockAlert();
@@ -2423,7 +2423,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                         gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
                                         StatutActuel = Convert.ToInt32(lkStatut.EditValue);
                                         MessageBox.Show("Insertion terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                        frmSites frmsite = new frmSites(this);
+                                        frmSites frmsite = new frmSites(this,dbPrincipale);
                                         frmsite.ShowDialog();
                                         list_depot();
                                         ExecuteStockAlert();
@@ -2435,7 +2435,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                         _ucDocuments.RafraichirDonnees();
                                         gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
                                         MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                        frmSites frmsite = new frmSites(this);
+                                        frmSites frmsite = new frmSites(this,dbPrincipale);
                                         frmsite.ShowDialog();
                                         list_depot();
                                         ExecuteStockAlert();
@@ -2483,7 +2483,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                         gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
                                         StatutActuel = Convert.ToInt32(lkStatut.EditValue);
                                         MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                        frmSites frmsite = new frmSites(this);
+                                        frmSites frmsite = new frmSites(this,dbPrincipale);
                                         frmsite.ShowDialog();
                                         list_depot();
                                         ExecuteStockAlert();
@@ -2513,7 +2513,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                             gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
                                             StatutActuel = Convert.ToInt32(lkStatut.EditValue);
                                             MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                            frmSites frmsite = new frmSites(this);
+                                            frmSites frmsite = new frmSites(this,dbPrincipale);
                                             frmsite.ShowDialog();
                                             list_depot();
                                             ExecuteStockAlert();
@@ -2550,7 +2550,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                         gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
                                         StatutActuel = Convert.ToInt32(lkStatut.EditValue);
                                         MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                        frmSites frmsite = new frmSites(this);
+                                        frmSites frmsite = new frmSites(this,dbPrincipale);
                                         frmsite.ShowDialog();
                                         list_depot();
                                         ExecuteStockAlert();
@@ -2577,7 +2577,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                         gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
                                         StatutActuel = Convert.ToInt32(lkStatut.EditValue);
                                         MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                        frmSites frmsite = new frmSites(this);
+                                        frmSites frmsite = new frmSites(this,dbPrincipale);
                                         frmsite.ShowDialog();
                                         list_depot();
                                         ExecuteStockAlert();
@@ -2606,7 +2606,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                 gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
                                 StatutActuel = Convert.ToInt32(lkStatut.EditValue);
                                 MessageBox.Show("Insertion terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                frmSites frmsite = new frmSites(this);
+                                frmSites frmsite = new frmSites(this,dbPrincipale);
                                 frmsite.ShowDialog();
                                 list_depot();
                                 ExecuteStockAlert();
@@ -2618,7 +2618,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                 _ucDocuments.RafraichirDonnees();
                                 gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
                                 MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                frmSites frmsite = new frmSites(this);
+                                frmSites frmsite = new frmSites(this,dbPrincipale);
                                 frmsite.ShowDialog();
                                 list_depot();
                                 ExecuteStockAlert();
@@ -2658,7 +2658,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                     gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
                                     StatutActuel = Convert.ToInt32(lkStatut.EditValue);
                                     MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                    frmSites frmsite = new frmSites(this);
+                                    frmSites frmsite = new frmSites(this,dbPrincipale);
                                     frmsite.ShowDialog();
                                     list_depot();
                                     ExecuteStockAlert();
@@ -2688,7 +2688,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                         gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
                                         StatutActuel = Convert.ToInt32(lkStatut.EditValue);
                                         MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                        frmSites frmsite = new frmSites(this);
+                                        frmSites frmsite = new frmSites(this,dbPrincipale);
                                         frmsite.ShowDialog();
 
                                         list_depot();
@@ -2726,7 +2726,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                     gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
                                     StatutActuel = Convert.ToInt32(lkStatut.EditValue);
                                     MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                    frmSites frmsite = new frmSites(this);
+                                    frmSites frmsite = new frmSites(this,dbPrincipale);
                                     frmsite.ShowDialog();
                                     list_depot();
                                     ExecuteStockAlert();
@@ -2753,7 +2753,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                     gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
                                     StatutActuel = Convert.ToInt32(lkStatut.EditValue);
                                     MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                    frmSites frmsite = new frmSites(this);
+                                    frmSites frmsite = new frmSites(this,dbPrincipale);
                                     frmsite.ShowDialog();
                                     list_depot();
                                     ExecuteStockAlert();
@@ -2782,7 +2782,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                             gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
                             StatutActuel = Convert.ToInt32(lkStatut.EditValue);
                             MessageBox.Show("Insertion terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            frmSites frmsite = new frmSites(this);
+                            frmSites frmsite = new frmSites(this,dbPrincipale);
                             frmsite.ShowDialog();
                             list_depot();
                             ExecuteStockAlert();
@@ -2794,7 +2794,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                             _ucDocuments.RafraichirDonnees();
                             gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
                             MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            frmSites frmsite = new frmSites(this);
+                            frmSites frmsite = new frmSites(this,dbPrincipale);
                             frmsite.ShowDialog();
                             list_depot();
                             ExecuteStockAlert();

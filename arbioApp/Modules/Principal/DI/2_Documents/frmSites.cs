@@ -23,6 +23,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         private SqlDataAdapter dataAdapter;
         private SqlConnection connection;
         public static string connectionString;
+        private string db;
         //private frmNewDocument parentForm;
         private frmEditDocument parentEditDocument;
 
@@ -35,7 +36,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         //    InitializeGridControlServers();
         //    this.parentForm = parent;
         //}
-        public frmSites(frmEditDocument parent)
+        public frmSites(frmEditDocument parent,String _db)
         {
             InitializeComponent();
             connectionString = $"Server={FrmMdiParent.DataSourceNameValueParent};" +
@@ -43,6 +44,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                $"TrustServerCertificate=True;Connection Timeout=120;";
             InitializeGridControlServers();
             this.parentEditDocument = parent;
+            this.db = _db;
         }
         private void InitializeGridControlServers()
         {
@@ -167,7 +169,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 }
             }
             string connectionString2 =
-                                   $"Server=SRV-ARB;Database=TRANSIT;" +
+                                   $"Server="+FrmMdiParent.DataSourceNameValueParent+";Database="+db+";" +
                                    $"User ID=Dev;Password=1234;TrustServerCertificate=True;" +
                                    $"Connection Timeout=240;";
 
