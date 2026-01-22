@@ -145,10 +145,99 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         
         private void simpleButton1_Click(object sender, EventArgs e)
         {
-            parentEditDocument.ExecuteStockAlert();
-            parentEditDocument.ChargerArtFrns();
+            string sb = "";
+
+            for (int i = 0; i < gvServers.RowCount; i++)
+            {
+                var actifObj = gvServers.GetRowCellValue(i, "actif");
+
+                if (actifObj != null && Convert.ToBoolean(actifObj) == true)
+                {
+                    var ractif = actifObj;
+                    var rdepot = gvServers.GetRowCellValue(i, "BDD");
+
+                    if (sb != "")
+                    {
+                        sb=sb+","+"'"+rdepot.ToString()+"'";
+                    }
+                    else
+                    {
+                        sb = "'"+rdepot.ToString()+"'";
+                    }
+                }
+            }
+            string connectionString2 =
+                                   $"Server=SRV-ARB;Database=TRANSIT;" +
+                                   $"User ID=Dev;Password=1234;TrustServerCertificate=True;" +
+                                   $"Connection Timeout=240;";
+
+            string query_depot = "SELECT val_depot FROM DEPOT";
+
+            using (SqlConnection conn = new SqlConnection(connectionString2))
+            {
+                try
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = new SqlCommand(query_depot, conn))
+                    {
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.HasRows == true)
+                            {
+                                while (reader.Read())
+                                {
+                                    if (sb != reader.GetString(0).ToString())
+                                    {
+                                        maj_depot(sb, connectionString2);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                insert(sb, connectionString2);
+                            }
+                        }
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    MethodBase m = MethodBase.GetCurrentMethod();
+                    MessageBox.Show($"Une erreur est survenue : {ex.Message}, {m}", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+
+            //parentEditDocument.ExecuteStockAlert();
+            //parentEditDocument.ChargerArtFrns();
             this.Close();
         }
-        
+
+        private void maj_depot(string sb,string connectstring)
+        {
+            using (SqlConnection conn = new SqlConnection(connectstring))
+            {
+                conn.Open();
+                string query = "UPDATE DEPOT SET val_depot = @val_depot";
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@val_depot", sb);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        private void insert(string sb, string connectstring)
+        {
+            using (SqlConnection conn = new SqlConnection(connectstring))
+            {
+                conn.Open();
+                string query = "INSERT INTO DEPOT(val_depot) VALUES (@val_depot)";
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.Add("@val_depot", SqlDbType.NVarChar).Value = sb;
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
     }
 }

@@ -91,7 +91,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                                  $"User ID=Dev;Password=1234;TrustServerCertificate=True;" +
                                                  $"Connection Timeout=240;";
 
-        private static string connectionString_f = $"Server={serveripPrincipale};Database=ARBIOCHEM_ACHAT;" +
+        private static string connectionString_f = $"Server={serveripPrincipale};Database=TRANSIT;" +
                                                  $"User ID=Dev;Password=1234;TrustServerCertificate=True;" +
                                                  $"Connection Timeout=240;";
         private readonly AppDbContext _context;
@@ -123,6 +123,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         private string dopiece;
 
         private int StatutActuel;
+
 
 
         //update
@@ -1933,9 +1934,25 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
         public void ExecuteStockAlert()
         {
+            treeList1.BeginUpdate();
+
             try
             {
-                string query1 = @"SELECT * FROM dbo.VW_ETAT_STOCK WHERE CT_INTITULE='" + lkEdFrns.Text + "'";
+                // Supprime tous les nœuds
+                treeList1.ClearNodes();
+
+                // Supprime toutes les colonnes
+                treeList1.Columns.Clear();
+            }
+            finally
+            {
+                // Débloque la mise à jour et rafraîchit l'affichage
+                treeList1.EndUpdate();
+            }
+
+            try
+            {
+                string query1 = @"SELECT * FROM dbo.VW_ETAT_STOCK WHERE CT_INTITULE='" + lkEdFrns.Text + "' AND DEPOT IN (" + labelControl8.Text + ")";
 
 
                 string connectionStringArbapp = $"Server={FrmMdiParent.DataSourceNameValueParent};" +
@@ -2121,6 +2138,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         {
             frmSites frmsite = new frmSites(this);
             frmsite.ShowDialog();
+            
         }
         private string GetArticleDescription(string arRef)
         {
@@ -2314,6 +2332,9 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                                     MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                                     frmSites frmsite = new frmSites(this);
                                                     frmsite.ShowDialog();
+                                                    list_depot();
+                                                    ExecuteStockAlert();
+                                                    ChargerArtFrns();
                                                 }
                                                 else
                                                 {
@@ -2348,6 +2369,9 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                                 MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                                 frmSites frmsite = new frmSites(this);
                                                 frmsite.ShowDialog();
+                                                list_depot();
+                                                ExecuteStockAlert();
+                                                ChargerArtFrns();
                                             }
                                             else
                                             {
@@ -2372,6 +2396,9 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                                 MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                                 frmSites frmsite = new frmSites(this);
                                                 frmsite.ShowDialog();
+                                                list_depot();
+                                                ExecuteStockAlert();
+                                                ChargerArtFrns();
                                             }
                                             else
                                             {
@@ -2398,6 +2425,9 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                         MessageBox.Show("Insertion terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                         frmSites frmsite = new frmSites(this);
                                         frmsite.ShowDialog();
+                                        list_depot();
+                                        ExecuteStockAlert();
+                                        ChargerArtFrns();
                                     }
                                     else
                                     {
@@ -2407,6 +2437,9 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                         MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                         frmSites frmsite = new frmSites(this);
                                         frmsite.ShowDialog();
+                                        list_depot();
+                                        ExecuteStockAlert();
+                                        ChargerArtFrns();
                                     }
                                 }
                             }
@@ -2452,6 +2485,9 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                         MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                         frmSites frmsite = new frmSites(this);
                                         frmsite.ShowDialog();
+                                        list_depot();
+                                        ExecuteStockAlert();
+                                        ChargerArtFrns();
                                     }
                                     else
                                     {
@@ -2479,6 +2515,9 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                             MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                             frmSites frmsite = new frmSites(this);
                                             frmsite.ShowDialog();
+                                            list_depot();
+                                            ExecuteStockAlert();
+                                            ChargerArtFrns();
                                         }
                                         else
                                         {
@@ -2513,6 +2552,9 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                         MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                         frmSites frmsite = new frmSites(this);
                                         frmsite.ShowDialog();
+                                        list_depot();
+                                        ExecuteStockAlert();
+                                        ChargerArtFrns();
                                     }
                                     else
                                     {
@@ -2537,6 +2579,9 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                         MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                         frmSites frmsite = new frmSites(this);
                                         frmsite.ShowDialog();
+                                        list_depot();
+                                        ExecuteStockAlert();
+                                        ChargerArtFrns();
                                     }
                                     else
                                     {
@@ -2563,6 +2608,9 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                 MessageBox.Show("Insertion terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                 frmSites frmsite = new frmSites(this);
                                 frmsite.ShowDialog();
+                                list_depot();
+                                ExecuteStockAlert();
+                                ChargerArtFrns();
                             }
                             else
                             {
@@ -2572,6 +2620,9 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                 MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                 frmSites frmsite = new frmSites(this);
                                 frmsite.ShowDialog();
+                                list_depot();
+                                ExecuteStockAlert();
+                                ChargerArtFrns();
                             }
                         }
                     }
@@ -2609,6 +2660,9 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                     MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                     frmSites frmsite = new frmSites(this);
                                     frmsite.ShowDialog();
+                                    list_depot();
+                                    ExecuteStockAlert();
+                                    ChargerArtFrns();
                                 }
                                 else
                                 {
@@ -2636,6 +2690,10 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                         MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                         frmSites frmsite = new frmSites(this);
                                         frmsite.ShowDialog();
+
+                                        list_depot();
+                                        ExecuteStockAlert();
+                                        ChargerArtFrns();
                                     }
                                     else
                                     {
@@ -2670,6 +2728,9 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                     MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                     frmSites frmsite = new frmSites(this);
                                     frmsite.ShowDialog();
+                                    list_depot();
+                                    ExecuteStockAlert();
+                                    ChargerArtFrns();
                                 }
                                 else
                                 {
@@ -2694,6 +2755,9 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                     MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                     frmSites frmsite = new frmSites(this);
                                     frmsite.ShowDialog();
+                                    list_depot();
+                                    ExecuteStockAlert();
+                                    ChargerArtFrns();
                                 }
                                 else
                                 {
@@ -2720,6 +2784,9 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                             MessageBox.Show("Insertion terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             frmSites frmsite = new frmSites(this);
                             frmsite.ShowDialog();
+                            list_depot();
+                            ExecuteStockAlert();
+                            ChargerArtFrns();
                         }
                         else
                         {
@@ -2729,6 +2796,9 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                             MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             frmSites frmsite = new frmSites(this);
                             frmsite.ShowDialog();
+                            list_depot();
+                            ExecuteStockAlert();
+                            ChargerArtFrns();
                         }
                     }
                 }
@@ -3543,6 +3613,42 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             }
         }
 
+        private void list_depot()
+        {
+            string connectionString3 =
+                                   $"Server={serveripPrincipale};Database={dbPrincipale};" +
+                                   $"User ID=Dev;Password=1234;TrustServerCertificate=True;" +
+                                   $"Connection Timeout=240;";
+
+            string query_depot = "SELECT val_depot FROM DEPOT";
+
+            using (SqlConnection conn = new SqlConnection(connectionString3))
+            {
+                try
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = new SqlCommand(query_depot, conn))
+                    {
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.HasRows == true)
+                            {
+                                while (reader.Read())
+                                {
+                                    labelControl8.Text = reader.GetString(0).ToString();
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    MethodBase m = MethodBase.GetCurrentMethod();
+                    MessageBox.Show($"Une erreur est survenue : {ex.Message}, {m}", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
         public static int intcollaborateur;
         private Dictionary<int, decimal> puTonneValues = new Dictionary<int, decimal>();
 
@@ -3559,10 +3665,14 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             }
 
             lbl_val.Text = "";
+
             string connectionString2 =
                                     $"Server={serveripPrincipale};Database={dbPrincipale};" +
                                     $"User ID=Dev;Password=1234;TrustServerCertificate=True;" +
                                     $"Connection Timeout=240;";
+
+
+            list_depot();
 
             string query = "SELECT mode_paiement,date_echeance FROM F_MODE_PAIEMENT WHERE do_piece = @do_piece";
 
@@ -4172,7 +4282,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
                         //MAJ Qte
 
-                        int? DE_No = Convert.ToInt32(lkDepot.EditValue);
+                        /*int? DE_No = Convert.ToInt32(lkDepot.EditValue);
                         for (int i = 0; i < gvLigneEdit.RowCount; i++)
                         {
                             string reference = gvLigneEdit.GetRowCellValue(i, "AR_Ref")?.ToString();
@@ -4180,8 +4290,9 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
                             try
                             {
-                                //string connectionString = "Server=26.71.34.164;Database=TRANSIT;Trusted_Connection=True;";
-                                /* string connectionString = "Server=localhost;Database=TRANSIT;Trusted_Connection=True;";
+                                 string connectionString = $"Server={serveripPrincipale};Database=TRANSIT;" +
+                                                 $"User ID=Dev;Password=1234;TrustServerCertificate=True;" +
+                                                 $"Connection Timeout=240;";
 
                                  using (SqlConnection connection = new SqlConnection(connectionString))
                                  {
@@ -4252,7 +4363,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                                  updateCmd.ExecuteNonQuery();
                                              }
                                      }
-                                 }*/
+                                 }
 
                                 //MAJ des articles par lot
                                 simpleButton2_Click(sender, e);   
@@ -4267,7 +4378,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                             }
                                
                             
-                        }
+                        }*/
                         // Fix for CS0120: Use the instance of ucDocuments instead of trying to call it statically
                         _ucDocuments.ChargerDonneesDepuisBDD();
                     }
@@ -5779,8 +5890,9 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         {
             int dlNo = 0;
 
-            string connectionStringArbio =
-                "Server=26.53.123.231;Database=ARBIOCHEM_ACHAT;User ID=Dev;Password=1234;";
+            string connectionStringArbio = $"Server={serveripPrincipale};Database=TRANSIT;" +
+                                                 $"User ID=Dev;Password=1234;TrustServerCertificate=True;" +
+                                                 $"Connection Timeout=240;";
 
             using (SqlConnection connection = new SqlConnection(connectionStringArbio))
             {

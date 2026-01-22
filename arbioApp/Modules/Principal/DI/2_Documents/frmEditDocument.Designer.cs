@@ -215,6 +215,8 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.xtraOpenFileDialog1 = new DevExpress.XtraEditors.XtraOpenFileDialog(this.components);
             this.xtraOpenFileDialog2 = new DevExpress.XtraEditors.XtraOpenFileDialog(this.components);
+            this.labelControl8 = new DevExpress.XtraEditors.LabelControl();
+            this.layoutControlItem42 = new DevExpress.XtraLayout.LayoutControlItem();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControl1)).BeginInit();
             this.layoutControl1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.xtraTabControl1)).BeginInit();
@@ -348,6 +350,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             this.layoutControl3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlGroup4)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem42)).BeginInit();
             this.SuspendLayout();
             // 
             // layoutControl1
@@ -477,6 +480,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             // 
             // layoutControl7
             // 
+            this.layoutControl7.Controls.Add(this.labelControl8);
             this.layoutControl7.Controls.Add(this.simpleButton1);
             this.layoutControl7.Controls.Add(this.txt_poids);
             this.layoutControl7.Controls.Add(this.txt_prix);
@@ -646,7 +650,8 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             this.layoutControlGroup8.Items.AddRange(new DevExpress.XtraLayout.BaseLayoutItem[] {
             this.layoutControlItem26,
             this.layoutControlItem13,
-            this.layoutControlItem15});
+            this.layoutControlItem15,
+            this.layoutControlItem42});
             this.layoutControlGroup8.Name = "Root";
             this.layoutControlGroup8.Size = new System.Drawing.Size(374, 124);
             this.layoutControlGroup8.TextVisible = false;
@@ -655,11 +660,11 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             // 
             this.layoutControlItem26.ContentHorzAlignment = DevExpress.Utils.HorzAlignment.Far;
             this.layoutControlItem26.Control = this.simpleButton1;
-            this.layoutControlItem26.Location = new System.Drawing.Point(0, 52);
+            this.layoutControlItem26.Location = new System.Drawing.Point(229, 52);
             this.layoutControlItem26.MaxSize = new System.Drawing.Size(125, 31);
             this.layoutControlItem26.MinSize = new System.Drawing.Size(125, 31);
             this.layoutControlItem26.Name = "layoutControlItem12";
-            this.layoutControlItem26.Size = new System.Drawing.Size(354, 52);
+            this.layoutControlItem26.Size = new System.Drawing.Size(125, 52);
             this.layoutControlItem26.SizeConstraintsType = DevExpress.XtraLayout.SizeConstraintsType.Custom;
             this.layoutControlItem26.TextAlignMode = DevExpress.XtraLayout.TextAlignModeItem.CustomSize;
             this.layoutControlItem26.TextLocation = DevExpress.Utils.Locations.Left;
@@ -2279,6 +2284,24 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             // 
             this.xtraOpenFileDialog2.FileName = "xtraOpenFileDialog2";
             // 
+            // labelControl8
+            // 
+            this.labelControl8.Location = new System.Drawing.Point(12, 64);
+            this.labelControl8.Name = "labelControl8";
+            this.labelControl8.Size = new System.Drawing.Size(225, 16);
+            this.labelControl8.StyleController = this.layoutControl7;
+            this.labelControl8.TabIndex = 20;
+            // 
+            // layoutControlItem42
+            // 
+            this.layoutControlItem42.Control = this.labelControl8;
+            this.layoutControlItem42.Location = new System.Drawing.Point(0, 52);
+            this.layoutControlItem42.Name = "layoutControlItem42";
+            this.layoutControlItem42.Size = new System.Drawing.Size(229, 52);
+            this.layoutControlItem42.TextSize = new System.Drawing.Size(0, 0);
+            this.layoutControlItem42.TextVisible = false;
+            this.layoutControlItem42.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
+            // 
             // frmEditDocument
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 16F);
@@ -2431,6 +2454,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             this.layoutControl3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlGroup4)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem42)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -2621,5 +2645,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         private DateTimePicker dtetd;
         private DateTimePicker dteta;
         private DevExpress.XtraEditors.LabelControl lblval1;
+        private DevExpress.XtraEditors.LabelControl labelControl8;
+        private DevExpress.XtraLayout.LayoutControlItem layoutControlItem42;
     }
 }

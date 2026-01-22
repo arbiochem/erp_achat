@@ -956,8 +956,9 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         {
             double val = 0;
 
-            string connectionString = $"Data Source=SRV-ARB;Initial Catalog=ARBIOCHEM_ACHAT;User ID=Dev;Password=1234;TrustServerCertificate=True";
-
+            string connectionString = $"Server=SRV-ARB;Database=TRANSIT;" +
+                                                 $"User ID=Dev;Password=1234;TrustServerCertificate=True;" +
+                                                 $"Connection Timeout=240;";
             string query = "SELECT valeur FROM F_DEVISE WHERE devise=@devise";
 
             using (SqlConnection conn = new SqlConnection(connectionString))
