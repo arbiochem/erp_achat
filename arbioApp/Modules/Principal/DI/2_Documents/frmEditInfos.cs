@@ -316,8 +316,14 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                 _context.F_FRETS.Add(f_fret);
                             }
 
-                            _context.SaveChanges();
-
+                            try
+                            {
+                                _context.SaveChanges();
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine("Erreur : " + ex.Message);
+                            }
 
                             try
                             {

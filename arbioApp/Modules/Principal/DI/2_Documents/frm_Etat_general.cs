@@ -75,22 +75,49 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
             string query = "";
 
-            if (string.IsNullOrEmpty(cmbFournisseur.Text) || cmbFournisseur.Text == "Tous")
+            if (dtdate1.Value.Date == dtdate2.Value.Date)
             {
-                query = @"
-                SELECT *
-                FROM Etat_global_achat
-                WHERE [Date de commande] BETWEEN @dateDebut AND @dateFin
-                ORDER BY [Date de LIVRAISON] DESC";
+                if (string.IsNullOrEmpty(cmbFournisseur.Text) || cmbFournisseur.Text == "Tous")
+                {
+                    query = @"
+                        SELECT *
+                        FROM Etat_global_achat
+                        WHERE [Date de commande] >= @dateDebut
+                        AND [Date de commande] < DATEADD(DAY, 1, @dateFin)
+                        ORDER BY [Date de LIVRAISON] DESC";
+                }
+                else
+                {
+                    query = @"
+                    SELECT *
+                    FROM Etat_global_achat
+                    WHERE [Date de commande] >= @dateDebut
+                    AND [Date de commande] < DATEADD(DAY, 1, @dateFin)
+                    AND Fournisseur=@Fournisseur
+                    ORDER BY [Date de LIVRAISON] DESC";
+                }
             }
             else
             {
-                query = @"
-                SELECT *
-                FROM Etat_global_achat
-                WHERE [Date de commande] BETWEEN @dateDebut AND @dateFin
-                AND Fournisseur=@Fournisseur
-                ORDER BY [Date de LIVRAISON] DESC";
+                if (string.IsNullOrEmpty(cmbFournisseur.Text) || cmbFournisseur.Text == "Tous")
+                {
+                    query = @"
+                        SELECT *
+                        FROM Etat_global_achat
+                        WHERE [Date de commande] >= @dateDebut
+                        AND [Date de commande] < DATEADD(DAY, 1, @dateDebut)
+                        ORDER BY [Date de LIVRAISON] DESC";
+                }
+                else
+                {
+                    query = @"
+                    SELECT *
+                    FROM Etat_global_achat
+                    WHERE [Date de commande] >= @dateDebut
+                    AND [Date de commande] < DATEADD(DAY, 1, @dateDebut)
+                    AND Fournisseur=@Fournisseur
+                    ORDER BY [Date de LIVRAISON] DESC";
+                }
             }
 
             DataTable dt = new DataTable();
@@ -159,7 +186,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
         private void simpleButton1_Click(object sender, EventArgs e)
         {
-            if (dtdate1.Value > dtdate2.Value)
+            if (dtdate1.Value.Date > dtdate2.Value.Date)
             {
                 MessageBox.Show("La plage de date est incorrecte!!!","Message d'erreur",MessageBoxButtons.OK, MessageBoxIcon.Error);
             }

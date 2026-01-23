@@ -947,6 +947,8 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
                 }
             }
+
+            txtCours_EditValueChanged(sender, e);
         }
 
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoOptimization)]
@@ -1601,6 +1603,8 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
                 btnEditLigne_Click(sender, e);
             }
+
+            txtCours_EditValueChanged(sender, e);
         }
         public static void UpdateSequence(string prefix, int currentNumber)
         {
@@ -1695,6 +1699,9 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
                     string arDesign = gvLigneEdit.GetRowCellValue(row, "DL_Design").ToString();
                     decimal puBrut = Convert.ToDecimal(gvLigneEdit.GetRowCellValue(row, "DL_PrixUnitaire"));
+                    decimal frais = Convert.ToDecimal(gvLigneEdit.GetRowCellValue(row, "DL_Frais"));
+                    decimal fret = Convert.ToDecimal(gvLigneEdit.GetRowCellValue(row, "Fret"));
+                    decimal cours = Convert.ToDecimal(txtCours.Text);
                     decimal puNet = puBrut * (1 - remisePourcent / 100);
 
                     //decimal montantHT = Convert.ToDecimal(gvLigneEdit.GetRowCellValue(row, "DL_MontantHT"));
@@ -1702,7 +1709,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                     decimal montantHT = 0;
                     if (montantHT == 0)
                     {
-                        montantHT = puNet * qte;
+                        montantHT = (puNet * qte * cours)+(frais+fret);
                         gvLigneEdit.SetRowCellValue(row, "DL_MontantHT", montantHT);
                     }
                     //decimal montantTTC = Convert.ToDecimal(gvLigneEdit.GetRowCellValue(row, "DL_MontantTTC"));
@@ -1892,6 +1899,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         private void Hyperlink_Click_AddLigne(object sender, EventArgs e)
         {
             AddLigne();
+            txtCours_EditValueChanged(sender, e);
         }
 
         private DataTable ExecuteQuery(string connectionString, string query)
@@ -2207,6 +2215,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         {
             string _currentDocPieceNo = dopiecetxt.Text;
             InitializeGrid(gcLigneEdit, _currentDocPieceNo);
+            txtCours_EditValueChanged(sender, e);
         }
 
         private Guid getcbCreationUserGuid(string usermail)
@@ -3306,154 +3315,161 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
             GridView view = sender as GridView;
 
-            if (e.Column.FieldName == "PU par tonne")
+            if(e.Column != null)
             {
-                if (decimal.TryParse(view.GetRowCellValue(e.RowHandle, "PU par tonne")?.ToString(), out decimal prixTonne))
+                if (e.Column.FieldName == "PU par tonne")
                 {
-                    decimal val = prixTonne / 1000;
-                    view.SetRowCellValue(e.RowHandle, "DL_PrixUnitaire", val); // prix par kg
-                }
-            }
-            else if (e.Column.FieldName == "DL_PrixUnitaire")
-            {
-                if (decimal.TryParse(view.GetRowCellValue(e.RowHandle, "DL_PrixUnitaire")?.ToString(), out decimal prixKg))
-                {
-                    view.SetRowCellValue(e.RowHandle, "PU par tonne", prixKg * 1000); // prix par tonne
-                }
-            }
-
-            isUpdating = false;
-
-            gvLigneEdit.PostEditor();
-
-            if (e.Column.FieldName == "AR_Ref" && e.Value != null && !string.IsNullOrWhiteSpace(e.Value.ToString()))
-            {
-                string selectedAR_Ref = e.Value.ToString();
-
-                if (e.RowHandle != DevExpress.XtraGrid.GridControl.NewItemRowHandle)
-                {
-                    gvLigneEdit.SetRowCellValue(e.RowHandle, "DL_Design", GetArticleDescription(selectedAR_Ref));
-                    gvLigneEdit.SetRowCellValue(e.RowHandle, "Action", "Remove");
-                    gvLigneEdit.SetRowCellValue(e.RowHandle, "Retenu", 1);
-                    gvLigneEdit.SetRowCellValue(e.RowHandle, "Validation", "Update");
-                    //gvLigneEdit.SetRowCellValue(e.RowHandle, "Insertion", "Add");
-                    gvLigneEdit.SetRowCellValue(e.RowHandle, "DL_PrixUnitaire", GetArticlePU(selectedAR_Ref));
-                    gvLigneEdit.SetRowCellValue(e.RowHandle, "CT_Num", GetFRNS(selectedAR_Ref));
-
-                    gvLigneEdit.BestFitColumns();
-                }
-                else
-                {
-                    gvLigneEdit.SetRowCellValue(e.RowHandle, "DL_Design", GetArticleDescription(selectedAR_Ref));
-                    gvLigneEdit.SetRowCellValue(e.RowHandle, "Action", "Remove");
-                    gvLigneEdit.SetRowCellValue(e.RowHandle, "Retenu", 1);
-                    gvLigneEdit.SetRowCellValue(e.RowHandle, "Validation", "Update");
-                    //gvLigneEdit.SetRowCellValue(e.RowHandle, "Insertion", "Add");
-                    gvLigneEdit.SetRowCellValue(e.RowHandle, "DL_PrixUnitaire", GetArticlePU(selectedAR_Ref));
-                    gvLigneEdit.SetRowCellValue(e.RowHandle, "CT_Num", GetFRNS(selectedAR_Ref));
-
-                    gvLigneEdit.BestFitColumns();
-                }
-            }
-            if (e.Column.FieldName == "DL_Qte" || e.Column.FieldName == "DL_Remise01REM_Valeur" || e.Column.FieldName == "DL_PrixUnitaire"
-                || e.Column.FieldName == "DL_Taxe1" || e.Column.FieldName == "DL_PUDevise" || e.Column.FieldName == "DL_PoidsNet" || e.Column.FieldName == "DL_Frais")
-            {
-                //GridView view = sender as GridView;
-
-                // Récupérer les valeurs
-                object prixUnitaireObj = view.GetRowCellValue(e.RowHandle, "DL_PrixUnitaire");
-                object quantiteObj = view.GetRowCellValue(e.RowHandle, "DL_Qte");
-                int qte = 0;
-                if (quantiteObj != null && quantiteObj != DBNull.Value && quantiteObj.ToString() != "")
-                {
-                    qte = Convert.ToInt32(quantiteObj);
-                }
-                else
-                {
-                    qte = 0;
-                }
-
-                object dlTaxe1obj = gvLigneEdit.GetRowCellValue(e.RowHandle, "DL_Taxe1");
-                int dlTaxe1 = 0;
-                if (dlTaxe1obj != null && dlTaxe1obj != DBNull.Value && dlTaxe1obj.ToString() != "")
-                {
-                    dlTaxe1 = Convert.ToInt32(dlTaxe1obj);
-                }
-                else
-                {
-                    dlTaxe1 = ucDocuments.doTaxe1;
-                    gvLigneEdit.SetRowCellValue(e.RowHandle, "DO_Taxe1", dlTaxe1);
-                }
-
-                object dlPuDeviseobj = gvLigneEdit.GetRowCellValue(e.RowHandle, "DL_PuDevise");
-                decimal dlPuDevise = 0;
-                if (dlPuDeviseobj != null && dlPuDeviseobj != DBNull.Value && dlPuDeviseobj.ToString() != "")
-                {
-                    dlPuDevise = Convert.ToDecimal(dlPuDeviseobj);
-                }
-                else
-                {
-                    dlPuDevise = 0;
-                    gvLigneEdit.SetRowCellValue(e.RowHandle, "DL_PuDevise", dlPuDevise);
-                }
-
-                object remiseObj = view.GetRowCellValue(e.RowHandle, "DL_Remise01REM_Valeur");
-                object tauxTVAObj = view.GetRowCellValue(e.RowHandle, "DL_Taxe1");
-
-                if (prixUnitaireObj != null && quantiteObj != null && remiseObj != null && tauxTVAObj != null &&
-                    prixUnitaireObj != DBNull.Value && quantiteObj != DBNull.Value &&
-                    remiseObj != DBNull.Value && tauxTVAObj != DBNull.Value)
-                {
-                    decimal prixUnitaire = Convert.ToDecimal(prixUnitaireObj);
-                    int quantite = Convert.ToInt32(qte);
-                    decimal remise = Convert.ToDecimal(remiseObj);
-                    decimal tauxTVA = Convert.ToDecimal(tauxTVAObj);
-                    decimal cours = Convert.ToDecimal(txtCours.Text);
-
-                    // Appliquer la remise au prix unitaire
-                    decimal prixNet = prixUnitaire * (1 - remise / 100);
-                    decimal montantHT = prixNet * quantite * cours;
-                    decimal montantTTC = montantHT * (1 + tauxTVA / 100);
-
-                    view.SetRowCellValue(e.RowHandle, "DL_MontantHT", montantHT);
-                    view.SetRowCellValue(e.RowHandle, "DL_MontantTTC", montantTTC);
-
-                    gvLigneEdit.CustomUnboundColumnData += (sender, e) =>
+                    if (decimal.TryParse(view.GetRowCellValue(e.RowHandle, "PU par tonne")?.ToString(), out decimal prixTonne))
                     {
-                        if (e.IsGetData)
-                        {
-                            if (e.Column.FieldName == "FRET")
-                            {
-                                try
-                                {
-                                    decimal poidsNet = Convert.ToDecimal(gvLigneEdit.GetListSourceRowCellValue(e.ListSourceRowIndex, "DL_PoidsNet"));
-                                    decimal prix = Convert.ToDecimal(txt_prix.Text);
-                                    decimal poids = Convert.ToDecimal(txt_poids.Text);
-
-                                    decimal fret = (poidsNet * prix) / poids;
-                                    if (fret < 0) fret = 0m;
-
-                                    e.Value = fret.ToString("N2");
-                                }catch(Exception er) { }
-                            }
-                            else if (e.Column.FieldName == "Total Frais")
-                            {
-                                try { 
-                                    decimal fret = Convert.ToDecimal(gvLigneEdit.GetListSourceRowCellValue(e.ListSourceRowIndex, "FRET"));
-                                    decimal dlFrais = Convert.ToDecimal(gvLigneEdit.GetListSourceRowCellValue(e.ListSourceRowIndex, "DL_Frais"));
-
-                                    decimal tot_frais = dlFrais + fret;
-                                    e.Value = tot_frais.ToString("N2");
-                                }
-                                catch (Exception er) { }
-                            }
-                        }
-                    };
+                        decimal val = prixTonne / 1000;
+                        view.SetRowCellValue(e.RowHandle, "DL_PrixUnitaire", val); // prix par kg
+                    }
                 }
+                else if (e.Column.FieldName == "DL_PrixUnitaire")
+                {
+                    if (decimal.TryParse(view.GetRowCellValue(e.RowHandle, "DL_PrixUnitaire")?.ToString(), out decimal prixKg))
+                    {
+                        view.SetRowCellValue(e.RowHandle, "PU par tonne", prixKg * 1000); // prix par tonne
+                    }
+                }
+
+                isUpdating = false;
+
+                gvLigneEdit.PostEditor();
+
+                if (e.Column.FieldName == "AR_Ref" && e.Value != null && !string.IsNullOrWhiteSpace(e.Value.ToString()))
+                {
+                    string selectedAR_Ref = e.Value.ToString();
+
+                    if (e.RowHandle != DevExpress.XtraGrid.GridControl.NewItemRowHandle)
+                    {
+                        gvLigneEdit.SetRowCellValue(e.RowHandle, "DL_Design", GetArticleDescription(selectedAR_Ref));
+                        gvLigneEdit.SetRowCellValue(e.RowHandle, "Action", "Remove");
+                        gvLigneEdit.SetRowCellValue(e.RowHandle, "Retenu", 1);
+                        gvLigneEdit.SetRowCellValue(e.RowHandle, "Validation", "Update");
+                        //gvLigneEdit.SetRowCellValue(e.RowHandle, "Insertion", "Add");
+                        gvLigneEdit.SetRowCellValue(e.RowHandle, "DL_PrixUnitaire", GetArticlePU(selectedAR_Ref));
+                        gvLigneEdit.SetRowCellValue(e.RowHandle, "CT_Num", GetFRNS(selectedAR_Ref));
+
+                        gvLigneEdit.BestFitColumns();
+                    }
+                    else
+                    {
+                        gvLigneEdit.SetRowCellValue(e.RowHandle, "DL_Design", GetArticleDescription(selectedAR_Ref));
+                        gvLigneEdit.SetRowCellValue(e.RowHandle, "Action", "Remove");
+                        gvLigneEdit.SetRowCellValue(e.RowHandle, "Retenu", 1);
+                        gvLigneEdit.SetRowCellValue(e.RowHandle, "Validation", "Update");
+                        //gvLigneEdit.SetRowCellValue(e.RowHandle, "Insertion", "Add");
+                        gvLigneEdit.SetRowCellValue(e.RowHandle, "DL_PrixUnitaire", GetArticlePU(selectedAR_Ref));
+                        gvLigneEdit.SetRowCellValue(e.RowHandle, "CT_Num", GetFRNS(selectedAR_Ref));
+
+                        gvLigneEdit.BestFitColumns();
+                    }
+                }
+                if (e.Column.FieldName == "DL_Qte" || e.Column.FieldName == "DL_Remise01REM_Valeur" || e.Column.FieldName == "DL_PrixUnitaire"
+                    || e.Column.FieldName == "DL_Taxe1" || e.Column.FieldName == "DL_PUDevise" || e.Column.FieldName == "DL_PoidsNet" || e.Column.FieldName == "DL_Frais")
+                {
+                    //GridView view = sender as GridView;
+
+                    // Récupérer les valeurs
+                    object prixUnitaireObj = view.GetRowCellValue(e.RowHandle, "DL_PrixUnitaire");
+                    object quantiteObj = view.GetRowCellValue(e.RowHandle, "DL_Qte");
+                    int qte = 0;
+                    if (quantiteObj != null && quantiteObj != DBNull.Value && quantiteObj.ToString() != "")
+                    {
+                        qte = Convert.ToInt32(quantiteObj);
+                    }
+                    else
+                    {
+                        qte = 0;
+                    }
+
+                    object dlTaxe1obj = gvLigneEdit.GetRowCellValue(e.RowHandle, "DL_Taxe1");
+                    int dlTaxe1 = 0;
+                    if (dlTaxe1obj != null && dlTaxe1obj != DBNull.Value && dlTaxe1obj.ToString() != "")
+                    {
+                        dlTaxe1 = Convert.ToInt32(dlTaxe1obj);
+                    }
+                    else
+                    {
+                        dlTaxe1 = ucDocuments.doTaxe1;
+                        gvLigneEdit.SetRowCellValue(e.RowHandle, "DO_Taxe1", dlTaxe1);
+                    }
+
+                    object dlPuDeviseobj = gvLigneEdit.GetRowCellValue(e.RowHandle, "DL_PuDevise");
+                    decimal dlPuDevise = 0;
+                    if (dlPuDeviseobj != null && dlPuDeviseobj != DBNull.Value && dlPuDeviseobj.ToString() != "")
+                    {
+                        dlPuDevise = Convert.ToDecimal(dlPuDeviseobj);
+                    }
+                    else
+                    {
+                        dlPuDevise = 0;
+                        gvLigneEdit.SetRowCellValue(e.RowHandle, "DL_PuDevise", dlPuDevise);
+                    }
+
+                    object remiseObj = view.GetRowCellValue(e.RowHandle, "DL_Remise01REM_Valeur");
+                    object tauxTVAObj = view.GetRowCellValue(e.RowHandle, "DL_Taxe1");
+
+                    if (prixUnitaireObj != null && quantiteObj != null && remiseObj != null && tauxTVAObj != null &&
+                        prixUnitaireObj != DBNull.Value && quantiteObj != DBNull.Value &&
+                        remiseObj != DBNull.Value && tauxTVAObj != DBNull.Value)
+                    {
+                        decimal prixUnitaire = Convert.ToDecimal(prixUnitaireObj);
+                        int quantite = Convert.ToInt32(qte);
+                        decimal remise = Convert.ToDecimal(remiseObj);
+                        decimal tauxTVA = Convert.ToDecimal(tauxTVAObj);
+                        decimal cours = Convert.ToDecimal(txtCours.Text);
+                        decimal frais = Convert.ToDecimal(view.GetRowCellValue(e.RowHandle, "DL_Frais"));
+                        decimal fret = Convert.ToDecimal(view.GetRowCellValue(e.RowHandle, "Fret"));
+
+                        // Appliquer la remise au prix unitaire
+                        decimal prixNet = prixUnitaire * (1 - remise / 100);
+                        decimal montantHT = (prixNet * quantite * cours) + (frais+fret);
+                        decimal montantTTC = montantHT * (1 + tauxTVA / 100);
+
+                        view.SetRowCellValue(e.RowHandle, "DL_MontantHT", montantHT);
+                        view.SetRowCellValue(e.RowHandle, "DL_MontantTTC", montantTTC);
+
+                        gvLigneEdit.CustomUnboundColumnData += (sender, e) =>
+                        {
+                            if (e.IsGetData)
+                            {
+                                if (e.Column.FieldName == "FRET")
+                                {
+                                    try
+                                    {
+                                        decimal poidsNet = Convert.ToDecimal(gvLigneEdit.GetListSourceRowCellValue(e.ListSourceRowIndex, "DL_PoidsNet"));
+                                        decimal prix = Convert.ToDecimal(txt_prix.Text);
+                                        decimal poids = Convert.ToDecimal(txt_poids.Text);
+
+                                        decimal fret = (poidsNet * prix) / poids;
+                                        if (fret < 0) fret = 0m;
+
+                                        e.Value = fret.ToString("N2");
+                                    }
+                                    catch (Exception er) { }
+                                }
+                                else if (e.Column.FieldName == "Total Frais")
+                                {
+                                    try
+                                    {
+                                        decimal fret = Convert.ToDecimal(gvLigneEdit.GetListSourceRowCellValue(e.ListSourceRowIndex, "FRET"));
+                                        decimal dlFrais = Convert.ToDecimal(gvLigneEdit.GetListSourceRowCellValue(e.ListSourceRowIndex, "DL_Frais"));
+
+                                        decimal tot_frais = dlFrais + fret;
+                                        e.Value = tot_frais.ToString("N2");
+                                    }
+                                    catch (Exception er) { }
+                                }
+                            }
+                        };
+                    }
+                }
+
+                gvLigneEdit.UpdateSummary();
+                gvLigneEdit.RefreshData();
             }
-            
-            gvLigneEdit.UpdateSummary();
-            gvLigneEdit.RefreshData();
         }
 
         private decimal GetArticlePU(string arRef)
@@ -3869,7 +3885,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 col1.VisibleIndex = indexFrais + 2;
 
                 int indexPrixUnitaire = gvLigneEdit.Columns["DL_PrixUnitaire"].VisibleIndex;
-                col_unite.VisibleIndex = indexPrixUnitaire - 1;
+                col_unite.VisibleIndex = indexPrixUnitaire - 2;
 
                 int indexMontantHT = gvLigneEdit.Columns["DL_MontantHT"].VisibleIndex;
                 col_htdevise.VisibleIndex = indexMontantHT + 1;
@@ -3995,6 +4011,16 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
             gvLigneEdit.Columns["DL_PrixUnitaire"].Caption = "PU par Kg";
             RecalculerPrix(gvLigneEdit);
+            
+            for (int i = 0; i < gvLigneEdit.RowCount; i++)
+            {
+                if (!gvLigneEdit.IsDataRow(i))
+                    continue;
+
+                UPdateLigne(i);
+            }
+
+            txtCours_EditValueChanged(sender, e);
         }
 
         private void datelivrprev_EditValueChanged(object sender, EventArgs e)
@@ -4705,6 +4731,45 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 {
                     frmEditInfos frm = new frmEditInfos(dopiece, totalTVA, this);
                     frm.ShowDialog();
+                    var view = gvLigneEdit;
+                    var colMontantHT = view.Columns["DL_montantHT"];
+                    var colFrais = view.Columns["DL_Frais"];
+                    var colFret = view.Columns["FRET"];
+                    var colQte = view.Columns["DL_QTE"];
+                    var colPU = view.Columns["DL_PrixUnitaire"];
+
+                    for (int i = 0; i < view.RowCount; i++)
+                    {
+                        // Récupération des valeurs
+                        decimal qte = Convert.ToDecimal(view.GetRowCellValue(i, colQte));
+                        decimal pu = Convert.ToDecimal(view.GetRowCellValue(i, colPU));
+                        decimal frais = Convert.ToDecimal(view.GetRowCellValue(i, colFrais));
+                        decimal fret = Convert.ToDecimal(view.GetRowCellValue(i, colFret));
+                        decimal cours = Convert.ToDecimal(txtCours.Text);
+
+                        // Calcul du montant HT
+                        decimal montantHT = (qte * pu * cours) + (frais+fret);
+
+                        // Mise à jour de la cellule
+                        view.SetRowCellValue(i, colMontantHT, montantHT);
+
+                        // Déclenchement du handler si nécessaire
+                        var args = new DevExpress.XtraGrid.Views.Base.CellValueChangedEventArgs(
+                            i,
+                            colMontantHT,
+                            montantHT
+                        );
+                        gvLigneEdit_CellValueChanged(view, args);
+                    }
+
+                    txtCours_EditValueChanged(sender, e);
+                    for (int i = 0; i < gvLigneEdit.RowCount; i++)
+                    {
+                        if (!gvLigneEdit.IsDataRow(i))
+                            continue;
+
+                        UPdateLigne(i);
+                    }
                 }
             }
             catch (System.Exception ex)
@@ -4853,7 +4918,10 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                     string arDesign = row["DL_Design"]?.ToString()?.Trim() ?? "";
                                     decimal puBrut = row["DL_PrixUnitaire"] != DBNull.Value ? Convert.ToDecimal(row["DL_PrixUnitaire"]) : 0;
                                     decimal puNet = puBrut * (1 - remisePourcent / 100);
-                                    decimal montantHT = dlQte * puNet;
+                                    decimal frais = row["DL_Frais"] != DBNull.Value ? Convert.ToDecimal(row["DL_Frais"]) : 0;
+                                    decimal fret = row["Fret"] != DBNull.Value ? Convert.ToDecimal(row["Fret"]) : 0;
+                                    decimal cours = Convert.ToDecimal(txtCours.Text);
+                                    decimal montantHT = (dlQte * puNet * cours)+(frais+ fret) ;
                                     decimal montantTTC = montantHT * (1 + DLTaxe1 / 100);
                                     int retenu = 1;
 
@@ -5633,7 +5701,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             col.VisibleIndex = indexFrais;
 
             int indexPrixUnitaire = gvLigneEdit.Columns["DL_PrixUnitaire"].VisibleIndex;
-            col_unite.VisibleIndex = indexPrixUnitaire - 1;
+            col_unite.VisibleIndex = indexPrixUnitaire - 2;
         }
 
         private void RecalculerPrix(GridView view)
@@ -5671,18 +5739,22 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             var colQte = view.Columns["DL_QTE"];
             var colPU = view.Columns["DL_PrixUnitaire"];
             var colMontantHT = view.Columns["DL_montantHT"];
+            var colFrais = view.Columns["DL_Frais"];
+            var colFret = view.Columns["FRET"];
 
-            if (colQte == null || colPU == null ||  colMontantHT == null) return;
+            if (colQte == null || colPU == null ||  colMontantHT == null || colFrais == null) return;
 
             for (int i = 0; i < view.RowCount; i++)
             {
                 // Récupération des valeurs
                 decimal qte = Convert.ToDecimal(view.GetRowCellValue(i, colQte));
                 decimal pu = Convert.ToDecimal(view.GetRowCellValue(i, colPU));
+                decimal frais = Convert.ToDecimal(view.GetRowCellValue(i, colFrais));
+                decimal fret = Convert.ToDecimal(view.GetRowCellValue(i, colFret));
                 decimal cours = Convert.ToDecimal(txtCours.Text);
 
                 // Calcul du montant HT
-                decimal montantHT = qte * pu * cours;
+                decimal montantHT = (qte * pu * cours)+(frais+fret);
 
                 // Mise à jour de la cellule
                 view.SetRowCellValue(i, colMontantHT, montantHT);
@@ -5710,8 +5782,10 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
                 decimal qte = Convert.ToDecimal(gvLigneEdit.GetRowCellValue(i, "DL_Qte") ?? 0);
                 decimal pu = Convert.ToDecimal(gvLigneEdit.GetRowCellValue(i, "DL_PrixUnitaire") ?? 0);
+                decimal frais = Convert.ToDecimal(gvLigneEdit.GetRowCellValue(i, "DL_Frais") ?? 0);
+                decimal fret = Convert.ToDecimal(gvLigneEdit.GetRowCellValue(i, "FRET") ?? 0);
 
-                decimal montant = qte * pu * cours;
+                decimal montant = (qte * pu * cours)+(frais+ fret);
 
                 gvLigneEdit.SetRowCellValue(i, "DL_MontantHT", montant);
             }
@@ -5763,6 +5837,8 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             {
                 MessageBox.Show(ex.Message, "Erreur");
             }
+
+            txtCours_EditValueChanged(sender, e);
         }
 
         private void txt_prix_KeyPress(object sender, KeyPressEventArgs e)

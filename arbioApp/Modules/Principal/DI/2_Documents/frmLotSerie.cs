@@ -33,11 +33,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             }
             else
             {
-                /*string connectionStringArbio = $"Server=SRV-ARB;" +
-                                $"Database=TRANSIT;User ID=Dev;Password=1234;" +
-                                $"TrustServerCertificate=True;Connection Timeout=120;";*/
-
-                string connectionStringArbio = $"Server=localhost;" +
+                string connectionStringArbio = $"Server=SRV-ARB;" +
                                 $"Database=TRANSIT;User ID=Dev;Password=1234;" +
                                 $"TrustServerCertificate=True;Connection Timeout=120;";
 
