@@ -77,6 +77,7 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 using Exception = System.Exception;
 using FieldInfo = DevExpress.DataAccess.Excel.FieldInfo;
+using SummaryItemType = DevExpress.Data.SummaryItemType;
 using TextEdit = DevExpress.XtraEditors.TextEdit;
 
 
@@ -804,9 +805,9 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             gvLigneEdit.Columns["DL_MontantHT"].OptionsColumn.ReadOnly = true;
             gvLigneEdit.Columns["DL_MontantRegle"].OptionsColumn.ReadOnly = true;
 
-            
             gvLigneEdit.BestFitColumns();
             gvLigneEdit.UpdateSummary();
+
         }
         public GridControl GridLigneEdit => gcLigneEdit;
         private void checkEdit_CheckedChanged(object sender, EventArgs e)
@@ -947,6 +948,19 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
                 }
             }
+
+            string sql = "EXEC SP_CalculCoutRevientParValeur @DO_Piece, @prix_total,@poids_total";
+
+            _context.Database.ExecuteSqlCommand(
+               sql,
+               new SqlParameter("@DO_Piece", dopiecetxt.Text),
+               new SqlParameter("@prix_total", Convert.ToDecimal(txt_prix.Text)),
+               new SqlParameter("@poids_total", Convert.ToDecimal(txt_poids.Text))
+            );
+
+
+            // Rafraîchir la grille du parent
+            InitializeGrid(GridLigneEdit, dopiecetxt.Text);
 
             txtCours_EditValueChanged(sender, e);
         }
@@ -1504,6 +1518,19 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                 }
                             }
                         }
+
+                        string sql = "EXEC SP_CalculCoutRevientParValeur @DO_Piece, @prix_total,@poids_total";
+
+                        _context.Database.ExecuteSqlCommand(
+                           sql,
+                           new SqlParameter("@DO_Piece", dopiecetxt.Text),
+                           new SqlParameter("@prix_total", Convert.ToDecimal(txt_prix.Text)),
+                           new SqlParameter("@poids_total", Convert.ToDecimal(txt_poids.Text))
+                        );
+
+
+                        // Rafraîchir la grille du parent
+                        InitializeGrid(GridLigneEdit, dopiecetxt.Text);
                     }
                     else
                     {
@@ -3864,6 +3891,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
                     col1.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
                     col1.DisplayFormat.FormatString = "N2";
+                    col1.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
                 }
 
                 GridColumn col_htdevise = gvLigneEdit.Columns["Montant Total en devise"];
@@ -3909,6 +3937,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
                                     e.Value = fret.ToString("N2");
                                 }
+
                             }
                             catch (Exception es) { }
                         }
@@ -5692,8 +5721,26 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 col.Caption = "FRET";
                 col.UnboundType = DevExpress.Data.UnboundColumnType.Decimal;
                 col.Visible = true;
-                col.OptionsColumn.AllowEdit = true;
-                col.OptionsColumn.ReadOnly = false;
+                col.OptionsColumn.AllowEdit = false;
+                col.OptionsColumn.ReadOnly = true;
+
+                // Format affichage avec séparateur de milliers + 2 décimales
+                col.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
+                col.DisplayFormat.FormatString = "N2";
+
+                // Résumé personnalisé
+                col.SummaryItem.SummaryType = DevExpress.Data.SummaryItemType.Custom;
+
+                // 🔹 AJOUT : Format pour le résumé aussi
+                col.SummaryItem.DisplayFormat = "{0:N2}";
+
+                gvLigneEdit.CustomSummaryCalculate += (s, e) =>
+                {
+                    if (e.Item == col.SummaryItem && e.SummaryProcess == CustomSummaryProcess.Calculate)
+                    {
+                        e.TotalValue = Convert.ToDecimal(e.TotalValue ?? 0m) + Convert.ToDecimal(e.FieldValue ?? 0m);
+                    }
+                };
             }
 
             // === POSITIONNEMENT ===
@@ -5702,6 +5749,56 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
             int indexPrixUnitaire = gvLigneEdit.Columns["DL_PrixUnitaire"].VisibleIndex;
             col_unite.VisibleIndex = indexPrixUnitaire - 2;
+
+            GridColumn colPU = gvLigneEdit.Columns["DL_PrixUnitaire"];
+            if (colPU != null)
+            {
+                colPU.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+            }
+
+            GridColumn colQte = gvLigneEdit.Columns["DL_Qte"];
+            if (colQte != null)
+            {
+                colQte.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+            }
+
+            GridColumn colPnet = gvLigneEdit.Columns["DL_PoidsNet"];
+            if (colPnet != null)
+            {
+                colPnet.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+            }
+
+            GridColumn colPRU = gvLigneEdit.Columns["DL_PrixRU"];
+            if (colPRU != null)
+            {
+                colPRU.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+            }
+
+            GridColumn colFret = gvLigneEdit.Columns["FRET"];
+            if (colFret != null)
+            {
+                colFret.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+            }
+
+            GridColumn colFrais = gvLigneEdit.Columns["DL_Frais"];
+            if (colFrais != null)
+            {
+                colFrais.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+                colFrais.SummaryItem.SummaryType = DevExpress.Data.SummaryItemType.Custom;
+                colFrais.SummaryItem.DisplayFormat = "{0:N2}";
+            }
+
+            GridColumn colMht = gvLigneEdit.Columns["DL_MontantHT"];
+            if (colMht != null)
+            {
+                colMht.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+            }
+
+            GridColumn colDate = gvLigneEdit.Columns["DL_DatePieceFourniss"];
+            if (colDate != null)
+            {
+                colDate.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+            }
         }
 
         private void RecalculerPrix(GridView view)

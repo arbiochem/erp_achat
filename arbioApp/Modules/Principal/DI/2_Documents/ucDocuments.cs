@@ -827,6 +827,69 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                         var dbContext = new AppDbContext();
                         _collaborateurRepository = new F_COLLABORATEURRepository(dbContext);
 
+                        try
+                        {
+                            string connectionStringArbio = $"Server={tag.ServerIP};Database={buttonItem.Caption};" +
+                                                 $"User ID=Dev;Password=1234;TrustServerCertificate=True;" +
+                                                 $"Connection Timeout=240;";
+
+                            using (SqlConnection connection = new SqlConnection(connectionStringArbio))
+                            {
+                                connection.Open();
+
+                                string sql = @"
+                                SELECT TOP 1 * FROM ARB_ACHAT_DOPIECE
+                                WHERE Year=@year";
+
+                                int annee = DateTime.Now.Year;
+
+                                using (SqlCommand checkCmd = new SqlCommand(sql, connection))
+                                {
+                                    checkCmd.Parameters.AddWithValue("@year", annee);
+
+                                    object result = checkCmd.ExecuteScalar();
+
+                                    if (result == null)
+                                    {
+                                        string insertSql = @"
+                                             INSERT INTO ARB_ACHAT_DOPIECE (
+                                                 Prefix,
+                                                 CurrentNumber,
+                                                 Year
+                                             )
+                                             VALUES (
+                                                 @Prefix,
+                                                 @CurrentNumber,
+                                                 @Year
+                                             )";
+
+                                        string[] list = { "APC", "APA", "AFV", "AFR", "AFA", "ABR", "ABL", "ABC" };
+
+                                        using (SqlCommand insertCmd = new SqlCommand(insertSql, connection))
+                                        {
+                                            insertCmd.Parameters.Add("@Prefix", SqlDbType.VarChar);
+                                            insertCmd.Parameters.Add("@CurrentNumber", SqlDbType.Int);
+                                            insertCmd.Parameters.Add("@Year", SqlDbType.Int);
+
+                                            foreach (string prefix in list)
+                                            {
+                                                insertCmd.Parameters["@Prefix"].Value = prefix;
+                                                insertCmd.Parameters["@CurrentNumber"].Value = 1;
+                                                insertCmd.Parameters["@Year"].Value = annee;
+
+                                                insertCmd.ExecuteNonQuery();
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        catch (System.Exception ex)
+                        {
+                            MethodBase m = MethodBase.GetCurrentMethod();
+                            MessageBox.Show($"Une erreur est survenue : {ex.Message}, {m}", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+
                         ChargerDonneesDepuisBDD();
                         btnOuvrirDoc.Enabled = true;
                         btnNouveauDoc.Enabled = true;
