@@ -970,8 +970,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         {
             try
             {
-
-                
+               
                 TreeListNode focusedNode = treeList1.FocusedNode;
                 short typeDoc = (short)_f_DOCENTETEService.GetDocTypeNo(dopiecetxt.Text.Substring(0, 3));
 
@@ -1200,8 +1199,68 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 MessageBox.Show($"Une erreur est survenue : {ex.Message}, {m}", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
+            GridColumn pu_tonne = gvLigneEdit.Columns["PU par tonne"];
+            if (pu_tonne == null)
+            {
+                pu_tonne = gvLigneEdit.Columns.AddField("PU par tonne");
+                pu_tonne.Caption = "PU par tonne";
+                pu_tonne.UnboundType = DevExpress.Data.UnboundColumnType.Decimal;
+                pu_tonne.Visible = true;
+                pu_tonne.FieldName = "PU par tonne";
+                pu_tonne.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+            }
+
+            int indexDesign = gvLigneEdit.Columns["DL_Design"].VisibleIndex;
+
+            pu_tonne.VisibleIndex = indexDesign + 1;
+
+            RepositoryItemSpinEdit spin = new RepositoryItemSpinEdit();
+            spin.IsFloatValue = true;
+            spin.Mask.MaskType = DevExpress.XtraEditors.Mask.MaskType.Numeric;
+            spin.Mask.EditMask = "n2";
+            spin.Mask.UseMaskAsDisplayFormat = true;
+
+            // IMPORTANT : Gérer l'événement EditValueChanged du SpinEdit
+            spin.EditValueChanged += (s, e) =>
+            {
+                gvLigneEdit.PostEditor();  // Force la validation immédiate
+                gvLigneEdit.UpdateCurrentRow();
+            };
+
+            gvLigneEdit.GridControl.RepositoryItems.Add(spin);
+            pu_tonne.ColumnEdit = spin;
+
+            gvLigneEdit.CustomUnboundColumnData += (sender, e) =>
+            {
+                if (e.Column.FieldName == "PU par tonne")
+                {
+                    int row = e.ListSourceRowIndex;
+
+                    if (e.IsGetData)
+                    {
+                        if (puTonneValues.ContainsKey(row))
+                            e.Value = puTonneValues[row];
+                        else
+                            e.Value = 0m;
+                    }
+                    else if (e.IsSetData)
+                    {
+                        if (e.Value != null && e.Value != DBNull.Value)
+                        {
+                            puTonneValues[row] = Convert.ToDecimal(e.Value);
+                        }
+                    }
+                }
+            };
+
+            // Forcer la mise à jour quand on change de cellule
+            gvLigneEdit.FocusedColumnChanged += (sender, e) =>
+            {
+                gvLigneEdit.PostEditor();
+                gvLigneEdit.UpdateCurrentRow();
+            };
         }
-        
+
         private void Hyperlink_EditDLMontantRegl(object sender, EventArgs e)
         {
             int row = gvLigneEdit.FocusedRowHandle;
@@ -3915,7 +3974,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 int indexPrixUnitaire = gvLigneEdit.Columns["DL_PrixUnitaire"].VisibleIndex;
                 col_unite.VisibleIndex = indexPrixUnitaire - 2;
 
-                int indexMontantHT = gvLigneEdit.Columns["DL_MontantHT"].VisibleIndex;
+                int indexMontantHT = gvLigneEdit.Columns["DL_PoidsNet"].VisibleIndex;
                 col_htdevise.VisibleIndex = indexMontantHT + 1;
 
                 gvLigneEdit.CustomUnboundColumnData += (sender, e) =>
@@ -3945,11 +4004,13 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                         {
                             try
                             {
-                                decimal PUHT = Convert.ToDecimal(gvLigneEdit.GetListSourceRowCellValue(e.ListSourceRowIndex, "DL_MontantHT"));
+                                decimal qte = Convert.ToDecimal(gvLigneEdit.GetListSourceRowCellValue(e.ListSourceRowIndex, "DL_PoidsNet"));
+                                decimal PUHT = Convert.ToDecimal(gvLigneEdit.GetListSourceRowCellValue(e.ListSourceRowIndex, "DL_PrixUnitaire"));
+                                decimal PU = Convert.ToDecimal(PUHT.ToString("N2"));
                                 if (txtCours.Text != "" && Convert.ToDecimal(txtCours.Text.ToString()) > 0)
                                 {
                                     decimal cours_devise = Convert.ToDecimal(txtCours.Text);
-                                    decimal m_devise = PUHT / cours_devise;
+                                    decimal m_devise = (PU * qte)/ cours_devise;
                                     if (m_devise < 0) m_devise = 0m;
 
                                     e.Value = m_devise.ToString("N2");

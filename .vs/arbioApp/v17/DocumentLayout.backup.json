@@ -284,7 +284,7 @@
               "RelativeDocumentMoniker": "arbioApp\\Modules\\Principal\\DI\\2_Documents\\frmEditDocument.cs",
               "ToolTip": "D:\\Arbiochem\\Travail\\erp\\arbioApp\\Modules\\Principal\\DI\\2_Documents\\frmEditDocument.cs",
               "RelativeToolTip": "arbioApp\\Modules\\Principal\\DI\\2_Documents\\frmEditDocument.cs",
-              "ViewState": "AgIAACYPAAAAAAAAAAAjwDUPAAAYAAAAAAAAAA==",
+              "ViewState": "AgIAAJsPAAAAAAAAAAASwKwPAAA6AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-01-09T10:01:39.442Z",
               "EditorCaption": ""
@@ -344,8 +344,7 @@
               "ToolTip": "D:\\Arbiochem\\Travail\\erp\\arbioApp\\Modules\\Principal\\DI\\2_Documents\\frmEditDocument.cs [Design]",
               "RelativeToolTip": "arbioApp\\Modules\\Principal\\DI\\2_Documents\\frmEditDocument.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-08T13:27:49.142Z",
-              "EditorCaption": " [Design]"
+              "WhenOpened": "2025-12-08T13:27:49.142Z"
             },
             {
               "$type": "Document",
@@ -463,8 +462,7 @@
               "RelativeToolTip": "arbioApp\\Modules\\Principal\\DI\\2_Documents\\frmEditDocument.Designer.cs",
               "ViewState": "AgIAAEMCAAAAAAAAAAAAAE4CAAAPAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-22T07:59:47.876Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-22T07:59:47.876Z"
             },
             {
               "$type": "Document",
@@ -524,8 +522,7 @@
               "RelativeToolTip": "arbioApp\\App.config",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAABFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000601|",
-              "WhenOpened": "2025-12-17T08:27:20.347Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-17T08:27:20.347Z"
             },
             {
               "$type": "Document",
