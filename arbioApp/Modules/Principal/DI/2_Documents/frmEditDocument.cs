@@ -4227,77 +4227,153 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             }
         }
 
+        bool tester_liberation()
+        {
+            bool b_test = false;
+            string connectionString2 =
+                                    $"Server={serveripPrincipale};Database={dbPrincipale};" +
+                                    $"User ID=Dev;Password=1234;TrustServerCertificate=True;" +
+                                    $"Connection Timeout=240;";
+
+            string query = "SELECT TOP 1 * FROM F_DOCLIGNE WHERE do_piece = @do_piece AND (DL_Qte=0 or DL_Qte is null)";
+
+            using (SqlConnection conn = new SqlConnection(connectionString2))
+            {
+                try
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.Add("@do_piece", SqlDbType.VarChar, 50)
+                       .Value = dopiecetxt.Text.Trim();
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.HasRows == true)
+                            {
+                                b_test = true;
+                            }
+                        }
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    MethodBase m = MethodBase.GetCurrentMethod();
+                    MessageBox.Show($"Une erreur est survenue : {ex.Message}, {m}", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            return b_test;
+        }
+
         private void barButtonItem2_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
         {
-            if (tester_cloturer(dopiecetxt.Text))
+            if (tester_liberation()==false)
             {
-                MessageBox.Show(
-                    "Ce document est déjà clôturé, vous ne pouvez plus modifier son contenu!!!!",
-                    "Modification bloquée",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error
-                );
-            }
-            else
-            {
-                string connectionStringArbio = $"Server={serveripPrincipale};" +
-                                $"Database=TRANSIT;User ID=Dev;Password=1234;" +
-                                $"TrustServerCertificate=True;Connection Timeout=120;";
-
-                using (SqlConnection connection = new SqlConnection(connectionStringArbio))
+                if (tester_cloturer(dopiecetxt.Text))
                 {
-                    connection.Open();
+                    MessageBox.Show(
+                        "Ce document est déjà clôturé, vous ne pouvez plus modifier son contenu!!!!",
+                        "Modification bloquée",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error
+                    );
+                }
+                else
+                {
+                    string connectionStringArbio = $"Server={serveripPrincipale};" +
+                                    $"Database=TRANSIT;User ID=Dev;Password=1234;" +
+                                    $"TrustServerCertificate=True;Connection Timeout=120;";
 
-                    using (SqlTransaction tran = connection.BeginTransaction())
+                    using (SqlConnection connection = new SqlConnection(connectionStringArbio))
                     {
-                        try
+                        connection.Open();
+
+                        using (SqlTransaction tran = connection.BeginTransaction())
                         {
-                            string sql = @"
+                            try
+                            {
+                                string sql = @"
                             DELETE FROM encoursutilisation
                             WHERE utilisateur = @utilisateur AND numero_doc=@numero_doc";
 
-                            using (SqlCommand cmd = new SqlCommand(sql, connection, tran))
-                            {
-                                cmd.Parameters.Add("@utilisateur", SqlDbType.VarChar)
-                                              .Value = FrmMdiParent.IDName;
-                                cmd.Parameters.Add("@numero_doc", SqlDbType.VarChar)
-                                             .Value = dopiecetxt.Text;
+                                using (SqlCommand cmd = new SqlCommand(sql, connection, tran))
+                                {
+                                    cmd.Parameters.Add("@utilisateur", SqlDbType.VarChar)
+                                                  .Value = FrmMdiParent.IDName;
+                                    cmd.Parameters.Add("@numero_doc", SqlDbType.VarChar)
+                                                 .Value = dopiecetxt.Text;
 
-                                cmd.ExecuteNonQuery();
+                                    cmd.ExecuteNonQuery();
+                                }
+
+                                // Validation
+                                tran.Commit();
                             }
+                            catch (Exception ex)
+                            {
+                                // Annulation si erreur
+                                if (tran != null)
+                                    tran.Rollback();
 
-                            // Validation
-                            tran.Commit();
+                                MessageBox.Show(
+                                    ex.Message,
+                                    "Erreur",
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Error
+                                );
+                            }
                         }
-                        catch (Exception ex)
-                        {
-                            // Annulation si erreur
-                            if (tran != null)
-                                tran.Rollback();
+                    }
 
+                    if (StatutActuel < 2)
+                    {
+                        MessageBox.Show("Le statut actuel ne permet pas de transformer le document.", "Information");
+                        return;
+                    }
+
+                    if (dopiecetxt.Text.ToString().StartsWith("APA"))
+                    {
+                        bool autorise = frmMenuAchat.verifier_droit("Projet d'achat", "TRANSFORM");
+
+                        if (autorise)
+                        {
+                            if (lkStatut.Text == "Accepté")
+                            {
+                                var dlg = new frmTransform(_typeDocument);
+                                dlg.ParentFormInstance = this;
+
+                                if (dlg.ShowDialog() == DialogResult.OK)
+                                {
+                                    this.TransformFDOCENTETE(dlg.doctype);
+                                }
+
+                                // Fix for CS0120: Use the instance of ucDocuments instead of trying to call it statically
+                                _ucDocuments.ChargerDonneesDepuisBDD();
+                            }
+                            else
+                            {
+                                MessageBox.Show(
+                                       "Le statut actuel ne vous permet pas de transformer ce document !",
+                                       "Modification bloquée",
+                                       MessageBoxButtons.OK,
+                                       MessageBoxIcon.Error);
+                            }
+                        }
+                        else
+                        {
                             MessageBox.Show(
-                                ex.Message,
-                                "Erreur",
+                                "Vous n'avez pas l'autorisation de transformer un projet d'achat !",
+                                "Transformation bloquée",
                                 MessageBoxButtons.OK,
                                 MessageBoxIcon.Error
                             );
                         }
                     }
-                }
-
-                if (StatutActuel < 2)
-                {
-                    MessageBox.Show("Le statut actuel ne permet pas de transformer le document.", "Information");
-                    return;
-                }
-
-                if (dopiecetxt.Text.ToString().StartsWith("APA"))
-                {
-                    bool autorise = frmMenuAchat.verifier_droit("Projet d'achat", "TRANSFORM");
-
-                    if (autorise)
+                    else if (dopiecetxt.Text.ToString().StartsWith("ABR"))
                     {
-                        if(lkStatut.Text == "Accepté") {
+                        bool autorise = frmMenuAchat.verifier_droit("Bon de réception", "TRANSFORM");
+
+                        if (autorise)
+                        {
                             var dlg = new frmTransform(_typeDocument);
                             dlg.ParentFormInstance = this;
 
@@ -4312,202 +4388,176 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                         else
                         {
                             MessageBox.Show(
-                                   "Le statut actuel ne vous permet pas de transformer ce document !",
-                                   "Modification bloquée",
-                                   MessageBoxButtons.OK,
-                                   MessageBoxIcon.Error);
+                                "Vous n'avez pas l'autorisation de transformer un bon de réception !",
+                                "Transformation bloquée",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error
+                            );
                         }
                     }
-                    else
+                    else if (dopiecetxt.Text.ToString().StartsWith("AFA"))
                     {
-                        MessageBox.Show(
-                            "Vous n'avez pas l'autorisation de transformer un projet d'achat !",
-                            "Transformation bloquée",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Error
-                        );
-                    }
-                }
-                else if (dopiecetxt.Text.ToString().StartsWith("ABR"))
-                {
-                    bool autorise = frmMenuAchat.verifier_droit("Bon de réception", "TRANSFORM");
+                        bool autorise = frmMenuAchat.verifier_droit("Facture", "TRANSFORM");
 
-                    if (autorise)
-                    {
-                        var dlg = new frmTransform(_typeDocument);
-                        dlg.ParentFormInstance = this;
-
-                        if (dlg.ShowDialog() == DialogResult.OK)
+                        if (autorise)
                         {
-                            this.TransformFDOCENTETE(dlg.doctype);
-                        }
+                            var dlg = new frmTransform(_typeDocument);
+                            dlg.ParentFormInstance = this;
 
-                        // Fix for CS0120: Use the instance of ucDocuments instead of trying to call it statically
-                        _ucDocuments.ChargerDonneesDepuisBDD();
-                    }
-                    else
-                    {
-                        MessageBox.Show(
-                            "Vous n'avez pas l'autorisation de transformer un bon de réception !",
-                            "Transformation bloquée",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Error
-                        );
-                    }
-                }
-                else if (dopiecetxt.Text.ToString().StartsWith("AFA"))
-                {
-                    bool autorise = frmMenuAchat.verifier_droit("Facture", "TRANSFORM");
-
-                    if (autorise)
-                    {
-                        var dlg = new frmTransform(_typeDocument);
-                        dlg.ParentFormInstance = this;
-
-                        if (dlg.ShowDialog() == DialogResult.OK)
-                        {
-                            this.TransformFDOCENTETE(dlg.doctype);
-                        }
-
-                        // Fix for CS0120: Use the instance of ucDocuments instead of trying to call it statically
-                        _ucDocuments.ChargerDonneesDepuisBDD();
-                    }
-                    else
-                    {
-                        MessageBox.Show(
-                            "Vous n'avez pas l'autorisation de transformer une facture !",
-                            "Transformation bloquée",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Error
-                        );
-                    }
-                }
-                else if (dopiecetxt.Text.ToString().StartsWith("ABC"))
-                {
-                    bool autorise = frmMenuAchat.verifier_droit("Bon de commande", "TRANSFORM");
-
-                    if (autorise)
-                    {
-                        var dlg = new frmTransform(_typeDocument);
-                        dlg.ParentFormInstance = this;
-
-                        if (dlg.ShowDialog() == DialogResult.OK)
-                        {
-                            this.TransformFDOCENTETE(dlg.doctype);
-                        }
-
-                        //MAJ Qte
-
-                        /*int? DE_No = Convert.ToInt32(lkDepot.EditValue);
-                        for (int i = 0; i < gvLigneEdit.RowCount; i++)
-                        {
-                            string reference = gvLigneEdit.GetRowCellValue(i, "AR_Ref")?.ToString();
-                            var qte = gvLigneEdit.GetRowCellValue(i, "DL_Qte");
-
-                            try
+                            if (dlg.ShowDialog() == DialogResult.OK)
                             {
-                                 string connectionString = $"Server={serveripPrincipale};Database=TRANSIT;" +
-                                                 $"User ID=Dev;Password=1234;TrustServerCertificate=True;" +
-                                                 $"Connection Timeout=240;";
+                                this.TransformFDOCENTETE(dlg.doctype);
+                            }
 
-                                 using (SqlConnection connection = new SqlConnection(connectionString))
-                                 {
-                                     connection.Open();
+                            // Fix for CS0120: Use the instance of ucDocuments instead of trying to call it statically
+                            _ucDocuments.ChargerDonneesDepuisBDD();
+                        }
+                        else
+                        {
+                            MessageBox.Show(
+                                "Vous n'avez pas l'autorisation de transformer une facture !",
+                                "Transformation bloquée",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error
+                            );
+                        }
+                    }
+                    else if (dopiecetxt.Text.ToString().StartsWith("ABC"))
+                    {
+                        bool autorise = frmMenuAchat.verifier_droit("Bon de commande", "TRANSFORM");
 
-                                     string existingStock = @"
-                                     SELECT TOP 1 AS_QteSto
-                                     FROM F_ARTSTOCK
-                                     WHERE AR_Ref = @AR_Ref AND DE_No = @DE_No";
+                        if (autorise)
+                        {
+                            var dlg = new frmTransform(_typeDocument);
+                            dlg.ParentFormInstance = this;
 
-                                     decimal? existingQte = null;
+                            if (dlg.ShowDialog() == DialogResult.OK)
+                            {
+                                this.TransformFDOCENTETE(dlg.doctype);
+                            }
 
-                                     using (SqlCommand checkCmd = new SqlCommand(existingStock, connection))
+                            //MAJ Qte
+
+                            /*int? DE_No = Convert.ToInt32(lkDepot.EditValue);
+                            for (int i = 0; i < gvLigneEdit.RowCount; i++)
+                            {
+                                string reference = gvLigneEdit.GetRowCellValue(i, "AR_Ref")?.ToString();
+                                var qte = gvLigneEdit.GetRowCellValue(i, "DL_Qte");
+
+                                try
+                                {
+                                     string connectionString = $"Server={serveripPrincipale};Database=TRANSIT;" +
+                                                     $"User ID=Dev;Password=1234;TrustServerCertificate=True;" +
+                                                     $"Connection Timeout=240;";
+
+                                     using (SqlConnection connection = new SqlConnection(connectionString))
                                      {
-                                         checkCmd.Parameters.AddWithValue("@AR_Ref", reference);
-                                         checkCmd.Parameters.AddWithValue("@DE_No", DE_No);
+                                         connection.Open();
 
-                                         var result = checkCmd.ExecuteScalar();
-                                         if (result != null && result != DBNull.Value)
-                                             existingQte = Convert.ToDecimal(result);
-                                     }
-                                     if (existingQte == null)
-                                     {
-                                         string insertSql = @"
-                                             INSERT INTO F_ARTSTOCK (
-                                                 AR_Ref,
-                                                 DE_No,
-                                                 DP_NoPrincipal,
-                                                 AS_QteSto,
-                                                 AS_QteRes,
-                                                 AS_QteCom,
-                                                 AS_QtePrepa,
-                                                 AS_MontSto,
-                                                 AS_QteMini,
-                                                 AS_QteMaxi
-                                             )
-                                             VALUES (
-                                                 @AR_Ref,
-                                                 @DE_No,
-                                                 @DP_NoPrincipal,
-                                                 @Qte,
-                                                 0, 0, 0, 0, 0, 0
-                                             )";
+                                         string existingStock = @"
+                                         SELECT TOP 1 AS_QteSto
+                                         FROM F_ARTSTOCK
+                                         WHERE AR_Ref = @AR_Ref AND DE_No = @DE_No";
 
-                                         using (SqlCommand insertCmd = new SqlCommand(insertSql, connection))
+                                         decimal? existingQte = null;
+
+                                         using (SqlCommand checkCmd = new SqlCommand(existingStock, connection))
                                          {
-                                             insertCmd.Parameters.AddWithValue("@AR_Ref", reference);
-                                             insertCmd.Parameters.AddWithValue("@DE_No", DE_No);
-                                             insertCmd.Parameters.AddWithValue("@DP_NoPrincipal", 1);
-                                             insertCmd.Parameters.AddWithValue("@Qte", qte);
+                                             checkCmd.Parameters.AddWithValue("@AR_Ref", reference);
+                                             checkCmd.Parameters.AddWithValue("@DE_No", DE_No);
 
-                                             insertCmd.ExecuteNonQuery();
+                                             var result = checkCmd.ExecuteScalar();
+                                             if (result != null && result != DBNull.Value)
+                                                 existingQte = Convert.ToDecimal(result);
+                                         }
+                                         if (existingQte == null)
+                                         {
+                                             string insertSql = @"
+                                                 INSERT INTO F_ARTSTOCK (
+                                                     AR_Ref,
+                                                     DE_No,
+                                                     DP_NoPrincipal,
+                                                     AS_QteSto,
+                                                     AS_QteRes,
+                                                     AS_QteCom,
+                                                     AS_QtePrepa,
+                                                     AS_MontSto,
+                                                     AS_QteMini,
+                                                     AS_QteMaxi
+                                                 )
+                                                 VALUES (
+                                                     @AR_Ref,
+                                                     @DE_No,
+                                                     @DP_NoPrincipal,
+                                                     @Qte,
+                                                     0, 0, 0, 0, 0, 0
+                                                 )";
+
+                                             using (SqlCommand insertCmd = new SqlCommand(insertSql, connection))
+                                             {
+                                                 insertCmd.Parameters.AddWithValue("@AR_Ref", reference);
+                                                 insertCmd.Parameters.AddWithValue("@DE_No", DE_No);
+                                                 insertCmd.Parameters.AddWithValue("@DP_NoPrincipal", 1);
+                                                 insertCmd.Parameters.AddWithValue("@Qte", qte);
+
+                                                 insertCmd.ExecuteNonQuery();
+                                             }
+                                         }
+                                         else
+                                         {
+                                                 string updateSql = @"
+                                                 UPDATE F_ARTSTOCK
+                                                 SET AS_QteSto = AS_QteSto + @Qte
+                                                 WHERE AR_Ref = @AR_Ref AND DE_No = @DE_No";
+
+                                                 using (SqlCommand updateCmd = new SqlCommand(updateSql, connection))
+                                                 {
+                                                     updateCmd.Parameters.AddWithValue("@AR_Ref", reference);
+                                                     updateCmd.Parameters.AddWithValue("@DE_No", DE_No);
+                                                     updateCmd.Parameters.AddWithValue("@Qte", qte);
+
+                                                     updateCmd.ExecuteNonQuery();
+                                                 }
                                          }
                                      }
-                                     else
-                                     {
-                                             string updateSql = @"
-                                             UPDATE F_ARTSTOCK
-                                             SET AS_QteSto = AS_QteSto + @Qte
-                                             WHERE AR_Ref = @AR_Ref AND DE_No = @DE_No";
 
-                                             using (SqlCommand updateCmd = new SqlCommand(updateSql, connection))
-                                             {
-                                                 updateCmd.Parameters.AddWithValue("@AR_Ref", reference);
-                                                 updateCmd.Parameters.AddWithValue("@DE_No", DE_No);
-                                                 updateCmd.Parameters.AddWithValue("@Qte", qte);
+                                    //MAJ des articles par lot
+                                    simpleButton2_Click(sender, e);   
+                                }
+                                catch (System.Data.Entity.Infrastructure.DbUpdateException ex)
+                                {
 
-                                                 updateCmd.ExecuteNonQuery();
-                                             }
-                                     }
-                                 }
+                                }
+                                catch (Exception ex)
+                                {
+                                    MessageBox.Show(ex.Message, "Erreur");
+                                }
 
-                                //MAJ des articles par lot
-                                simpleButton2_Click(sender, e);   
-                            }
-                            catch (System.Data.Entity.Infrastructure.DbUpdateException ex)
-                            {
-                               
-                            }
-                            catch (Exception ex)
-                            {
-                                MessageBox.Show(ex.Message, "Erreur");
-                            }
-                               
-                            
-                        }*/
-                        // Fix for CS0120: Use the instance of ucDocuments instead of trying to call it statically
-                        _ucDocuments.ChargerDonneesDepuisBDD();
-                    }
-                    else
-                    {
-                        MessageBox.Show(
-                            "Vous n'avez pas l'autorisation de transformer un bon de commande!",
-                            "Transformation bloquée",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Error
-                        );
+
+                            }*/
+                            // Fix for CS0120: Use the instance of ucDocuments instead of trying to call it statically
+                            _ucDocuments.ChargerDonneesDepuisBDD();
+                        }
+                        else
+                        {
+                            MessageBox.Show(
+                                "Vous n'avez pas l'autorisation de transformer un bon de commande!",
+                                "Transformation bloquée",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error
+                            );
+                        }
                     }
                 }
+            }
+            else
+            {
+                MessageBox.Show(
+                                "Il y a des quantités vide pour ce document, veuillez enregistrer toutes les lignes en cliquant sur le lien Update dans le tableau en bas!",
+                                "Transformation bloquée",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error
+                            );
             }
         }
 

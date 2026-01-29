@@ -83,7 +83,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                         SELECT *
                         FROM Etat_global_achat
                         WHERE [Date de commande] >= @dateDebut
-                        AND [Date de commande] < DATEADD(DAY, 1, @dateFin)
+                        AND [Date de commande] < @dateFin
                         ORDER BY [Date de LIVRAISON] DESC";
                 }
                 else
@@ -92,7 +92,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                     SELECT *
                     FROM Etat_global_achat
                     WHERE [Date de commande] >= @dateDebut
-                    AND [Date de commande] < DATEADD(DAY, 1, @dateFin)
+                    AND [Date de commande] < @dateFin
                     AND Fournisseur=@Fournisseur
                     ORDER BY [Date de LIVRAISON] DESC";
                 }
@@ -105,7 +105,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                         SELECT *
                         FROM Etat_global_achat
                         WHERE [Date de commande] >= @dateDebut
-                        AND [Date de commande] < DATEADD(DAY, 1, @dateDebut)
+                        AND [Date de commande] < @dateFin
                         ORDER BY [Date de LIVRAISON] DESC";
                 }
                 else
@@ -114,7 +114,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                     SELECT *
                     FROM Etat_global_achat
                     WHERE [Date de commande] >= @dateDebut
-                    AND [Date de commande] < DATEADD(DAY, 1, @dateDebut)
+                    AND [Date de commande] < @dateFin
                     AND Fournisseur=@Fournisseur
                     ORDER BY [Date de LIVRAISON] DESC";
                 }
