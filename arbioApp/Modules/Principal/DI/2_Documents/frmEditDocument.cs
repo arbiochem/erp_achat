@@ -3240,6 +3240,21 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                     cmd.ExecuteNonQuery();
                 }
 
+                string UPDATESql2 = @"UPDATE F_INCOTERM SET do_piece=@do_pieces WHERE do_piece=@do_piece";
+
+                using (SqlConnection conn = new SqlConnection(connectionString2))
+                using (SqlCommand cmd = new SqlCommand(UPDATESql2, conn))
+                {
+                    cmd.Parameters.Add("@do_piece", SqlDbType.VarChar, 50)
+                        .Value = dopiecetxt.Text.Trim();
+
+                    cmd.Parameters.Add("@do_pieces", SqlDbType.VarChar, 20)
+                        .Value = newDocPieceNo;
+
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                }
+
                 this.Close();
             }
             catch (System.Exception ex)
@@ -3668,7 +3683,46 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             }
 
         }
+        
+        private void lister_incoterm(String cond)
+        {
+            lbl_val2.Text = "";
+            string connectionString2 =
+                                    $"Server={serveripPrincipale};Database={dbPrincipale};" +
+                                    $"User ID=Dev;Password=1234;TrustServerCertificate=True;" +
+                                    $"Connection Timeout=240;";
 
+            string query = "SELECT incoterm FROM F_INCOTERM WHERE do_piece = @do_piece";
+
+            using (SqlConnection conn = new SqlConnection(connectionString2))
+            {
+                try
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.Add("@do_piece", SqlDbType.VarChar, 50)
+                        .Value = dopiecetxt.Text.Trim();
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.HasRows == true)
+                            {
+                                lbl_val2.Text = "1";
+                                while (reader.Read())
+                                {
+                                    cmbIncoterm.Text = reader.GetString(0).ToString();
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    MethodBase m = MethodBase.GetCurrentMethod();
+                    MessageBox.Show($"Une erreur est survenue : {ex.Message}, {m}", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
         private void lister_packing(String cond)
         {
             lblval1.Text = "";
@@ -3756,6 +3810,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
         private void frmEditDocument_Load_1(object sender, EventArgs e)
         {
+            lister_incoterm(dopiecetxt.Text);
             lister_packing(dopiecetxt.Text);
             if (dopiecetxt.Text.StartsWith("AFA"))
             {
@@ -3764,6 +3819,15 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             else
             {
                 groupControl4.Enabled = false;
+            }
+
+            if (!dopiecetxt.Text.StartsWith("ABR"))
+            {
+                groupControl5.Enabled = true;
+            }
+            else
+            {
+                groupControl5.Enabled = false;
             }
 
             lbl_val.Text = "";
@@ -5992,8 +6056,15 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 decimal pu = Convert.ToDecimal(gvLigneEdit.GetRowCellValue(i, "DL_PrixUnitaire") ?? 0);
                 decimal frais = Convert.ToDecimal(gvLigneEdit.GetRowCellValue(i, "DL_Frais") ?? 0);
                 decimal fret = Convert.ToDecimal(gvLigneEdit.GetRowCellValue(i, "FRET") ?? 0);
-
-                decimal montant = (qte * pu * cours)+(frais+ fret);
+                decimal montant = 0;
+                if (new[] { "XW", "FOB" }.Contains(cmbIncoterm.Text))
+                {
+                    montant = (qte * pu * cours) + (frais + fret);
+                }
+                else
+                {
+                    montant = (qte * pu * cours) + frais;
+                }
 
                 gvLigneEdit.SetRowCellValue(i, "DL_MontantHT", montant);
             }
@@ -6362,5 +6433,66 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                     }
                 }
             }
+
+        private void simpleButton4_Click(object sender, EventArgs e)
+        {
+            string connectionString2 =
+                                    $"Server={serveripPrincipale};Database={dbPrincipale};" +
+                                    $"User ID=Dev;Password=1234;TrustServerCertificate=True;" +
+                                    $"Connection Timeout=240;";
+
+            if (string.IsNullOrWhiteSpace(lbl_val2.Text))
+            {
+                lbl_val2.Text = "1";
+                string insertSql = @"
+                    INSERT INTO F_INCOTERM
+                    (
+                        do_piece,
+                        incoterm
+                    )
+                    VALUES
+                    (
+                        @do_piece,
+                        @incoterm
+                    )";
+
+                using (SqlConnection conn = new SqlConnection(connectionString2))
+                using (SqlCommand cmd = new SqlCommand(insertSql, conn))
+                {
+                    // Paramètres TYPÉS (bonne pratique)
+                    cmd.Parameters.Add("@do_piece", SqlDbType.VarChar, 50)
+                        .Value = dopiecetxt.Text.Trim();
+
+                    cmd.Parameters.Add("@incoterm", SqlDbType.VarChar, 20)
+                        .Value = cmbIncoterm.Text?.ToString();
+
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+            else
+            {
+                lbl_val2.Text = "1";
+                string UPDATESql = @"
+                   UPDATE F_INCOTERM
+                        SET incoterm=@incoterm
+                   WHERE do_piece=@do_piece 
+                   ";
+
+                using (SqlConnection conn = new SqlConnection(connectionString2))
+                using (SqlCommand cmd = new SqlCommand(UPDATESql, conn))
+                {
+                    // Paramètres TYPÉS (bonne pratique)
+                    cmd.Parameters.Add("@do_piece", SqlDbType.VarChar, 50)
+                        .Value = dopiecetxt.Text.Trim();
+
+                    cmd.Parameters.Add("@incoterm", SqlDbType.VarChar, 20)
+                        .Value = cmbIncoterm.Text?.ToString();
+
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
     }
 }
