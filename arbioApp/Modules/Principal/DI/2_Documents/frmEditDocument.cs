@@ -4951,8 +4951,16 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                         decimal fret = Convert.ToDecimal(view.GetRowCellValue(i, colFret));
                         decimal cours = Convert.ToDecimal(txtCours.Text);
 
+                        decimal montantHT = 0;
                         // Calcul du montant HT
-                        decimal montantHT = (qte * pu * cours) + (frais+fret);
+                        if (new[] { "XW", "FOB" }.Contains(cmbIncoterm.Text))
+                        {
+                            montantHT = (qte * pu * cours) + (frais + fret);
+                        }
+                        else
+                        {
+                            montantHT = (qte * pu * cours) + frais;
+                        }
 
                         // Mise à jour de la cellule
                         view.SetRowCellValue(i, colMontantHT, montantHT);
@@ -6026,7 +6034,16 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 decimal cours = Convert.ToDecimal(txtCours.Text);
 
                 // Calcul du montant HT
-                decimal montantHT = (qte * pu * cours)+(frais+fret);
+
+                decimal montantHT = 0;
+                if (new[] { "XW", "FOB" }.Contains(cmbIncoterm.Text))
+                {
+                    montantHT = (qte * pu * cours) + (frais + fret);
+                }
+                else
+                {
+                    montantHT = (qte * pu * cours) + frais;
+                }
 
                 // Mise à jour de la cellule
                 view.SetRowCellValue(i, colMontantHT, montantHT);

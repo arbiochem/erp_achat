@@ -159,15 +159,33 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                     col.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
                     col.AppearanceHeader.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
 
-                    // Format numérique avec 2 décimales
-                    col.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
-                    col.DisplayFormat.FormatString = "N2";
+                    // 🔹 COLONNES DATE
+                    if (col.ColumnType == typeof(DateTime))
+                    {
+                        col.DisplayFormat.FormatType = DevExpress.Utils.FormatType.DateTime;
+                        col.DisplayFormat.FormatString = "dd/MM/yyyy"; // ou "dd/MM/yyyy HH:mm"
+                        continue; // IMPORTANT : on ne passe pas au format numérique
+                    }
 
-                    // Résumé pour "Prix de revient"
+                    // 🔹 COLONNES NUMÉRIQUES
+                    if (col.ColumnType == typeof(decimal) ||
+                        col.ColumnType == typeof(double) ||
+                        col.ColumnType == typeof(float) ||
+                        col.ColumnType == typeof(int))
+                    {
+                        col.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
+                        col.DisplayFormat.FormatString = "N2";
+                    }
+
+                    // 🔹 Résumé uniquement pour certaines colonnes
                     if (col.FieldName == "Prix de revient" || col.FieldName == "Montant total")
                     {
                         col.Summary.Clear();
-                        col.Summary.Add(DevExpress.Data.SummaryItemType.Sum, col.FieldName, "{0:N2}");
+                        col.Summary.Add(
+                            DevExpress.Data.SummaryItemType.Sum,
+                            col.FieldName,
+                            "{0:N2}"
+                        );
                     }
                 }
 

@@ -3,10 +3,6 @@
   "WorkspaceRootPath": "D:\\Arbiochem\\Travail\\erp\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{78D775A6-87D6-4010-86C9-4DDC40FBCA69}|arbioApp\\arbioApp.csproj|d:\\arbiochem\\travail\\erp\\arbioapp\\modules\\principal\\di\\2_documents\\frmeditdocument.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{78D775A6-87D6-4010-86C9-4DDC40FBCA69}|arbioApp\\arbioApp.csproj|solutionrelative:arbioapp\\modules\\principal\\di\\2_documents\\frmeditdocument.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{78D775A6-87D6-4010-86C9-4DDC40FBCA69}|arbioApp\\arbioApp.csproj|D:\\Arbiochem\\Travail\\erp\\arbioapp\\modules\\principal\\di\\2_documents\\frmeditdocument.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
       "RelativeMoniker": "D:0:0:{78D775A6-87D6-4010-86C9-4DDC40FBCA69}|arbioApp\\arbioApp.csproj|solutionrelative:arbioapp\\modules\\principal\\di\\2_documents\\frmeditdocument.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     },
@@ -15,16 +11,20 @@
       "RelativeMoniker": "D:0:0:{78D775A6-87D6-4010-86C9-4DDC40FBCA69}|arbioApp\\arbioApp.csproj|solutionrelative:arbioapp\\modules\\principal\\di\\2_documents\\frm_etat_general.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{78D775A6-87D6-4010-86C9-4DDC40FBCA69}|arbioApp\\arbioApp.csproj|D:\\Arbiochem\\Travail\\erp\\arbioapp\\modules\\principal\\di\\2_documents\\frm_etat_general.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{78D775A6-87D6-4010-86C9-4DDC40FBCA69}|arbioApp\\arbioApp.csproj|solutionrelative:arbioapp\\modules\\principal\\di\\2_documents\\frm_etat_general.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{78D775A6-87D6-4010-86C9-4DDC40FBCA69}|arbioApp\\arbioApp.csproj|d:\\arbiochem\\travail\\erp\\arbioapp\\modules\\principal\\di\\2_documents\\frmeditdocument.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{78D775A6-87D6-4010-86C9-4DDC40FBCA69}|arbioApp\\arbioApp.csproj|solutionrelative:arbioapp\\modules\\principal\\di\\2_documents\\frmeditdocument.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{78D775A6-87D6-4010-86C9-4DDC40FBCA69}|arbioApp\\arbioApp.csproj|D:\\Arbiochem\\Travail\\erp\\arbioapp\\modules\\principal\\di\\2_documents\\frmtransform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{78D775A6-87D6-4010-86C9-4DDC40FBCA69}|arbioApp\\arbioApp.csproj|solutionrelative:arbioapp\\modules\\principal\\di\\2_documents\\frmtransform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{78D775A6-87D6-4010-86C9-4DDC40FBCA69}|arbioApp\\arbioApp.csproj|D:\\Arbiochem\\Travail\\erp\\arbioapp\\modules\\principal\\di\\2_documents\\frmtransform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
       "RelativeMoniker": "D:0:0:{78D775A6-87D6-4010-86C9-4DDC40FBCA69}|arbioApp\\arbioApp.csproj|solutionrelative:arbioapp\\modules\\principal\\di\\2_documents\\frmtransform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{78D775A6-87D6-4010-86C9-4DDC40FBCA69}|arbioApp\\arbioApp.csproj|D:\\Arbiochem\\Travail\\erp\\arbioapp\\modules\\principal\\di\\2_documents\\frm_etat_general.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{78D775A6-87D6-4010-86C9-4DDC40FBCA69}|arbioApp\\arbioApp.csproj|solutionrelative:arbioapp\\modules\\principal\\di\\2_documents\\frm_etat_general.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{78D775A6-87D6-4010-86C9-4DDC40FBCA69}|arbioApp\\arbioApp.csproj|D:\\Arbiochem\\Travail\\erp\\arbioapp\\modules\\principal\\di\\2_documents\\ucdocuments.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
@@ -270,7 +270,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Bookmark",
@@ -278,20 +278,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 3,
               "Title": "frmEditDocument.cs",
               "DocumentMoniker": "D:\\Arbiochem\\Travail\\erp\\arbioApp\\Modules\\Principal\\DI\\2_Documents\\frmEditDocument.cs",
               "RelativeDocumentMoniker": "arbioApp\\Modules\\Principal\\DI\\2_Documents\\frmEditDocument.cs",
               "ToolTip": "D:\\Arbiochem\\Travail\\erp\\arbioApp\\Modules\\Principal\\DI\\2_Documents\\frmEditDocument.cs",
               "RelativeToolTip": "arbioApp\\Modules\\Principal\\DI\\2_Documents\\frmEditDocument.cs",
-              "ViewState": "AgIAAJsXAAAAAAAAAIAzwKUXAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAIoXAAAAAAAAAAASwJwXAAAxAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-01-09T10:01:39.442Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
               "Title": "frmEditDocument.cs [Design]",
               "DocumentMoniker": "D:\\Arbiochem\\Travail\\erp\\arbioApp\\Modules\\Principal\\DI\\2_Documents\\frmEditDocument.cs",
               "RelativeDocumentMoniker": "arbioApp\\Modules\\Principal\\DI\\2_Documents\\frmEditDocument.cs",
@@ -303,7 +303,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 1,
               "Title": "frm_Etat_general.cs [Design]",
               "DocumentMoniker": "D:\\Arbiochem\\Travail\\erp\\arbioApp\\Modules\\Principal\\DI\\2_Documents\\frm_Etat_general.cs",
               "RelativeDocumentMoniker": "arbioApp\\Modules\\Principal\\DI\\2_Documents\\frm_Etat_general.cs",
@@ -315,32 +315,31 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 2,
               "Title": "frm_Etat_general.cs",
               "DocumentMoniker": "D:\\Arbiochem\\Travail\\erp\\arbioApp\\Modules\\Principal\\DI\\2_Documents\\frm_Etat_general.cs",
               "RelativeDocumentMoniker": "arbioApp\\Modules\\Principal\\DI\\2_Documents\\frm_Etat_general.cs",
               "ToolTip": "D:\\Arbiochem\\Travail\\erp\\arbioApp\\Modules\\Principal\\DI\\2_Documents\\frm_Etat_general.cs",
               "RelativeToolTip": "arbioApp\\Modules\\Principal\\DI\\2_Documents\\frm_Etat_general.cs",
-              "ViewState": "AgIAAHcAAAAAAAAAAAAcwIYAAAAyAAAAAAAAAA==",
+              "ViewState": "AgIAAJ4AAAAAAAAAAAAiwKgAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-01-09T05:43:42.86Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "frmTransform.cs [Design]",
               "DocumentMoniker": "D:\\Arbiochem\\Travail\\erp\\arbioApp\\Modules\\Principal\\DI\\2_Documents\\frmTransform.cs",
               "RelativeDocumentMoniker": "arbioApp\\Modules\\Principal\\DI\\2_Documents\\frmTransform.cs",
               "ToolTip": "D:\\Arbiochem\\Travail\\erp\\arbioApp\\Modules\\Principal\\DI\\2_Documents\\frmTransform.cs [Design]",
               "RelativeToolTip": "arbioApp\\Modules\\Principal\\DI\\2_Documents\\frmTransform.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-16T05:24:08.388Z",
-              "EditorCaption": " [Design]"
+              "WhenOpened": "2025-12-16T05:24:08.388Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "frmTransform.cs",
               "DocumentMoniker": "D:\\Arbiochem\\Travail\\erp\\arbioApp\\Modules\\Principal\\DI\\2_Documents\\frmTransform.cs",
               "RelativeDocumentMoniker": "arbioApp\\Modules\\Principal\\DI\\2_Documents\\frmTransform.cs",
@@ -348,8 +347,7 @@
               "RelativeToolTip": "arbioApp\\Modules\\Principal\\DI\\2_Documents\\frmTransform.cs",
               "ViewState": "AgIAACQAAAAAAAAAAAASwDIAAAAMAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-09T10:13:17.803Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-09T10:13:17.803Z"
             },
             {
               "$type": "Document",
