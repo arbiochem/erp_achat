@@ -19,6 +19,7 @@ using DevExpress.DataAccess.UI.Excel;
 using DevExpress.DataProcessing;
 using DevExpress.DataProcessing.InMemoryDataProcessor;
 using DevExpress.DataProcessing.InMemoryDataProcessor.GraphGenerator;
+using DevExpress.Map.Native;
 using DevExpress.Pdf.Xmp;
 using DevExpress.Spreadsheet;
 using DevExpress.UIAutomation;
@@ -2061,7 +2062,8 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 {
                     if (string.IsNullOrEmpty(connectionStringArbapp))
                     {
-                        // Log l'erreur
+                        //Voir correspondance
+                        
                         throw new ArgumentException("Chaîne de connexion vide");
                     }
 
@@ -2095,7 +2097,11 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
                 if (dtMaster == null || dtMaster.Rows.Count == 0)
                 {
-                    return;
+                    recuperer_correspondance(labelControl10);
+                    string query2 = @"SELECT * FROM dbo.VW_ETAT_STOCK WHERE CT_INTITULE in (" + labelControl10.Text + ") AND DEPOT IN (" + labelControl8.Text + ")";
+
+                    dtMaster = ExecuteQuery(connectionStringArbapp, query2);
+
                 }
 
                 if (dtMaster == null)
@@ -2201,6 +2207,51 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             
         }
 
+        private void recuperer_correspondance(LabelControl lbl)
+        {
+            labelControl10.Text = "";
+            string connectionString = $"Server={FrmMdiParent.DataSourceNameValueParent};" +
+                                 $"Database=ARBIOCHEM;" +
+                                 $"User ID=Dev;" +
+                                 $"Password=1234;" +
+                                 $"TrustServerCertificate=True;" +
+                                 $"Connection Timeout=120;";
+
+            try
+            {
+                string query = "SELECT DISTINCT fourns FROM F_Corres WHERE num_piece = @num_piece AND fourn=@fourn ORDER BY fourns ASC";
+
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    SqlDataAdapter adapter = new SqlDataAdapter(query, conn);
+                    adapter.SelectCommand.Parameters.AddWithValue("@num_piece", dopiecetxt.Text.Trim());
+                    adapter.SelectCommand.Parameters.AddWithValue("@fourn", lkEdFrns.Text.Trim());
+
+                    DataTable dt = new DataTable();
+                    adapter.Fill(dt);
+
+                    // ✅ Construire la liste pour labelControl10
+                    List<string> fournList = new List<string>();
+
+                    foreach (DataRow row in dt.Rows)
+                    {
+                        string fourns = row["fourns"]?.ToString().Trim();
+                        if (!string.IsNullOrEmpty(fourns))
+                        {
+                            fournList.Add($"'{fourns}'"); // ✅ Avec guillemets pour le IN()
+                        }
+                    }
+                    labelControl10.Text = string.Join(",", fournList);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erreur : {ex.Message}", "Erreur",
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
         private void TreeList1_NodeCellStyle(object sender, GetCustomNodeCellStyleEventArgs e)
         {
             if (e.Node.ParentNode == null) // Uniquement pour les nœuds parents
@@ -6510,6 +6561,13 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                     cmd.ExecuteNonQuery();
                 }
             }
+        }
+
+        private void hyperlinkLabelControl1_Click_1(object sender, EventArgs e)
+        {
+            frm_correspondance f_corres = new frm_correspondance();
+            f_corres.txtnumpiece.Text =dopiecetxt.Text.ToString();
+            f_corres.ShowDialog();
         }
     }
 }

@@ -438,3 +438,4 @@ D:\Arbiochem\Travail\Sauvegarde projets\erp_sauve_20260123\APM\arbioApp\obj\Debu
 D:\Arbiochem\Travail\Sauvegarde projets\erp_sauve_20260123\APM\arbioApp\obj\Debug\arbioApp.csproj.CoreCompileInputs.cache
 D:\Arbiochem\Travail\Sauvegarde projets\erp_sauve_20260123\APM\arbioApp\obj\Debug\arbioApp.exe
 D:\Arbiochem\Travail\Sauvegarde projets\erp_sauve_20260123\APM\arbioApp\obj\Debug\arbioApp.pdb
+D:\Arbiochem\Travail\ERP\arbioApp\obj\Debug\arbioApp.Modules.Principal.DI._2_Documents.frm_correspondance.resources

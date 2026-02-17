@@ -309,6 +309,12 @@
     <Compile Include="Modules\Principal\DI\2_Documents\frmTransform.Designer.cs">
       <DependentUpon>frmTransform.cs</DependentUpon>
     </Compile>
+    <Compile Include="Modules\Principal\DI\2_Documents\frm_correspondance.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Modules\Principal\DI\2_Documents\frm_correspondance.Designer.cs">
+      <DependentUpon>frm_correspondance.cs</DependentUpon>
+    </Compile>
     <Compile Include="Modules\Principal\DI\2_Documents\frm_Etat_general.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -727,6 +733,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Modules\Principal\DI\2_Documents\frmTransform.resx">
       <DependentUpon>frmTransform.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\Principal\DI\2_Documents\frm_correspondance.resx">
+      <DependentUpon>frm_correspondance.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Modules\Principal\DI\2_Documents\frm_Etat_general.resx">
       <DependentUpon>frm_Etat_general.cs</DependentUpon>

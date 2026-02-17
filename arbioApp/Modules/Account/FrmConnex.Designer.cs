@@ -102,7 +102,6 @@ namespace arbioApp
             this.tokenEmail.Properties.Separators.AddRange(new string[] {
             ","});
             this.tokenEmail.Size = new System.Drawing.Size(366, 22);
-            this.tokenEmail.StyleController = this.layoutControl1;
             this.tokenEmail.TabIndex = 10;
             // 
             // cboServers
@@ -113,7 +112,6 @@ namespace arbioApp
             new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
             this.cboServers.Properties.TextEditStyle = DevExpress.XtraEditors.Controls.TextEditStyles.DisableTextEditor;
             this.cboServers.Size = new System.Drawing.Size(366, 22);
-            this.cboServers.StyleController = this.layoutControl1;
             this.cboServers.TabIndex = 9;
             this.cboServers.SelectedIndexChanged += new System.EventHandler(this.cboServers_SelectedIndexChanged);
             this.cboServers.EditValueChanged += new System.EventHandler(this.cboServers_EditValueChanged_1);
@@ -125,7 +123,6 @@ namespace arbioApp
             this.textPwd.Name = "textPwd";
             this.textPwd.Properties.PasswordChar = '*';
             this.textPwd.Size = new System.Drawing.Size(366, 22);
-            this.textPwd.StyleController = this.layoutControl1;
             this.textPwd.TabIndex = 5;
             // 
             // checkEdit11
@@ -134,7 +131,6 @@ namespace arbioApp
             this.checkEdit11.Name = "checkEdit11";
             this.checkEdit11.Properties.Caption = "Keep me signed in";
             this.checkEdit11.Size = new System.Drawing.Size(236, 24);
-            this.checkEdit11.StyleController = this.layoutControl1;
             this.checkEdit11.TabIndex = 6;
             this.checkEdit11.CheckedChanged += new System.EventHandler(this.checkEdit11_CheckedChanged);
             // 
@@ -143,7 +139,6 @@ namespace arbioApp
             this.BtnOK.Location = new System.Drawing.Point(252, 90);
             this.BtnOK.Name = "BtnOK";
             this.BtnOK.Size = new System.Drawing.Size(237, 27);
-            this.BtnOK.StyleController = this.layoutControl1;
             this.BtnOK.TabIndex = 7;
             this.BtnOK.Text = "Login";
             this.BtnOK.Click += new System.EventHandler(this.BtnOK_Click);
@@ -262,7 +257,6 @@ namespace arbioApp
             this.pictureEdit1.Properties.ShowCameraMenuItem = DevExpress.XtraEditors.Controls.CameraMenuItemVisibility.Auto;
             this.pictureEdit1.Properties.SizeMode = DevExpress.XtraEditors.Controls.PictureSizeMode.Stretch;
             this.pictureEdit1.Size = new System.Drawing.Size(503, 126);
-            this.pictureEdit1.StyleController = this.layoutControl3;
             this.pictureEdit1.TabIndex = 1;
             // 
             // layoutControlGroup2
