@@ -6413,6 +6413,8 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                     conn.Open();
                     cmd.ExecuteNonQuery();
                 }
+
+                MessageBox.Show("Modification Mode de paiement terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -6500,7 +6502,9 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                         cmd.ExecuteNonQuery();
                     }
                 }
-            }
+
+            MessageBox.Show("Modification Packing List terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
 
         private void simpleButton4_Click(object sender, EventArgs e)
         {
@@ -6561,6 +6565,8 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                     cmd.ExecuteNonQuery();
                 }
             }
+
+            MessageBox.Show("Modification INCOTERM terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void hyperlinkLabelControl1_Click_1(object sender, EventArgs e)
