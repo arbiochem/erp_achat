@@ -4553,7 +4553,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
                             //MAJ Qte
 
-                            /*int? DE_No = Convert.ToInt32(lkDepot.EditValue);
+                            int? DE_No = Convert.ToInt32(lkDepot.EditValue);
                             for (int i = 0; i < gvLigneEdit.RowCount; i++)
                             {
                                 string reference = gvLigneEdit.GetRowCellValue(i, "AR_Ref")?.ToString();
@@ -4649,7 +4649,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                 }
 
 
-                            }*/
+                            }
                             // Fix for CS0120: Use the instance of ucDocuments instead of trying to call it statically
                             _ucDocuments.ChargerDonneesDepuisBDD();
                         }
