@@ -44,7 +44,6 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         private SqlDataAdapter dataAdapter;
         private SqlConnection connection;
         public static string connectionString;
-        public static decimal doCours;
 
         public static ucDocuments Instance
         {
@@ -58,20 +57,19 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
         public ucDocuments()
         {
-            ucDocuments.dbNamePrincipale = "TRANSIT";
-            ucDocuments.serverNamePrincipale = "SRV-ARB";
-            ucDocuments.serverIpPrincipale = "26.53.123.231";
             InitializeComponent();           
-            CreateDatabaseMenu();
-            ChargerDonneesDepuisBDD();
-
-            ucDocuments.dbNamePrincipale = "TRANSIT";
-            ucDocuments.serverNamePrincipale = "SRV-ARB";
-            ucDocuments.serverIpPrincipale = "26.53.123.231";
-
-            var dbContext = new AppDbContext();
-            _collaborateurRepository = new F_COLLABORATEURRepository(dbContext);
+            CreateDatabaseMenu();    
+            
+            
         }
+
+
+        public void SelectDoType(int doType)
+        {
+            listBox1.SelectedValue = doType; // Cela déclenche SelectedIndexChanged automatiquement
+        }
+
+
 
         private void btnNouveauDoc_Click(object sender, EventArgs e)
         {
@@ -83,8 +81,17 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
         private void ucDocuments_Load(object sender, EventArgs e)
         {
-            ChargerDonneesDepuisBDD();
+            listBox1.DataSource = statutItems;
+            listBox1.DisplayMember = "Text";
+            listBox1.ValueMember = "Value";
+            btnOuvrirDoc.Enabled = false;
+            btnNouveauDoc.Enabled = false;
+            btnRefresh.Enabled = false;
+
         }
+
+
+
 
         List<F_DOCENTETE> dotype = new List<F_DOCENTETE>
         {
@@ -115,36 +122,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
             try
             {
-                Entetes.AfficherEntetes(gcEntetes, DoTypeSelected, BindingEntetes);
-                gvEntete.BestFitColumns();
-
-                for (int i = 0; i <= gvEntete.Columns.Count - 1; i++)
-                {
-                    gvEntete.Columns[i].OptionsColumn.ReadOnly = true;
-                }
-                if (gvEntete.RowCount < 1) { return; }
-                gvEntete.Columns[0].VisibleIndex = -1;
-
-                RepositoryItemHyperLinkEdit hyperlink = new RepositoryItemHyperLinkEdit();
-                hyperlink.TextEditStyle = DevExpress.XtraEditors.Controls.TextEditStyles.Standard;
-                hyperlink.Click += Hyperlink_Click;
-                gcEntetes.RepositoryItems.Add(hyperlink);
-                gvEntete.Columns["DO_Piece"].ColumnEdit = hyperlink;
-                gvEntete.Columns["CO_No"].VisibleIndex = -1;
-                gvEntete.Columns["DO_Taxe1"].VisibleIndex = -1;
-                gvEntete.Columns["DO_CodeTaxe1"].VisibleIndex = -1;
-                gvEntete.Columns["DO_Statut"].VisibleIndex = -1;
-                gvEntete.Columns["DO_TotalTTC"].VisibleIndex = -1;
-                gvEntete.Columns["DO_Expedit"].VisibleIndex = -1;
-                gvEntete.Columns["DO_Coord01"].VisibleIndex = -1;
-                gvEntete.Columns["DE_No"].VisibleIndex = -1;
-
-                gvEntete.Columns["DO_TotalHT"].DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
-                gvEntete.Columns["DO_TotalHT"].DisplayFormat.FormatString = "N2";
-                gvEntete.Columns["DO_TotalTTC"].DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
-                gvEntete.Columns["DO_TotalTTC"].DisplayFormat.FormatString = "N2";
-
-                /*if (listBox1.SelectedItem != null)
+                if (listBox1.SelectedItem != null)
                 {
                     DoTypeItem selectedItem = (DoTypeItem)listBox1.SelectedItem;
                     DoTypeSelected = selectedItem.Value;
@@ -177,7 +155,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                     gvEntete.Columns["DO_TotalHT"].DisplayFormat.FormatString = "N2";
                     gvEntete.Columns["DO_TotalTTC"].DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
                     gvEntete.Columns["DO_TotalTTC"].DisplayFormat.FormatString = "N2";
-                }*/
+                }
             }
             catch (System.Exception ex)
             {
@@ -191,11 +169,11 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             {
                 return;
             }
-                
+                ChargerDonneesDepuisBDD();
         }
         public void RafraichirListeDocumentsParDoType(int doType)
         {
-            //listBox1.SelectedValue = doType; // Cela déclenche automatiquement SelectedIndexChanged
+            listBox1.SelectedValue = doType; // Cela déclenche automatiquement SelectedIndexChanged
         }
 
         private void Hyperlink_Click(object sender, EventArgs e)
@@ -226,43 +204,38 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
         private void gvEntete_RowCellStyle(object sender, RowCellStyleEventArgs e)
         {
-            try
+            if (e.Column.FieldName == "DO_Imprim") // Vérifie si c'est la colonne ciblée
             {
-                if (e.Column.FieldName == "DO_Imprim") // Vérifie si c'est la colonne ciblée
-                {
-                    int value = Convert.ToInt32(gvEntete.GetRowCellValue(e.RowHandle, "DO_Imprim"));
+                int value = Convert.ToInt32(gvEntete.GetRowCellValue(e.RowHandle, "DO_Imprim"));
 
-                    if (value == 1)
-                    {
-                        e.Appearance.Image = imageCollection1.Images[0]; // Affiche l'icône pour 1
-                    }
-                    else
-                    {
-                        e.Appearance.Image = imageCollection1.Images[1]; // Affiche l'icône pour 0
-                    }
+                if (value == 1)
+                {
+                    e.Appearance.Image = imageCollection1.Images[0]; // Affiche l'icône pour 1
                 }
-            }catch(Exception ep) { }
+                else
+                {
+                    e.Appearance.Image = imageCollection1.Images[1]; // Affiche l'icône pour 0
+                }
+            }
+
         }
 
         private void gvEntete_CustomDrawCell(object sender, DevExpress.XtraGrid.Views.Base.RowCellCustomDrawEventArgs e)
         {
-            try
+            if (e.Column.FieldName == "DO_Imprim") // Vérifie si c'est la colonne ciblée
             {
-                if (e.Column.FieldName == "DO_Imprim") // Vérifie si c'est la colonne ciblée
-                {
-                    int value = Convert.ToInt32(gvEntete.GetRowCellValue(e.RowHandle, "DO_Imprim"));
-                    Image icon = value == 1 ? imageCollection1.Images[0] : imageCollection1.Images[1];
+                int value = Convert.ToInt32(gvEntete.GetRowCellValue(e.RowHandle, "DO_Imprim"));
+                Image icon = value == 1 ? imageCollection1.Images[0] : imageCollection1.Images[1];
 
-                    // Calcul du centrage dans la cellule
-                    int iconWidth = 16;  // Largeur de l'icône
-                    int iconHeight = 16; // Hauteur de l'icône
-                    int x = e.Bounds.X + (e.Bounds.Width - iconWidth) / 2; // Centrage horizontal
-                    int y = e.Bounds.Y + (e.Bounds.Height - iconHeight) / 2; // Centrage vertical
+                // Calcul du centrage dans la cellule
+                int iconWidth = 16;  // Largeur de l'icône
+                int iconHeight = 16; // Hauteur de l'icône
+                int x = e.Bounds.X + (e.Bounds.Width - iconWidth) / 2; // Centrage horizontal
+                int y = e.Bounds.Y + (e.Bounds.Height - iconHeight) / 2; // Centrage vertical
 
-                    e.Graphics.DrawImage(icon, x, y, iconWidth, iconHeight);
-                    e.Handled = true; // Empêche le texte de s'afficher
-                }
-            }catch(Exception fr) { }
+                e.Graphics.DrawImage(icon, x, y, iconWidth, iconHeight);
+                e.Handled = true; // Empêche le texte de s'afficher
+            }
         }
 
         public static DateTime doDate;
@@ -370,32 +343,36 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             OuvrirPiece(doPiece);
 
         }
-       
-        BarSubItem fileMenu1;
+        List<DoTypeItem> statutItems = new List<DoTypeItem>
+            {
+                new DoTypeItem { Value = 200, Text = "Tous les documents" },
+                new DoTypeItem { Value = 10, Text = "Projet d'achat" },
+                new DoTypeItem { Value = 12, Text = "Bon de Commande" },
+                new DoTypeItem { Value = 16, Text = "Facture" },
+                new DoTypeItem { Value = 13, Text = "Packing list" },
+                new DoTypeItem { Value = 18, Text = "Bon de réception" },
+                //new DoTypeItem { Value = 17, Text = "Facture comptabilisée" },
+                //new DoTypeItem { Value = 18, Text = "Archive" },
+
+            };
+
+        private void barButtonItem1_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
+        {
+
+        }
+
         private void CreateDatabaseMenu()
         {
-            DataTable databases = GetDatabasesFromF_ACHATFILES();
+           DataTable databases = GetDatabasesFromF_ACHATFILES();
 
             BarSubItem fileMenu = new BarSubItem();
             fileMenu.Caption = "Fichier";
 
-            fileMenu1 = new BarSubItem();
-            fileMenu1.Caption = "Etat";
-            fileMenu1.Enabled = false;
-
             barManager1.Items.Add(fileMenu);
-            barManager1.Items.Add(fileMenu1);
             barManager1.MainMenu.LinksPersistInfo.Add(new LinkPersistInfo(fileMenu));
-            barManager1.MainMenu.LinksPersistInfo.Add(new LinkPersistInfo(fileMenu1));
 
-            BarButtonItem dbItem1 = new BarButtonItem();
-            dbItem1.Caption = "Etat global";
-
-            dbItem1.ItemClick += DbItem_Item1Click;
-
-            fileMenu1.AddItem(dbItem1);
-
-            /*foreach (DataRow row in databases.Rows)
+           
+            foreach (DataRow row in databases.Rows)
             {
                 BarButtonItem dbItem = new BarButtonItem();
                 dbItem.Caption = row["DBNAME"].ToString();
@@ -411,56 +388,14 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 
                 dbItem.ItemClick += DbItem_ItemClick;               
                 fileMenu.ItemLinks.Add(dbItem);
-            }*/
-
-
-            /*if (FrmMdiParent.UserRole.Contains("Administrators"))
-            {*/
-            BarSubItem autItem = new BarSubItem();
-            autItem.Caption = "Autorisation";
-            fileMenu.ItemLinks.Add(autItem);
-
-            BarButtonItem genItem = new BarButtonItem();
-            genItem.Caption = "Générer Projet d'achat";
-            genItem.ItemClick += genItem_Itemclick;
-            fileMenu.ItemLinks.Add(genItem);
-            
-
-            BarButtonItem autGlogale = new BarButtonItem();
-            autGlogale.Caption = "Globale";
-            autGlogale.ItemClick += autGlogale_ItemClick;
-
-            BarButtonItem autAchat = new BarButtonItem();
-            autAchat.Caption = "Type de documents";
-            autAchat.ItemClick += autAchat_ItemClick;
-
-            autItem.ItemLinks.Add(autGlogale);
-            autItem.ItemLinks.Add(autAchat).BeginGroup = true;
-            //}
-        }
-
-        private void genItem_Itemclick(object sender, ItemClickEventArgs e)
-        {
-            frm_generer frmGen = new frm_generer();
-            frmGen.ShowDialog();
-            ChargerDonneesDepuisBDD();
-        }
-
-        private void DbItem_Item1Click(object sender, ItemClickEventArgs e)
-        {
-            frm_Etat_general frmEtat = new frm_Etat_general();
-            frmEtat.ShowDialog();
-        }
-        private void autGlogale_ItemClick(object sender, ItemClickEventArgs e)
-        {
-            frmAutorisation _frmAutorisation = new frmAutorisation();
-            _frmAutorisation.ShowDialog();
-        }
-
-        private void autAchat_ItemClick(object sender, ItemClickEventArgs e)
-        {
-            frmAutorisations_achat _frmAutorisation_achat = new frmAutorisations_achat();
-            _frmAutorisation_achat.ShowDialog();
+            }
+            if (FrmMdiParent.UserRole.Contains("Administrators"))
+            {
+                BarButtonItem autItem = new BarButtonItem();
+                autItem.Caption= "Autorisations";
+                fileMenu.ItemLinks.Add(autItem);
+                autItem.ItemClick += autItem_ItemClick;
+            }
         }
         private void autItem_ItemClick(object sender, ItemClickEventArgs e)
         {
@@ -491,7 +426,37 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         public static string dbNamePrincipale = string.Empty;
         public static string serverNamePrincipale = string.Empty;
         public static string serverIpPrincipale = string.Empty;
-       
+        private void DbItem_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            try
+            {
+                if (e.Item is BarButtonItem buttonItem)
+                {
+                    
+                    if (buttonItem.Tag != null)
+                    {                                              
+                        dynamic tag = buttonItem.Tag;
+                        ucDocuments.dbNamePrincipale = buttonItem.Caption;
+                        ucDocuments.serverNamePrincipale = tag.ServerName;
+                        ucDocuments.serverIpPrincipale = tag.ServerIP;
+
+                        var dbContext = new AppDbContext();
+                        _collaborateurRepository = new F_COLLABORATEURRepository(dbContext);
+
+                        ChargerDonneesDepuisBDD();
+                        btnOuvrirDoc.Enabled = true;
+                        btnNouveauDoc.Enabled = true;
+                        btnRefresh.Enabled = true;
+                    }
+                }
+            }
+            catch (System.Exception ex)
+            {
+                MethodBase m = MethodBase.GetCurrentMethod();
+                MessageBox.Show($"Une erreur est survenue : {ex.Message}, {m}", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            
+        }
 
         private void btnRefresh_Click(object sender, EventArgs e)
         {
@@ -503,7 +468,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             gcEntetes.ShowPrintPreview();
         }
     }
-    /*public class DoTypeItem
+    public class DoTypeItem
     {
         public int Value { get; set; }
         public string Text { get; set; }
@@ -512,5 +477,5 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         {
             return Text;
         }
-    }*/
+    }
 }

@@ -44,39 +44,52 @@ namespace arbioApp.Modules.Principal.DI
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 {
 
-                    string query = "";/// $"SELECT * FROM dbo.F_DOCENTETE WHERE DO_Domaine = 1 AND DO_Type = @dotype";
-                    if(achattype != 200)
+                    string query = "";
+                    /*if(achattype != 200)
                     {
                         query =  $"SELECT * FROM dbo.ACHAT_ENTETE WHERE DO_Type = @dotype ORDER BY DO_Date DESC";
                     }
                     else
-                    {
+                    {*/
                         query = $"SELECT * FROM dbo.ACHAT_ENTETE ORDER BY DO_Date DESC";
-                    }
-                    using (SqlCommand cmd = new SqlCommand(query, connection))
-                    {
-                        cmd.Parameters.AddWithValue("@dotype", achattype);
-                        dataAdapter = new SqlDataAdapter(cmd); // On passe `cmd`, pas `query`
-                        SqlCommandBuilder commandBuilder = new SqlCommandBuilder(dataAdapter);
-                        dataTable = new DataTable();
+                    //}
+                        try
+                        {
+                            using (SqlCommand cmd = new SqlCommand(query, connection))
+                            {
+                                // cmd.Parameters.AddWithValue("@dotype", achattype);
 
-                        connection.Open();
-                        dataAdapter.Fill(dataTable);
-                        rownum = dataTable.Rows.Count;
-                        if(rownum == 0)
-                        {
-                            bs.DataSource = null;
-                            gc.DataSource = null;
+                                if (connection.State != ConnectionState.Open)
+                                    connection.Open();
+
+                                using (SqlDataAdapter localAdapter = new SqlDataAdapter(cmd))
+                                {
+                                    dataTable = new DataTable();
+                                    localAdapter.Fill(dataTable);
+
+                                    rownum = dataTable.Rows.Count;
+
+                                    if (rownum == 0)
+                                    {
+                                        bs.DataSource = null;
+                                        gc.DataSource = null;
+                                    }
+                                    else
+                                    {
+                                        bs.DataSource = dataTable;
+                                        gc.DataSource = bs;
+                                    }
+                                }
+                            }
                         }
-                        else
+                        catch (SqlException ex)
                         {
-                            bs.DataSource = dataTable;
-                            gc.DataSource = bs;
+                            MessageBox.Show("Erreur SQL : " + ex.Message);
                         }
-                            
-                        
-                        
-                    }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show("Erreur : " + ex.Message);
+                        }
                 }
 
             }

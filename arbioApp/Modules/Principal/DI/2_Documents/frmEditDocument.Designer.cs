@@ -125,6 +125,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             this.bindingNavigatorDeleteItem = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.layoutControl2 = new DevExpress.XtraLayout.LayoutControl();
+            this.labelControl10 = new DevExpress.XtraEditors.LabelControl();
             this.simpleButton2 = new DevExpress.XtraEditors.SimpleButton();
             this.txtCours = new DevExpress.XtraEditors.TextEdit();
             this.hyperlinkLabelControl7 = new DevExpress.XtraEditors.HyperlinkLabelControl();
@@ -162,6 +163,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             this.layoutControlItem18 = new DevExpress.XtraLayout.LayoutControlItem();
             this.layoutControlItem36 = new DevExpress.XtraLayout.LayoutControlItem();
             this.layoutControlItem40 = new DevExpress.XtraLayout.LayoutControlItem();
+            this.layoutControlItem45 = new DevExpress.XtraLayout.LayoutControlItem();
             this.treeList1 = new DevExpress.XtraTreeList.TreeList();
             this.layoutControlGroup3 = new DevExpress.XtraLayout.LayoutControlGroup();
             this.layoutControlItem1 = new DevExpress.XtraLayout.LayoutControlItem();
@@ -225,8 +227,6 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.xtraOpenFileDialog1 = new DevExpress.XtraEditors.XtraOpenFileDialog(this.components);
             this.xtraOpenFileDialog2 = new DevExpress.XtraEditors.XtraOpenFileDialog(this.components);
-            this.labelControl10 = new DevExpress.XtraEditors.LabelControl();
-            this.layoutControlItem45 = new DevExpress.XtraLayout.LayoutControlItem();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControl1)).BeginInit();
             this.layoutControl1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.xtraTabControl1)).BeginInit();
@@ -308,6 +308,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem18)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem36)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem40)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem45)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.treeList1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlGroup3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem1)).BeginInit();
@@ -366,7 +367,6 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             this.layoutControl3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlGroup4)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem45)).BeginInit();
             this.SuspendLayout();
             // 
             // layoutControl1
@@ -1010,7 +1010,6 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             // 
             this.toolStripTextBox1.AccessibleName = "Position";
             this.toolStripTextBox1.AutoSize = false;
-            this.toolStripTextBox1.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.toolStripTextBox1.Name = "toolStripTextBox1";
             this.toolStripTextBox1.Size = new System.Drawing.Size(50, 27);
             this.toolStripTextBox1.Text = "0";
@@ -1271,7 +1270,6 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             // 
             this.bindingNavigatorPositionItem.AccessibleName = "Position";
             this.bindingNavigatorPositionItem.AutoSize = false;
-            this.bindingNavigatorPositionItem.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.bindingNavigatorPositionItem.Name = "bindingNavigatorPositionItem";
             this.bindingNavigatorPositionItem.Size = new System.Drawing.Size(50, 27);
             this.bindingNavigatorPositionItem.Text = "0";
@@ -1361,6 +1359,15 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             this.layoutControl2.Size = new System.Drawing.Size(1320, 128);
             this.layoutControl2.TabIndex = 0;
             this.layoutControl2.Text = "layoutControl2";
+            // 
+            // labelControl10
+            // 
+            this.labelControl10.Location = new System.Drawing.Point(999, 38);
+            this.labelControl10.Name = "labelControl10";
+            this.labelControl10.Size = new System.Drawing.Size(82, 16);
+            this.labelControl10.StyleController = this.layoutControl2;
+            this.labelControl10.TabIndex = 20;
+            this.labelControl10.Visible = false;
             // 
             // simpleButton2
             // 
@@ -1769,6 +1776,16 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             this.layoutControlItem40.TextSize = new System.Drawing.Size(0, 0);
             this.layoutControlItem40.TextVisible = false;
             this.layoutControlItem40.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
+            // 
+            // layoutControlItem45
+            // 
+            this.layoutControlItem45.Control = this.labelControl10;
+            this.layoutControlItem45.Location = new System.Drawing.Point(987, 26);
+            this.layoutControlItem45.Name = "layoutControlItem45";
+            this.layoutControlItem45.Size = new System.Drawing.Size(86, 82);
+            this.layoutControlItem45.TextSize = new System.Drawing.Size(0, 0);
+            this.layoutControlItem45.TextVisible = false;
+            this.layoutControlItem45.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
             // 
             // treeList1
             // 
@@ -2415,25 +2432,6 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             // 
             this.xtraOpenFileDialog2.FileName = "xtraOpenFileDialog2";
             // 
-            // labelControl10
-            // 
-            this.labelControl10.Location = new System.Drawing.Point(999, 38);
-            this.labelControl10.Name = "labelControl10";
-            this.labelControl10.Size = new System.Drawing.Size(82, 16);
-            this.labelControl10.StyleController = this.layoutControl2;
-            this.labelControl10.TabIndex = 20;
-            this.labelControl10.Visible = false;
-            // 
-            // layoutControlItem45
-            // 
-            this.layoutControlItem45.Control = this.labelControl10;
-            this.layoutControlItem45.Location = new System.Drawing.Point(987, 26);
-            this.layoutControlItem45.Name = "layoutControlItem45";
-            this.layoutControlItem45.Size = new System.Drawing.Size(86, 82);
-            this.layoutControlItem45.TextSize = new System.Drawing.Size(0, 0);
-            this.layoutControlItem45.TextVisible = false;
-            this.layoutControlItem45.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
-            // 
             // frmEditDocument
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 16F);
@@ -2535,6 +2533,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem18)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem36)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem40)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem45)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.treeList1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlGroup3)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem1)).EndInit();
@@ -2593,7 +2592,6 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             this.layoutControl3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlGroup4)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem45)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 

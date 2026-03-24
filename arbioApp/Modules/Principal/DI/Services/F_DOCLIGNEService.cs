@@ -311,7 +311,7 @@ namespace arbioApp.Modules.Principal.DI.Services
             try
             {
                 // F_DOCLIGNE f_DOCLIGNEToUpdate = _context.F_DOCLIGNE.Where(dl => dl.DO_Piece == DO_Piece && dl.AR_Ref == AR_Ref && dl.DL_No == (DL_No ?? dl.DL_No) && dl.DE_No == De_No).FirstOrDefault();
-                F_DOCLIGNE f_DOCLIGNEToUpdate = _context.F_DOCLIGNE.Where(dl => dl.DO_Piece == DO_Piece && dl.AR_Ref == AR_Ref).FirstOrDefault();
+                F_DOCLIGNE f_DOCLIGNEToUpdate = _context.F_DOCLIGNE.Where(dl => dl.DO_Piece == DO_Piece.Trim() && dl.AR_Ref == AR_Ref.Trim()).FirstOrDefault();
 
                 //using (_context)
                 //{

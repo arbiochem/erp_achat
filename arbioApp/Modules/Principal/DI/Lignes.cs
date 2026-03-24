@@ -166,7 +166,7 @@ namespace arbioApp.Modules.Principal.DI
                                             FROM
                                               dbo.F_DOCLIGNE
                                               INNER JOIN dbo.F_COMPTET ON (dbo.F_DOCLIGNE.CT_Num = dbo.F_COMPTET.CT_Num)
-                                            WHERE DO_Domaine = 1 AND DO_Piece = @DO_Piece
+                                            WHERE DO_Domaine = 1 AND RTRIM(DO_Piece) = RTRIM(@DO_Piece)
                                             ORDER BY DL_Ligne ASC";
                     
                     using (SqlCommand cmd = new SqlCommand(query, connection))

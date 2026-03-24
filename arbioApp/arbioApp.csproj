@@ -321,11 +321,29 @@
     <Compile Include="Modules\Principal\DI\2_Documents\frm_Etat_general.Designer.cs">
       <DependentUpon>frm_Etat_general.cs</DependentUpon>
     </Compile>
+    <Compile Include="Modules\Principal\DI\2_Documents\frm_generer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Modules\Principal\DI\2_Documents\frm_generer.Designer.cs">
+      <DependentUpon>frm_generer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Principal\DI\2_Documents\frm_saisieQuantite.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Modules\Principal\DI\2_Documents\frm_saisieQuantite.Designer.cs">
+      <DependentUpon>frm_saisieQuantite.cs</DependentUpon>
+    </Compile>
     <Compile Include="Modules\Principal\DI\2_Documents\rptDocument.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Modules\Principal\DI\2_Documents\rptDocument.Designer.cs">
       <DependentUpon>rptDocument.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Principal\DI\2_Documents\ucDocuments.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Modules\Principal\DI\2_Documents\ucDocuments.Designer.cs">
+      <DependentUpon>ucDocuments.cs</DependentUpon>
     </Compile>
     <Compile Include="Modules\Principal\DI\Converter.cs" />
     <Compile Include="Modules\Principal\DI\dto\ArtClient.cs" />
@@ -422,12 +440,6 @@
     </Compile>
     <Compile Include="Modules\Principal\DI\2_Documents\frmSites.Designer.cs">
       <DependentUpon>frmSites.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Modules\Principal\DI\2_Documents\ucDocuments.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Modules\Principal\DI\2_Documents\ucDocuments.Designer.cs">
-      <DependentUpon>ucDocuments.cs</DependentUpon>
     </Compile>
     <Compile Include="Modules\Principal\DI\FileIconHelper.cs" />
     <Compile Include="Modules\Principal\DI\frmOpenFile.cs">
@@ -739,6 +751,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Modules\Principal\DI\2_Documents\frm_Etat_general.resx">
       <DependentUpon>frm_Etat_general.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\Principal\DI\2_Documents\frm_generer.resx">
+      <DependentUpon>frm_generer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\Principal\DI\2_Documents\frm_saisieQuantite.resx">
+      <DependentUpon>frm_saisieQuantite.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Modules\Principal\DI\2_Documents\ucDocuments.resx">
       <DependentUpon>ucDocuments.cs</DependentUpon>

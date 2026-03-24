@@ -65,8 +65,6 @@ namespace arbioApp.Modules.Principal.DI.Repositories.ModelsRepository
         }
 
 
-
-
         public void UpdateDL_Qte(string typeDocument, string DO_Piece, int? DL_Ligne, int? DL_Qte)
         {
             F_DOCLIGNE f_DOCLIGNE = _context.F_DOCLIGNE.Where(dl => dl.DO_Piece == DO_Piece && dl.DL_Ligne == DL_Ligne).FirstOrDefault();
