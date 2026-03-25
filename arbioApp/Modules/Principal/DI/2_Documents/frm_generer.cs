@@ -40,6 +40,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         private string ct_num;
         private string dodo_piece;
         private DateTime dts;
+        private DateTime dtc;
 
         public frm_generer()
         {
@@ -644,6 +645,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                 depot = frmQte.deno;
                                 cono = frmQte.cono;
                                 dts=frmQte.dt;
+                                dtc = frmQte.dc;
                                 poids = Convert.ToDecimal(frmQte.txtPoids.Text);
                             }
 
@@ -666,7 +668,8 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                             cmd.ExecuteNonQuery();
                                     }
 
-                                    string sqlUpdate = "UPDATE F_DOCENTETE SET DO_Taxe1=0,DO_Expedit=0,DO_DateLivr=@dtt,DE_No=@deno,CO_No=@cono,DO_Imprim=0,DO_Statut=0,DO_Cours = @doCours,DO_TotalHTNet=@montant,DO_TotalHT=@montant,DO_TotalTTC=@montant WHERE DO_Piece = @doPiece";
+                                    string user = FrmMdiParent._id_user.ToString();
+                                    string sqlUpdate = "UPDATE F_DOCENTETE SET DO_Taxe1=0,DO_Expedit=0,DO_DateLivr=@dtt,DE_No=@deno,CO_No=@cono,DO_Imprim=0,DO_Statut=0,DO_Cours = @doCours,DO_TotalHTNet=@montant,DO_TotalHT=@montant,DO_TotalTTC=@montant,DO_DateExpedition=@dtc WHERE DO_Piece = @doPiece";
                                     using (var cmdUpdate = new SqlCommand(sqlUpdate, connection))
                                     {
                                         cmdUpdate.Parameters.Add("@doCours", SqlDbType.Decimal).Value = cours; // valeur correcte pour Sage
@@ -675,6 +678,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                         cmdUpdate.Parameters.Add("@deno", SqlDbType.Int).Value = depot;
                                         cmdUpdate.Parameters.Add("@cono", SqlDbType.Int).Value = cono;
                                         cmdUpdate.Parameters.Add("@dtt", SqlDbType.DateTime).Value = dts;
+                                        cmdUpdate.Parameters.Add("@dtc", SqlDbType.DateTime).Value = dtc;
                                         cmdUpdate.ExecuteNonQuery();
                                     }
                                     InsertFDOCLIGNE(dodo_piece, article.AR_Ref, article.AR_Design, qte,pu,montant, group.Key.CT_Num,depot,poids); // ← quantité ajoutée

@@ -143,6 +143,8 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 gvEntete.Columns["DO_TotalHT"].DisplayFormat.FormatString = "N2";
                 gvEntete.Columns["DO_TotalTTC"].DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
                 gvEntete.Columns["DO_TotalTTC"].DisplayFormat.FormatString = "N2";
+                gvEntete.Columns["DO_Cours"].DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
+                gvEntete.Columns["DO_Cours"].DisplayFormat.FormatString = "N2";
 
                 /*if (listBox1.SelectedItem != null)
                 {

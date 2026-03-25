@@ -24,6 +24,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         public int deno;
         public int cono;
         public DateTime dt;
+        public DateTime dc;
         private readonly AppDbContext _context;
 
         // Propriété pour récupérer la quantité saisie
@@ -174,7 +175,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         {
             try
             {
-                string query = "SELECT DO_Cours, CO_No, DE_No, DO_DateLivr FROM F_DOCENTETE WHERE DO_Piece = @doPiece";
+                string query = "SELECT DO_Cours, CO_No, DE_No, DO_DateLivr,DO_DateExpedition FROM F_DOCENTETE WHERE DO_Piece = @doPiece";
                 using (var connection = new SqlConnection(connectionStrings))
                 {
                     connection.Open();
@@ -205,6 +206,9 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                 datelivrprev.EditValue = reader["DO_DateLivr"] != DBNull.Value
                                  ? Convert.ToDateTime(reader["DO_DateLivr"])
                                  : (object)null;
+                                datecommande.EditValue = reader["DO_DateExpedition"] != DBNull.Value
+                                 ? Convert.ToDateTime(reader["DO_DateExpedition"])
+                                 : (object)null;
                             }
                             else
                             {
@@ -212,6 +216,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                 cmbcollaborateur.EditValue = null;
                                 cmbdepot.EditValue = null;
                                 datelivrprev.EditValue = null;
+                                datecommande.EditValue = null;
                             }
                         }
                     }
@@ -517,6 +522,11 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             {
                 e.Handled = true; // bloquer la touche
             }
+        }
+
+        private void datecommande_EditValueChanged(object sender, EventArgs e)
+        {
+            dc = Convert.ToDateTime(datecommande.EditValue.ToString());
         }
     }
 }

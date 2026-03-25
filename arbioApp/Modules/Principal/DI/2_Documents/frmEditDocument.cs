@@ -68,11 +68,13 @@ using System.Net;
 using System.Reflection;
 using System.Runtime.Remoting.Contexts;
 using System.Security.AccessControl;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static DevExpress.Utils.Drawing.Helpers.NativeMethods;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
@@ -395,6 +397,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             lkStatut.DataBindings.Add("EditValue", bindingSource, "DO_Statut");
             dateSaisie.DataBindings.Add("Text", bindingSource, "DO_Date");
             datelivrprev.DataBindings.Add("Text", bindingSource, "DO_DateLivr");
+            datecommande.DataBindings.Add("Text", bindingSource, "DO_DateExpedition");
             lkEdCollaborateur.DataBindings.Add("EditValue", bindingSource, "CO_No");
             txtCoord1.DataBindings.Add("Text", bindingSource, "DO_Coord01");
             lkDepot.DataBindings.Add("EditValue", bindingSource, "DE_No");
@@ -2361,8 +2364,23 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             }
             return test;
         }
+
         private void btnValider_Click(object sender, EventArgs e)
         {
+            DateTime dtc = Convert.ToDateTime(datecommande.EditValue);
+
+            using (var connection = new SqlConnection(connectionStrings))
+            {
+                connection.Open();
+                string sqlUpdate = "UPDATE F_DOCENTETE SET DO_DateExpedition=@dtc WHERE DO_Piece = @doPiece";
+                using (var cmdUpdate = new SqlCommand(sqlUpdate, connection))
+                {
+                    cmdUpdate.Parameters.Add("@doPiece", SqlDbType.Char).Value = dopiecetxt.Text.Trim();
+                    cmdUpdate.Parameters.Add("@dtc", SqlDbType.DateTime).Value = dtc;
+                    cmdUpdate.ExecuteNonQuery();
+                }
+            }
+
             if (txtCours.Text != "" || txtCours.Text == "0,00")
             {
                 decimal totalPoids = 0;
@@ -6605,6 +6623,11 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         private void txtCours_KeyUp_1(object sender, KeyEventArgs e)
         {
             txtCours_KeyUp(sender, e);
+        }
+
+        private void datecommande_EditValueChanged(object sender, EventArgs e)
+        {
+            datecommande.EditValue=Convert.ToDateTime(datecommande.EditValue);
         }
     }
 }
