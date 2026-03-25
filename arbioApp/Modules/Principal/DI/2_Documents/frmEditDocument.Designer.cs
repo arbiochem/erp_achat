@@ -1010,6 +1010,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             // 
             this.toolStripTextBox1.AccessibleName = "Position";
             this.toolStripTextBox1.AutoSize = false;
+            this.toolStripTextBox1.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.toolStripTextBox1.Name = "toolStripTextBox1";
             this.toolStripTextBox1.Size = new System.Drawing.Size(50, 27);
             this.toolStripTextBox1.Text = "0";
@@ -1270,6 +1271,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             // 
             this.bindingNavigatorPositionItem.AccessibleName = "Position";
             this.bindingNavigatorPositionItem.AutoSize = false;
+            this.bindingNavigatorPositionItem.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.bindingNavigatorPositionItem.Name = "bindingNavigatorPositionItem";
             this.bindingNavigatorPositionItem.Size = new System.Drawing.Size(50, 27);
             this.bindingNavigatorPositionItem.Text = "0";
@@ -1392,7 +1394,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             this.txtCours.Size = new System.Drawing.Size(65, 22);
             this.txtCours.StyleController = this.layoutControl2;
             this.txtCours.TabIndex = 18;
-            this.txtCours.EditValueChanged += new System.EventHandler(this.txtCours_EditValueChanged);
+            this.txtCours.KeyUp += new System.Windows.Forms.KeyEventHandler(this.txtCours_KeyUp_1);
             // 
             // hyperlinkLabelControl7
             // 

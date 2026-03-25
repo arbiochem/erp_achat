@@ -782,12 +782,13 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                     MessageBoxIcon.Error);
             }
         }
+
         public void InitializeGrid(GridControl gc, string DoPiece)
         {
             Lignes.AfficherLignes(gcLigneEdit, DoPiece);
             Lignes.cacherColonnes(gvLigneEdit);
 
-            // ✅ Helper local pour éviter la répétition
+            // ─── Helpers ───────────────────────────────────────────
             void FormatColonne(string fieldName, string format, bool readOnly = false)
             {
                 var col = gvLigneEdit.Columns[fieldName];
@@ -801,38 +802,55 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             {
                 var col = gvLigneEdit.Columns[fieldName];
                 if (col == null) return;
-                col.SummaryItem.SummaryType = DevExpress.Data.SummaryItemType.Custom;
-                col.SummaryItem.DisplayFormat = "{0:n2}";
+                col.SummaryItem.SummaryType = DevExpress.Data.SummaryItemType.Sum;
+                col.SummaryItem.DisplayFormat = "{0:N2}";
+                col.SummaryItem.FieldName = fieldName; // ✅ Lier explicitement
             }
 
-            // Colonnes avec summary
+            // ─── Summary ───────────────────────────────────────────
             SummaryColonne("Montant Total en devise");
             SummaryColonne("DL_MontantHT");
+            SummaryColonne("DL_Frais");
             SummaryColonne("DL_MontantTTC");
             SummaryColonne("DL_MontantRegle");
+            SummaryColonne("DL_PoidsNet");
+            
 
-            // Colonnes numériques N2
-            foreach (var field in new[] {
+            // ─── Alignement colonne MontantHT ──────────────────────
+            GridColumn colMht = gvLigneEdit.Columns["DL_MontantHT"];
+            if (colMht != null)
+            {
+                colMht.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
+            }
+
+            // ─── Format N2 ─────────────────────────────────────────
+            foreach (var field in new[]
+            {
                 "DL_Qte", "DL_Remise01REM_Valeur", "DL_PrixUnitaire",
                 "DL_Taxe1", "DL_PUDevise", "DL_Frais",
-                "DL_MontantTTC", "DL_MontantHT", "DL_MontantRegle"
+                "DL_MontantTTC", "DL_MontantHT", "DL_MontantRegle","DL_Frais","DL_PoidsNet",
+                "Montant Total en devise"
             })
-            
-            FormatColonne(field, "N2");
+            {
+                FormatColonne(field, "N2");
+            }
 
-            // Colonnes N0
+            // ─── Format N0 ─────────────────────────────────────────
             FormatColonne("DL_NonLivre", "N0");
 
-            // Colonnes ReadOnly N2
+            // ─── ReadOnly ──────────────────────────────────────────
             FormatColonne("DL_PrixRU", "N2", readOnly: true);
             FormatColonne("DL_Frais", "N2", readOnly: true);
             FormatColonne("DL_MontantHT", "N2", readOnly: true);
             FormatColonne("DL_MontantRegle", "N2", readOnly: true);
+            FormatColonne("DL_PoidsNet", "N2", readOnly: true);      
 
+            // ─── Refresh ───────────────────────────────────────────
             gvLigneEdit.BestFitColumns();
             gvLigneEdit.UpdateSummary();
-
+            gvLigneEdit.RefreshData();
         }
+
         public GridControl GridLigneEdit => gcLigneEdit;
         private void checkEdit_CheckedChanged(object sender, EventArgs e)
         {
@@ -2434,10 +2452,10 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                                         gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
                                                         StatutActuel = Convert.ToInt32(lkStatut.EditValue);
                                                         MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                                        frmSites frmsite = new frmSites(this, dbPrincipale);
-                                                        frmsite.ShowDialog();
+                                                        //frmSites frmsite = new frmSites(this, dbPrincipale);
+                                                        //frmsite.ShowDialog();
                                                         list_depot();
-                                                        ExecuteStockAlert();
+                                                        //ExecuteStockAlert();
                                                         ChargerArtFrns();
                                                     }
                                                 }
@@ -2474,10 +2492,10 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                                     gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
                                                     StatutActuel = Convert.ToInt32(lkStatut.EditValue);
                                                     MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                                    frmSites frmsite = new frmSites(this, dbPrincipale);
-                                                    frmsite.ShowDialog();
+                                                    //frmSites frmsite = new frmSites(this, dbPrincipale);
+                                                    //frmsite.ShowDialog();
                                                     list_depot();
-                                                    ExecuteStockAlert();
+                                                   // ExecuteStockAlert();
                                                     ChargerArtFrns();
                                                 }
                                             }
@@ -2504,10 +2522,10 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                                     gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
                                                     StatutActuel = Convert.ToInt32(lkStatut.EditValue);
                                                     MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                                    frmSites frmsite = new frmSites(this, dbPrincipale);
-                                                    frmsite.ShowDialog();
+                                                    //frmSites frmsite = new frmSites(this, dbPrincipale);
+                                                    //frmsite.ShowDialog();
                                                     list_depot();
-                                                    ExecuteStockAlert();
+                                                    //ExecuteStockAlert();
                                                     ChargerArtFrns();
                                                 }
                                             }
@@ -2534,10 +2552,10 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                         gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
                                         StatutActuel = Convert.ToInt32(lkStatut.EditValue);
                                         MessageBox.Show("Insertion terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                        frmSites frmsite = new frmSites(this,dbPrincipale);
-                                        frmsite.ShowDialog();
+                                        //frmSites frmsite = new frmSites(this,dbPrincipale);
+                                        //frmsite.ShowDialog();
                                         list_depot();
-                                        ExecuteStockAlert();
+                                        //ExecuteStockAlert();
                                         ChargerArtFrns();
                                     }
                                     else
@@ -2546,10 +2564,10 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                         //_ucDocuments.RafraichirDonnees();
                                         gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
                                         MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                        frmSites frmsite = new frmSites(this,dbPrincipale);
-                                        frmsite.ShowDialog();
+                                        //frmSites frmsite = new frmSites(this,dbPrincipale);
+                                        //frmsite.ShowDialog();
                                         list_depot();
-                                        ExecuteStockAlert();
+                                        //ExecuteStockAlert();
                                         ChargerArtFrns();
                                     }
                                 }
@@ -2594,10 +2612,10 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                         gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
                                         StatutActuel = Convert.ToInt32(lkStatut.EditValue);
                                         MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                        frmSites frmsite = new frmSites(this,dbPrincipale);
-                                        frmsite.ShowDialog();
+                                        //frmSites frmsite = new frmSites(this,dbPrincipale);
+                                        //frmsite.ShowDialog();
                                         list_depot();
-                                        ExecuteStockAlert();
+                                        //ExecuteStockAlert();
                                         ChargerArtFrns();
                                     }
                                     else
@@ -2626,10 +2644,10 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                                 gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
                                                 StatutActuel = Convert.ToInt32(lkStatut.EditValue);
                                                 MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                                frmSites frmsite = new frmSites(this, dbPrincipale);
-                                                frmsite.ShowDialog();
+                                                //frmSites frmsite = new frmSites(this, dbPrincipale);
+                                                //frmsite.ShowDialog();
                                                 list_depot();
-                                                ExecuteStockAlert();
+                                                //ExecuteStockAlert();
                                                 ChargerArtFrns();
                                             }
                                         }
@@ -2664,10 +2682,10 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                         gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
                                         StatutActuel = Convert.ToInt32(lkStatut.EditValue);
                                         MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                        frmSites frmsite = new frmSites(this,dbPrincipale);
-                                        frmsite.ShowDialog();
+                                        //frmSites frmsite = new frmSites(this,dbPrincipale);
+                                        //frmsite.ShowDialog();
                                         list_depot();
-                                        ExecuteStockAlert();
+                                        //ExecuteStockAlert();
                                         ChargerArtFrns();
                                     }
                                     else
@@ -2691,10 +2709,10 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                         gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
                                         StatutActuel = Convert.ToInt32(lkStatut.EditValue);
                                         MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                        frmSites frmsite = new frmSites(this,dbPrincipale);
-                                        frmsite.ShowDialog();
+                                        //frmSites frmsite = new frmSites(this,dbPrincipale);
+                                        //frmsite.ShowDialog();
                                         list_depot();
-                                        ExecuteStockAlert();
+                                        //ExecuteStockAlert();
                                         ChargerArtFrns();
                                     }
                                     else
@@ -2720,10 +2738,10 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                 gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
                                 StatutActuel = Convert.ToInt32(lkStatut.EditValue);
                                 MessageBox.Show("Insertion terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                frmSites frmsite = new frmSites(this,dbPrincipale);
-                                frmsite.ShowDialog();
+                                //frmSites frmsite = new frmSites(this,dbPrincipale);
+                                //frmsite.ShowDialog();
                                 list_depot();
-                                ExecuteStockAlert();
+                                //ExecuteStockAlert();
                                 ChargerArtFrns();
                             }
                             else
@@ -2732,10 +2750,10 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                 //_ucDocuments.RafraichirDonnees();
                                 gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
                                 MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                frmSites frmsite = new frmSites(this,dbPrincipale);
-                                frmsite.ShowDialog();
+                                //frmSites frmsite = new frmSites(this,dbPrincipale);
+                                //frmsite.ShowDialog();
                                 list_depot();
-                                ExecuteStockAlert();
+                                //ExecuteStockAlert();
                                 ChargerArtFrns();
                             }
                         }
@@ -2772,10 +2790,10 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                     gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
                                     StatutActuel = Convert.ToInt32(lkStatut.EditValue);
                                     MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                    frmSites frmsite = new frmSites(this,dbPrincipale);
-                                    frmsite.ShowDialog();
+                                    //frmSites frmsite = new frmSites(this,dbPrincipale);
+                                    //frmsite.ShowDialog();
                                     list_depot();
-                                    ExecuteStockAlert();
+                                    //ExecuteStockAlert();
                                     ChargerArtFrns();
                                 }
                                 else
@@ -2805,11 +2823,11 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                             gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
                                             StatutActuel = Convert.ToInt32(lkStatut.EditValue);
                                             MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                            frmSites frmsite = new frmSites(this, dbPrincipale);
-                                            frmsite.ShowDialog();
+                                            //frmSites frmsite = new frmSites(this, dbPrincipale);
+                                            //frmsite.ShowDialog();
 
                                             list_depot();
-                                            ExecuteStockAlert();
+                                            //ExecuteStockAlert();
                                             ChargerArtFrns();
                                         }
                                     }
@@ -2844,10 +2862,10 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                     gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
                                     StatutActuel = Convert.ToInt32(lkStatut.EditValue);
                                     MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                    frmSites frmsite = new frmSites(this,dbPrincipale);
-                                    frmsite.ShowDialog();
+                                    //frmSites frmsite = new frmSites(this,dbPrincipale);
+                                    //frmsite.ShowDialog();
                                     list_depot();
-                                    ExecuteStockAlert();
+                                    //ExecuteStockAlert();
                                     ChargerArtFrns();
                                 }
                                 else
@@ -2871,10 +2889,10 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                     gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
                                     StatutActuel = Convert.ToInt32(lkStatut.EditValue);
                                     MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                    frmSites frmsite = new frmSites(this,dbPrincipale);
-                                    frmsite.ShowDialog();
+                                    //frmSites frmsite = new frmSites(this,dbPrincipale);
+                                    //frmsite.ShowDialog();
                                     list_depot();
-                                    ExecuteStockAlert();
+                                    //ExecuteStockAlert();
                                     ChargerArtFrns();
                                 }
                                 else
@@ -2900,10 +2918,10 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                             gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
                             StatutActuel = Convert.ToInt32(lkStatut.EditValue);
                             MessageBox.Show("Insertion terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            frmSites frmsite = new frmSites(this,dbPrincipale);
-                            frmsite.ShowDialog();
+                            //frmSites frmsite = new frmSites(this,dbPrincipale);
+                            //frmsite.ShowDialog();
                             list_depot();
-                            ExecuteStockAlert();
+                            //ExecuteStockAlert();
                             ChargerArtFrns();
                         }
                         else
@@ -2912,10 +2930,10 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                             //_ucDocuments.RafraichirDonnees();
                             gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
                             MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            frmSites frmsite = new frmSites(this,dbPrincipale);
-                            frmsite.ShowDialog();
+                            //frmSites frmsite = new frmSites(this,dbPrincipale);
+                            //frmsite.ShowDialog();
                             list_depot();
-                            ExecuteStockAlert();
+                            //ExecuteStockAlert();
                             ChargerArtFrns();
                         }
                     }
@@ -4097,7 +4115,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                 if (txtCours.Text != "" && Convert.ToDecimal(txtCours.Text.ToString()) > 0)
                                 {
                                     decimal cours_devise = Convert.ToDecimal(txtCours.Text);
-                                    decimal m_devise = (PU * qte)/ cours_devise;
+                                    decimal m_devise = (PU * qte) / cours_devise;
                                     if (m_devise < 0) m_devise = 0m;
 
                                     e.Value = m_devise.ToString("N2");
@@ -6006,9 +6024,13 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             if (colMht != null)
             {
                 colMht.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
-                colMht.SummaryItem.SummaryType = DevExpress.Data.SummaryItemType.Custom;
+
+                // ✅ Sum calcule automatiquement sans événement supplémentaire
+                colMht.SummaryItem.SummaryType = DevExpress.Data.SummaryItemType.Sum;
                 colMht.SummaryItem.DisplayFormat = "{0:N2}";
             }
+
+            gvLigneEdit.UpdateSummary();
 
             GridColumn colDate = gvLigneEdit.Columns["DL_DatePieceFourniss"];
             if (colDate != null)
@@ -6091,40 +6113,6 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             }
         }
 
-        private void txtCours_EditValueChanged(object sender, EventArgs e)
-        {
-            try
-            {
-                if (!decimal.TryParse(txtCours.Text, out decimal cours))
-                    return; // On ne fait rien si la valeur est invalide
-
-                for (int i = 0; i < gvLigneEdit.RowCount; i++)
-                {
-                    // Ignorer les lignes invalides (DevExpress utilise parfois des index spéciaux)
-                    if (gvLigneEdit.IsGroupRow(i))
-                        continue;
-
-                    decimal qte = Convert.ToDecimal(gvLigneEdit.GetRowCellValue(i, "DL_Qte") ?? 0);
-                    decimal pu = Convert.ToDecimal(gvLigneEdit.GetRowCellValue(i, "DL_PrixUnitaire") ?? 0);
-                    decimal frais = Convert.ToDecimal(gvLigneEdit.GetRowCellValue(i, "DL_Frais") ?? 0);
-                    decimal fret = Convert.ToDecimal(gvLigneEdit.GetRowCellValue(i, "FRET") ?? 0);
-                    decimal montant = 0;
-                    if (new[] { "XW", "FOB" }.Contains(cmbIncoterm.Text))
-                    {
-                        montant = (qte * pu * cours) + (frais + fret);
-                    }
-                    else
-                    {
-                        montant = (qte * pu * cours) + frais;
-                    }
-
-                    gvLigneEdit.SetRowCellValue(i, "DL_MontantHT", montant);
-                }
-
-                // Regénère le résumé sans appeler l’event manuellement
-                gvLigneEdit.UpdateSummary();
-            }catch(Exception ed) { }
-        }
 
         private void simpleButton1_Click(object sender, EventArgs e)
         {
@@ -6559,6 +6547,64 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             frm_correspondance f_corres = new frm_correspondance();
             f_corres.txtnumpiece.Text =dopiecetxt.Text.ToString();
             f_corres.ShowDialog();
+        }
+
+        
+
+        private void txtCours_KeyUp(object sender, KeyEventArgs e)
+        {
+            txtCours_EditValueChanged(sender, EventArgs.Empty);
+        }
+
+        private void txtCours_EditValueChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                // ✅ TryParse avec culture locale
+                if (!decimal.TryParse(txtCours.Text,
+                    System.Globalization.NumberStyles.Any,
+                    System.Globalization.CultureInfo.CurrentCulture,
+                    out decimal cours) || cours <= 0)
+                    return;
+
+                // ✅ Helper pour éviter DBNull
+                decimal GetVal(int row, string field)
+                {
+                    var val = gvLigneEdit.GetRowCellValue(row, field);
+                    return (val == null || val == DBNull.Value) ? 0m : Convert.ToDecimal(val);
+                }
+
+                bool isXwOrFob = new[] { "XW", "FOB" }.Contains(cmbIncoterm.Text?.Trim());
+
+                for (int i = 0; i < gvLigneEdit.RowCount; i++)
+                {
+                    if (gvLigneEdit.IsGroupRow(i)) continue;
+
+                    decimal qte = GetVal(i, "DL_Qte");
+                    decimal pu = GetVal(i, "DL_PrixUnitaire");
+                    decimal frais = GetVal(i, "DL_Frais");
+                    decimal fret = GetVal(i, "FRET");
+
+                    decimal montant = isXwOrFob
+                        ? (qte * pu * cours) + (frais + fret)
+                        : (qte * pu * cours) + frais;
+
+                    gvLigneEdit.SetRowCellValue(i, "DL_MontantHT", montant);
+                }
+
+                gvLigneEdit.UpdateSummary();
+                gvLigneEdit.RefreshData();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erreur : {ex.Message}", "Erreur",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void txtCours_KeyUp_1(object sender, KeyEventArgs e)
+        {
+            txtCours_KeyUp(sender, e);
         }
     }
 }
