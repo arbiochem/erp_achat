@@ -41,7 +41,11 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         private string dodo_piece;
         private DateTime dts;
         private DateTime dtc;
+        private Dictionary<string, Rectangle> articleLineBounds = new Dictionary<string, Rectangle>();
+        private Dictionary<string, bool> checkStatesFournisseurs = new Dictionary<string, bool>();
 
+            private Dictionary<string, Dictionary<string, bool>> checkStatesArticles
+            = new Dictionary<string, Dictionary<string, bool>>();
         public frm_generer()
         {
             _prefix = "APA";
@@ -98,8 +102,9 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         private string GetRowKey(int rowHandle)
         {
             string ctNum = layoutView.GetRowCellValue(rowHandle, "CT_Num")?.ToString() ?? "";
-            string arRef = layoutView.GetRowCellValue(rowHandle, "AR_Ref")?.ToString() ?? "";
-            return $"{ctNum}|{arRef}";
+            //string arRef = layoutView.GetRowCellValue(rowHandle, "AR_Ref")?.ToString() ?? "";
+            // return $"{ctNum}|{arRef}";
+            return $"{ctNum}";
         }
 
         private Guid getcbCreationUserGuid(string usermail)
@@ -241,6 +246,11 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
         public void ChargerDonneesDepuisBDD()
         {
+            // ── Dictionnaires d'état ──
+            // articleLineBounds : clé = "rowHandle|AR_Ref", valeur = Rectangle de la ligne
+            // checkStates       : clé = "CT_Num|AR_Ref",   valeur = bool coché
+            // cardBoundsDict    : clé = rowHandle,          valeur = Rectangle de la carte
+
             PanelControl bottomPanel = new PanelControl();
             bottomPanel.Dock = DockStyle.Bottom;
             bottomPanel.Height = 40;
@@ -269,7 +279,15 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 conn.Open();
-                string query = "SELECT * FROM VW_SEUIL_MIN_STOCK_SUM";
+                string query = @"
+                SELECT 
+                    CT_Num,
+                    CT_Intitule,
+                    SUM(StockADate)   AS StockADate,
+                    MIN(StockMinimum) AS StockMinimum,
+                    MAX(StockMaximum) AS StockMaximum
+                FROM VW_SEUIL_MIN_STOCK_SUM
+                GROUP BY CT_Num, CT_Intitule";
                 SqlDataAdapter adapter = new SqlDataAdapter(query, conn);
                 dt = new DataTable();
                 adapter.Fill(dt);
@@ -301,8 +319,9 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 if (c != null) c.Visible = false;
             }
 
-            layoutView.CardMinSize = new Size(280, 200);
+            layoutView.CardMinSize = new Size(550, 280);
 
+            // ── Helper formatage numérique ──
             string FormatNum(object val)
             {
                 if (double.TryParse(val?.ToString(),
@@ -313,143 +332,18 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 return "0,00";
             }
 
-            layoutView.CustomDrawCardCaption += (sender, e) =>
-            {
-                e.DefaultDraw();
-
-                string key = GetRowKey(e.RowHandle);
-                if (!checkStates.ContainsKey(key))
-                    checkStates[key] = false;
-
-                bool isChecked = checkStates[key]; 
-
-                int cbSize = 16;
-                int margin = 6;
-
-                Rectangle cbRect = new Rectangle(
-                    e.CaptionBounds.Right - cbSize - margin,
-                    e.CaptionBounds.Top + (e.CaptionBounds.Height - cbSize) / 2,
-                    cbSize,
-                    cbSize);
-
-                using (SolidBrush cbBg = new SolidBrush(isChecked
-                    ? Color.FromArgb(39, 174, 96) : Color.White))
-                    e.Cache.FillRectangle(cbBg, cbRect);
-
-                using (Pen cbPen = new Pen(isChecked
-                    ? Color.FromArgb(27, 130, 70)
-                    : Color.FromArgb(200, 200, 200), 1.5f))
-                    e.Cache.DrawRectangle(cbPen, cbRect);
-
-                if (isChecked)
-                {
-                    using (Pen checkPen = new Pen(Color.White, 2f))
-                    {
-                        e.Cache.DrawLine(checkPen,
-                            new Point(cbRect.Left + 3, cbRect.Top + cbSize / 2),
-                            new Point(cbRect.Left + cbSize / 2 - 1, cbRect.Bottom - 3));
-                        e.Cache.DrawLine(checkPen,
-                            new Point(cbRect.Left + cbSize / 2 - 1, cbRect.Bottom - 3),
-                            new Point(cbRect.Right - 2, cbRect.Top + 3));
-                    }
-                }
-            };
-
-            layoutView.CustomDrawCardBackground += (sender, e) =>
-            {
-                e.DefaultDraw();
-                cardBoundsDict[e.RowHandle] = e.Bounds;
-
-                double GetVal(string colName) => double.TryParse(
-                    layoutView.GetRowCellValue(e.RowHandle, colName)?.ToString(),
-                    System.Globalization.NumberStyles.Any,
-                    System.Globalization.CultureInfo.InvariantCulture,
-                    out double v) ? v : 0;
-
-                double rawStockADate = GetVal("StockADate");
-                double rawStockMin = GetVal("StockMinimum");
-                double rawStockMax = GetVal("StockMaximum");
-
-                Color footerColor;
-                if (rawStockADate < rawStockMin)
-                    footerColor = Color.FromArgb(255, 220, 50, 50);
-                else if (rawStockADate < rawStockMax)
-                    footerColor = Color.FromArgb(255, 230, 126, 34);
-                else
-                    footerColor = Color.FromArgb(255, 41, 98, 162);
-
-                int footerHeight = 55;
-                Rectangle footerRect = new Rectangle(
-                    e.Bounds.Left + 2,
-                    e.Bounds.Bottom - footerHeight - 2,
-                    e.Bounds.Width - 4,
-                    footerHeight);
-
-                using (SolidBrush bgBrush = new SolidBrush(footerColor))
-                    e.Cache.FillRectangle(bgBrush, footerRect);
-
-                using (Pen pen = new Pen(Color.White, 1))
-                    e.Cache.DrawLine(pen,
-                        new Point(footerRect.Left, footerRect.Top),
-                        new Point(footerRect.Right, footerRect.Top));
-
-                int lineHeight = footerHeight / 3;
-
-                using (Font font = new Font("Tahoma", 7.5f, FontStyle.Regular))
-                using (SolidBrush fg = new SolidBrush(Color.White))
-                {
-                    var sf = new StringFormat
-                    {
-                        Alignment = StringAlignment.Near,
-                        LineAlignment = StringAlignment.Center
-                    };
-
-                    e.Cache.DrawString($"Stock à date : {FormatNum(rawStockADate)}", font, fg,
-                        new Rectangle(footerRect.Left + 5, footerRect.Top + 2,
-                                      footerRect.Width - 10, lineHeight), sf);
-                    e.Cache.DrawString($"Stock Min    : {FormatNum(rawStockMin)}", font, fg,
-                        new Rectangle(footerRect.Left + 5, footerRect.Top + lineHeight + 2,
-                                      footerRect.Width - 10, lineHeight), sf);
-                    e.Cache.DrawString($"Stock Max    : {FormatNum(rawStockMax)}", font, fg,
-                        new Rectangle(footerRect.Left + 5, footerRect.Top + (lineHeight * 2) + 2,
-                                      footerRect.Width - 10, lineHeight), sf);
-                }
-            };
-
-
-            gdList.MouseClick += (sender, e) =>
-            {
-                Point pt = e.Location;
-                LayoutViewHitInfo hi = layoutView.CalcHitInfo(pt);
-                int rowHandle = hi.RowHandle;
-
-                if (rowHandle < 0) return;
-                if (!cardBoundsDict.ContainsKey(rowHandle)) return;
-
-                Rectangle bounds = cardBoundsDict[rowHandle];
-                int headerHeight = 24;
-
-                Rectangle headerRect = new Rectangle(
-                    bounds.Left, bounds.Top, bounds.Width, headerHeight);
-
-                if (headerRect.Contains(pt))
-                {
-                    string key = GetRowKey(rowHandle);
-                    if (!checkStates.ContainsKey(key))
-                        checkStates[key] = false;
-
-                    checkStates[key] = !checkStates[key];
-
-                    UpdateSelectionCount();
-                    layoutView.RefreshData();
-                }
-            };
-
+            // ── Panels de recherche ──
+            Panel spacer = new Panel();
+            spacer.Dock = DockStyle.Top;
+            spacer.Height = 10;
+            this.Controls.Add(spacer);
 
             PanelControl searchPanel = new PanelControl();
             searchPanel.Dock = DockStyle.Top;
-            searchPanel.Height = 40;
+            searchPanel.Height = 60;
             searchPanel.BackColor = Color.FromArgb(240, 240, 240);
+            searchPanel.Padding = new Padding(5);
+            this.Controls.Add(searchPanel);
 
             LabelControl lblSearch = new LabelControl();
             lblSearch.Text = "Recherche :";
@@ -457,24 +351,270 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             lblSearch.Parent = searchPanel;
 
             TextEdit txtSearch = new TextEdit();
-            txtSearch.Properties.NullValuePrompt = "🔍 Fournisseur ou article...";
+            txtSearch.Properties.NullValuePrompt = "🔍 Fournisseur";
             txtSearch.Properties.NullValuePromptShowForEmptyValue = true;
-            txtSearch.Location = new Point(90, 8);
-            txtSearch.Width = 300;
+            txtSearch.Location = new Point(10, 30);
+            txtSearch.Width = 140;
             txtSearch.Height = 24;
             txtSearch.Parent = searchPanel;
 
+            TextEdit txtSearch1 = new TextEdit();
+            txtSearch1.Properties.NullValuePrompt = "🔍 Article";
+            txtSearch1.Properties.NullValuePromptShowForEmptyValue = true;
+            txtSearch1.Location = new Point(160, 30);
+            txtSearch1.Width = 140;
+            txtSearch1.Height = 24;
+            txtSearch1.Parent = searchPanel;
+
             SimpleButton btnClear = new SimpleButton();
             btnClear.Text = "✕";
-            btnClear.Location = new Point(395, 8);
-            btnClear.Width = 30;
-            btnClear.Height = 24;
+            btnClear.Location = new Point(305, 29);
+            btnClear.Size = new Size(30, 24);
             btnClear.Parent = searchPanel;
+
+            txtSearch.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            txtSearch1.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+
+            // ── Rafraîchissement sur saisie dans les deux champs ──
+            txtSearch.TextChanged += (s, ev) =>
+            {
+                cardBoundsDict.Clear();
+                articleLineBounds.Clear();
+                layoutView.RefreshData();
+            };
+
+            txtSearch1.TextChanged += (s, ev) =>
+            {
+                cardBoundsDict.Clear();
+                articleLineBounds.Clear();
+                layoutView.RefreshData();
+            };
+
+            // ── Dessin personnalisé des cartes ──
+            layoutView.CustomDrawCardBackground += (sender, e) =>
+            {
+                e.DefaultDraw();
+                cardBoundsDict[e.RowHandle] = e.Bounds;
+
+                string ctNum = layoutView.GetRowCellValue(e.RowHandle, "CT_Num")?.ToString();
+
+                // ✅ CT_Intitule récupéré directement depuis l'en-tête de la carte (DataTable)
+                string ctIntitule = layoutView.GetRowCellValue(e.RowHandle, "CT_Intitule")?.ToString() ?? "";
+
+                // ── Charger les articles depuis la BDD ──
+                var articles = new List<(string client, string Ref, string Design, double StockADate, double StockMin, double StockMax)>();
+
+                using (var conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    string sql = @"SELECT CT_Intitule, AR_Ref, AR_Design, StockADate, StockMinimum, StockMaximum 
+                   FROM VW_SEUIL_MIN_STOCK_SUM WHERE CT_Num = @ct";
+
+                    using (var cmd = new SqlCommand(sql, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@ct", ctNum);
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                double ParseVal(string colName)
+                                {
+                                    string raw = reader[colName]?.ToString();
+                                    if (double.TryParse(raw, System.Globalization.NumberStyles.Any,
+                                        new System.Globalization.CultureInfo("fr-FR"), out double v1)) return v1;
+                                    if (double.TryParse(raw, System.Globalization.NumberStyles.Any,
+                                        System.Globalization.CultureInfo.InvariantCulture, out double v2)) return v2;
+                                    return 0;
+                                }
+
+                                articles.Add((
+                                    reader["CT_Intitule"]?.ToString(),
+                                    reader["AR_Ref"]?.ToString(),
+                                    reader["AR_Design"]?.ToString(),
+                                    ParseVal("StockADate"),
+                                    ParseVal("StockMinimum"),
+                                    ParseVal("StockMaximum")
+                                ));
+                            }
+                        }
+                    }
+                }
+
+                // ── Filtre texte ──
+                string searchF = txtSearch?.Text?.Trim() ?? "";
+                string searchA = txtSearch1?.Text?.Trim() ?? "";
+
+                // ✅ Le filtre fournisseur porte sur ctIntitule (en-tête de carte) — pas sur a.client
+                if (!string.IsNullOrEmpty(searchF) &&
+                    ctIntitule.IndexOf(searchF, StringComparison.OrdinalIgnoreCase) < 0)
+                    return;
+
+                // Filtre article sur la désignation uniquement
+                articles = articles
+                    .Where(a =>
+                        string.IsNullOrEmpty(searchA) ||
+                        (a.Design ?? "").IndexOf(searchA, StringComparison.OrdinalIgnoreCase) >= 0)
+                    .ToList();
+
+                // ── Layout ──
+                int headerTop = e.Bounds.Top + 28;
+                int headerH = 22;
+                int articleAreaTop = headerTop + headerH;
+                int articleAreaBottom = e.Bounds.Bottom - 4;
+
+                int lineH = 22;
+                int cbSize = 12;
+                int maxVisible = 10;
+
+                int col1W = (e.Bounds.Width - cbSize - 20) * 2 / 3;
+                int col2W = (e.Bounds.Width - cbSize - 20) / 3;
+
+                using (Font fontHeader = new Font("Tahoma", 7.5f, FontStyle.Bold))
+                using (Font fontArt = new Font("Tahoma", 7.5f))
+                using (Font fontStock = new Font("Tahoma", 6.5f))
+                using (SolidBrush fgHeader = new SolidBrush(Color.Black))
+                using (SolidBrush fgDesign = new SolidBrush(Color.FromArgb(40, 40, 40)))
+                using (SolidBrush fgStock = new SolidBrush(Color.FromArgb(80, 80, 80)))
+                using (SolidBrush fgMore = new SolidBrush(Color.Gray))
+                {
+                    var sfLeft = new StringFormat { LineAlignment = StringAlignment.Center };
+                    var sfRight = new StringFormat { Alignment = StringAlignment.Far, LineAlignment = StringAlignment.Center };
+
+                    // ── En-tête colonnes ──
+                    using (SolidBrush headerBg = new SolidBrush(Color.FromArgb(230, 230, 230)))
+                        e.Cache.FillRectangle(headerBg,
+                            new Rectangle(e.Bounds.Left + 2, headerTop, e.Bounds.Width - 4, headerH));
+
+                    e.Cache.DrawString("Désignation", fontHeader, fgHeader,
+                        new Rectangle(e.Bounds.Left + cbSize + 12, headerTop, col1W, headerH), sfLeft);
+
+                    e.Cache.DrawString("A date | Min | Max", fontHeader, fgHeader,
+                        new Rectangle(e.Bounds.Left + cbSize + 12 + col1W, headerTop, col2W, headerH), sfRight);
+
+                    int drawn = 0;
+
+                    foreach (var (client, arRef, arDesign, stockADate, stockMin, stockMax) in articles)
+                    {
+                        if (drawn >= maxVisible) break;
+
+                        int y = articleAreaTop + drawn * lineH;
+
+                        // ── Couleur de ligne ──
+                        Color baseColor = (drawn % 2 == 0)
+                            ? Color.FromArgb(245, 245, 245)
+                            : Color.White;
+
+                        Color lineColor = (stockADate < stockMin)
+                            ? Color.FromArgb(180, 255, 80, 80)
+                            : baseColor;
+
+                        Rectangle lineRect = new Rectangle(e.Bounds.Left + 2, y, e.Bounds.Width - 4, lineH);
+
+                        using (SolidBrush bg = new SolidBrush(lineColor))
+                            e.Cache.FillRectangle(bg, lineRect);
+
+                        // clé = "rowHandle|AR_Ref"  → utilisée dans MouseClick
+                        string lineKey = $"{e.RowHandle}|{arRef}";
+                        articleLineBounds[lineKey] = lineRect;
+
+                        // ── Checkbox ──
+                        string articleKey = $"{ctNum}|{arRef}";
+                        if (!checkStates.ContainsKey(articleKey))
+                            checkStates[articleKey] = false;
+
+                        bool isChecked = checkStates[articleKey];
+
+                        Rectangle cbRect = new Rectangle(
+                            e.Bounds.Left + 6,
+                            y + (lineH - cbSize) / 2,
+                            cbSize, cbSize);
+
+                        using (SolidBrush cbBg = new SolidBrush(isChecked ? Color.Green : Color.White))
+                            e.Cache.FillRectangle(cbBg, cbRect);
+
+                        using (Pen pen = new Pen(Color.Gray))
+                            e.Cache.DrawRectangle(pen, cbRect);
+
+                        if (isChecked)
+                        {
+                            using (Pen checkPen = new Pen(Color.White, 2f))
+                            {
+                                e.Cache.DrawLine(checkPen,
+                                    new Point(cbRect.Left + 2, cbRect.Top + cbSize / 2),
+                                    new Point(cbRect.Left + cbSize / 2 - 1, cbRect.Bottom - 2));
+                                e.Cache.DrawLine(checkPen,
+                                    new Point(cbRect.Left + cbSize / 2 - 1, cbRect.Bottom - 2),
+                                    new Point(cbRect.Right - 1, cbRect.Top + 2));
+                            }
+                        }
+
+                        // ── Texte article ──
+                        e.Cache.DrawString(arDesign ?? "", fontArt, fgDesign,
+                            new Rectangle(e.Bounds.Left + cbSize + 12, y, col1W, lineH), sfLeft);
+
+                        string stockInfo = $"{FormatNum(stockADate),9} | {FormatNum(stockMin),9} | {FormatNum(stockMax),9}";
+
+                        e.Cache.DrawString(stockInfo, fontStock, fgStock,
+                            new Rectangle(e.Bounds.Left + cbSize + 12 + col1W, y, col2W, lineH), sfRight);
+
+                        // ── Séparateur colonne ──
+                        using (Pen sep = new Pen(Color.FromArgb(200, 200, 200)))
+                        {
+                            int xSep = e.Bounds.Left + cbSize + 12 + col1W;
+                            e.Cache.DrawLine(sep, new Point(xSep, y), new Point(xSep, y + lineH));
+                        }
+
+                        drawn++;
+                    }
+
+                    // ── "+N articles..." si tronqué ──
+                    if (articles.Count > maxVisible)
+                    {
+                        int remain = articles.Count - maxVisible;
+                        e.Cache.DrawString($"+{remain} article(s)...", fontStock, fgMore,
+                            new Rectangle(e.Bounds.Left + 10, articleAreaBottom - 16,
+                                          e.Bounds.Width - 20, 16), sfLeft);
+                    }
+                }
+            };
+
+            // ── Gestion du clic souris ──
+            gdList.MouseClick += (sender, e) =>
+            {
+                Point pt = e.Location;
+
+                // Parcourir articleLineBounds pour détecter le clic
+                foreach (var kvp in articleLineBounds)
+                {
+                    if (kvp.Value.Contains(pt))
+                    {
+                        // clé = "rowHandle|AR_Ref"
+                        string[] parts = kvp.Key.Split('|');
+                        if (parts.Length < 2) continue;
+
+                        int rowHandle = int.Parse(parts[0]);
+                        string arRef = parts[1];
+                        string ctNum2 = layoutView.GetRowCellValue(rowHandle, "CT_Num")?.ToString();
+
+                        string articleKey = $"{ctNum2}|{arRef}";
+
+                        if (!checkStates.ContainsKey(articleKey))
+                            checkStates[articleKey] = false;
+
+                        checkStates[articleKey] = !checkStates[articleKey];
+
+                        UpdateSelectionCount();
+                        layoutView.RefreshData();
+                        return;
+                    }
+                }
+            };
 
             this.Controls.Add(searchPanel);
             searchPanel.BringToFront();
             this.Controls.Add(bottomPanel);
 
+            // ── Mise à jour du compteur de sélection ──
             void UpdateSelectionCount()
             {
                 int count = checkStates.Count(kv => kv.Value);
@@ -482,6 +622,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 btnGenerer.Enabled = count > 0;
             }
 
+            // ── Filtre sur fournisseur (RowFilter sur DataTable) ──
             txtSearch.EditValueChanged += (sender, e) =>
             {
                 string search = txtSearch.Text.Trim();
@@ -492,15 +633,15 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                     else
                     {
                         string safe = search.Replace("'", "''");
-                        dt.DefaultView.RowFilter =
-                            $"CT_Intitule LIKE '%{safe}%' OR AR_Design LIKE '%{safe}%'";
+                        dt.DefaultView.RowFilter = $"CT_Intitule LIKE '%{safe}%'";
                     }
 
                     gdList.DataSource = null;
                     gdList.DataSource = dt.DefaultView;
                     gdList.MainView = layoutView;
                     gdList.RefreshDataSource();
-                    cardBoundsDict.Clear(); 
+                    cardBoundsDict.Clear();
+                    articleLineBounds.Clear();
                 }
                 catch (Exception ex)
                 {
@@ -508,187 +649,213 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 }
             };
 
+            // ── Bouton reset ──
             btnClear.Click += (sender, e) =>
             {
                 txtSearch.EditValue = null;
+                txtSearch1.EditValue = null;
                 dt.DefaultView.RowFilter = string.Empty;
                 gdList.DataSource = null;
                 gdList.DataSource = dt;
                 gdList.MainView = layoutView;
                 gdList.RefreshDataSource();
                 cardBoundsDict.Clear();
+                articleLineBounds.Clear();
             };
+        
 
             btnGenerer.Click += (sender, e) =>
             {
-                var selected = checkStates
+
+                // 1. Fournisseurs cochés
+                // Récupère les CT_Num distincts des articles cochés
+                var selectedCtNums = checkStates
                     .Where(kv => kv.Value)
-                    .Select(kv =>
-                    {
-                        string[] parts = kv.Key.Split('|');
-                        string ctNum = parts[0];
-                        string arRef = parts.Length > 1 ? parts[1] : "";
-
-                        DataRow row = dt.Rows.Cast<DataRow>()
-                            .FirstOrDefault(r =>
-                                r["CT_Num"]?.ToString() == ctNum &&
-                                r["AR_Ref"]?.ToString() == arRef);
-
-                        if (row == null) return null;
-
-                        return new
-                        {
-                            CT_Num = ctNum,
-                            Fournisseur = row["CT_Intitule"]?.ToString(),
-                            AR_Ref = arRef,
-                            AR_Design = row["AR_Design"]?.ToString()
-                        };
-                    })
-                    .Where(x => x != null)
+                    .Select(kv => kv.Key.Split('|')[0]) // CT_Num
+                    .Distinct()
                     .ToList();
 
-                if (selected.Count == 0)
+                if (selectedCtNums.Count == 0)
                 {
                     MessageBox.Show("Aucun article sélectionné.", "Attention",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
-                // 2. Regrouper par fournisseur → 1 PA par groupe
-                var groupedByFournisseur = selected
-                    .GroupBy(s => new { s.CT_Num, s.Fournisseur })
+               
+                // 1. Afficher les fournisseurs concernés
+                var selectedFournisseurs = dt.Rows
+                    .Cast<DataRow>()
+                    .Where(r => selectedCtNums.Contains(r["CT_Num"]?.ToString()))
+                    .Select(r => r["CT_Intitule"]?.ToString())
+                    .Distinct()
                     .ToList();
 
-                // 3. Récapitulatif de confirmation
+                // 2. Charger + filtrer articles cochés
+                var groupedByFournisseur = new List<(string CT_Num, string Fournisseur, DataTable Articles)>();
+
+                foreach (string ctNum in selectedCtNums)
+                {
+                    DataRow fournisseurRow = dt.Rows.Cast<DataRow>()
+                        .FirstOrDefault(r => r["CT_Num"]?.ToString() == ctNum);
+
+                    string fournisseur = fournisseurRow?["CT_Intitule"]?.ToString() ?? ctNum;
+
+                    DataTable dtArticles = new DataTable();
+
+                    using (var conn = new SqlConnection(connectionString))
+                    {
+                        conn.Open();
+                        string sql = @"SELECT AR_Ref, AR_Design, StockADate, StockMinimum, StockMaximum
+                           FROM VW_SEUIL_MIN_STOCK_SUM
+                           WHERE CT_Num = @ctNum";
+
+                        var ada = new SqlDataAdapter(sql, conn);
+                        ada.SelectCommand.Parameters.AddWithValue("@ctNum", ctNum);
+                        ada.Fill(dtArticles);
+                    }
+
+                    // ✅ FILTRAGE : articles cochés via checkStates["CT_Num|AR_Ref"]
+                    DataTable dtFiltered = dtArticles.Clone();
+
+                    foreach (DataRow row in dtArticles.Rows)
+                    {
+                        string arRef = row["AR_Ref"]?.ToString();
+                        string articleKey = $"{ctNum}|{arRef}";
+
+                        if (checkStates.ContainsKey(articleKey) && checkStates[articleKey])
+                            dtFiltered.ImportRow(row);
+                    }
+
+                    // Aucun article coché pour ce fournisseur → on passe
+                    if (dtFiltered.Rows.Count == 0)
+                        continue;
+
+                    groupedByFournisseur.Add((ctNum, fournisseur, dtFiltered));
+                }
+
+                // Sécurité globale
+                if (groupedByFournisseur.Count == 0)
+                {
+                    MessageBox.Show("Aucun article sélectionné.", "Attention",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // 3. Récapitulatif
                 var recap = new StringBuilder();
                 recap.AppendLine($"{groupedByFournisseur.Count} PA(s) vont être générés :\n");
 
-                foreach (var group in groupedByFournisseur)
+                foreach (var (ctNum, fournisseur, articles) in groupedByFournisseur)
                 {
-                    recap.AppendLine($"📦 {group.Key.Fournisseur}  ({group.Count()} article(s))");
-                    foreach (var item in group)
-                        recap.AppendLine($"     • {item.AR_Design}");
+                    recap.AppendLine($"📦 {fournisseur} ({articles.Rows.Count} article(s))");
+
+                    foreach (DataRow r in articles.Rows)
+                        recap.AppendLine($"   • {r["AR_Design"]}");
+
                     recap.AppendLine();
                 }
 
-                DialogResult confirm = MessageBox.Show(
-                    recap.ToString(), "Confirmation",
+                DialogResult confirm = MessageBox.Show(recap.ToString(), "Confirmation",
                     MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
 
                 if (confirm != DialogResult.OK) return;
 
-                // 4. Génération : 1 en-tête + N lignes par fournisseur
+                // 4. Génération
                 int paGeneresCount = 0;
                 var erreurs = new List<string>();
-                int depot = 0;
-                int cono = 0;
+                int depot = 0, cono = 0;
 
-                foreach (var group in groupedByFournisseur)
+                foreach (var (ctNum, fournisseur, articles) in groupedByFournisseur)
                 {
                     doPiece = GetNextInvoiceNumber(_prefix);
+
                     try
                     {
+                        // EN-TÊTE
                         using (var connection = new SqlConnection(connectionStrings))
                         {
                             connection.Open();
-
-                            var triggers = new List<string>
-                            {
-                                "TG_CBINS_F_DOCENTETE",
-                                "TG_INS_CPTAF_DOCENTETE",
-                                "TG_INS_F_DOCENTETE"
-                            };
+                            var triggers = new[] { "TG_CBINS_F_DOCENTETE", "TG_INS_CPTAF_DOCENTETE", "TG_INS_F_DOCENTETE" };
 
                             try
                             {
-                                foreach (var trigger in triggers)
-                                {
-                                    using (var cmd = new SqlCommand($"DISABLE TRIGGER {trigger} ON F_DOCENTETE", connection))
-                                    {
-                                        cmd.ExecuteNonQuery();
-                                    }
-                                }
+                                foreach (var t in triggers)
+                                    new SqlCommand($"DISABLE TRIGGER {t} ON F_DOCENTETE", connection).ExecuteNonQuery();
+
                                 dodo_piece = doPiece;
-                                InsertFDOCENTETE(group.Key.CT_Num, group.Key.Fournisseur);
+                                InsertFDOCENTETE(ctNum, fournisseur);
                             }
                             finally
                             {
-                                foreach (var trigger in triggers)
-                                {
-                                    using (var cmd = new SqlCommand($"ENABLE TRIGGER {trigger} ON F_DOCENTETE", connection))
-                                    {
-                                        cmd.ExecuteNonQuery();
-                                    }
-                                }
+                                foreach (var t in triggers)
+                                    new SqlCommand($"ENABLE TRIGGER {t} ON F_DOCENTETE", connection).ExecuteNonQuery();
                             }
-
                         }
-                        decimal cours=0;
-                        decimal montant_total=0;
-                       
-                        foreach (var article in group)
-                        {
-                            // 1. Saisie de la quantité via formulaire DevExpress
-                            int qte=0;
-                            decimal pu;
-                            decimal montant;
-                            decimal poids;
 
-                            using (var frmQte = new frm_saisieQuantite(article.AR_Ref, article.AR_Design, dodo_piece, article.Fournisseur))
+                        decimal cours = 0, montant_total = 0;
+
+                        // LIGNES
+                        foreach (DataRow article in articles.Rows)
+                        {
+                            string arRef = article["AR_Ref"]?.ToString();
+                            string arDesign = article["AR_Design"]?.ToString();
+
+                            using (var frmQte = new frm_saisieQuantite(arRef, arDesign, dodo_piece, fournisseur))
                             {
-                                if (frmQte.ShowDialog() != DialogResult.OK) continue; // Annuler → article suivant
-                                qte = int.Parse(frmQte.txtQte.Text);
-                                pu = decimal.Parse(frmQte.txtKg.Text);
-                                cours=decimal.Parse(frmQte.txtcoursdevise.Text);
-                                montant = qte * pu * cours;
+                                if (frmQte.ShowDialog() != DialogResult.OK) continue;
+
+                                int qte = int.Parse(frmQte.txtQte.Text);
+                                decimal pu = decimal.Parse(frmQte.txtKg.Text);
+                                cours = decimal.Parse(frmQte.txtcoursdevise.Text);
+
+                                decimal montant = qte * pu * cours;
                                 montant_total += montant;
+
                                 depot = frmQte.deno;
                                 cono = frmQte.cono;
-                                dts=frmQte.dt;
+                                dts = frmQte.dt;
                                 dtc = frmQte.dc;
-                                poids = Convert.ToDecimal(frmQte.txtPoids.Text);
-                            }
 
+                                decimal poids = Convert.ToDecimal(frmQte.txtPoids.Text);
 
-                            // 2. Insertion avec la quantité saisie
-                            using (var connection = new SqlConnection(connectionStrings))
-                            {
-                                connection.Open();
-                                var triggers = new List<string>
+                                using (var connection = new SqlConnection(connectionStrings))
                                 {
-                                    "TG_CBINS_F_DOCLIGNE",
-                                    "TG_INS_CPTAF_DOCLIGNE",
-                                    "TG_INS_F_DOCLIGNE"
-                                };
-                                try
-                                {
-                                    foreach (var trigger in triggers)
+                                    connection.Open();
+
+                                    var triggers = new[] { "TG_CBINS_F_DOCLIGNE", "TG_INS_CPTAF_DOCLIGNE", "TG_INS_F_DOCLIGNE" };
+
+                                    try
                                     {
-                                        using (var cmd = new SqlCommand($"DISABLE TRIGGER {trigger} ON F_DOCLIGNE", connection))
+                                        foreach (var t in triggers)
+                                            new SqlCommand($"DISABLE TRIGGER {t} ON F_DOCLIGNE", connection).ExecuteNonQuery();
+
+                                        string sqlUpdate = @"UPDATE F_DOCENTETE 
+                            SET DO_Taxe1=0, DO_Expedit=0, DO_DateLivr=@dtt,
+                                DE_No=@deno, CO_No=@cono, DO_Imprim=0, DO_Statut=0,
+                                DO_Cours=@doCours, DO_TotalHTNet=@montant,
+                                DO_TotalHT=@montant, DO_TotalTTC=@montant,
+                                DO_DateExpedition=@dtc
+                            WHERE DO_Piece = @doPiece";
+
+                                        using (var cmd = new SqlCommand(sqlUpdate, connection))
+                                        {
+                                            cmd.Parameters.Add("@doCours", SqlDbType.Decimal).Value = cours;
+                                            cmd.Parameters.Add("@doPiece", SqlDbType.Char, 13).Value = dodo_piece.PadRight(13);
+                                            cmd.Parameters.Add("@montant", SqlDbType.Decimal).Value = montant_total;
+                                            cmd.Parameters.Add("@deno", SqlDbType.Int).Value = depot;
+                                            cmd.Parameters.Add("@cono", SqlDbType.Int).Value = cono;
+                                            cmd.Parameters.Add("@dtt", SqlDbType.DateTime).Value = dts;
+                                            cmd.Parameters.Add("@dtc", SqlDbType.DateTime).Value = dtc;
                                             cmd.ExecuteNonQuery();
-                                    }
+                                        }
 
-                                    string user = FrmMdiParent._id_user.ToString();
-                                    string sqlUpdate = "UPDATE F_DOCENTETE SET DO_Taxe1=0,DO_Expedit=0,DO_DateLivr=@dtt,DE_No=@deno,CO_No=@cono,DO_Imprim=0,DO_Statut=0,DO_Cours = @doCours,DO_TotalHTNet=@montant,DO_TotalHT=@montant,DO_TotalTTC=@montant,DO_DateExpedition=@dtc WHERE DO_Piece = @doPiece";
-                                    using (var cmdUpdate = new SqlCommand(sqlUpdate, connection))
-                                    {
-                                        cmdUpdate.Parameters.Add("@doCours", SqlDbType.Decimal).Value = cours; // valeur correcte pour Sage
-                                        cmdUpdate.Parameters.Add("@doPiece", SqlDbType.Char, 13).Value = dodo_piece.PadRight(13);
-                                        cmdUpdate.Parameters.Add("@montant", SqlDbType.Decimal).Value = montant_total;
-                                        cmdUpdate.Parameters.Add("@deno", SqlDbType.Int).Value = depot;
-                                        cmdUpdate.Parameters.Add("@cono", SqlDbType.Int).Value = cono;
-                                        cmdUpdate.Parameters.Add("@dtt", SqlDbType.DateTime).Value = dts;
-                                        cmdUpdate.Parameters.Add("@dtc", SqlDbType.DateTime).Value = dtc;
-                                        cmdUpdate.ExecuteNonQuery();
+                                        InsertFDOCLIGNE(dodo_piece, arRef, arDesign, qte, pu, montant, ctNum, depot, poids);
                                     }
-                                    InsertFDOCLIGNE(dodo_piece, article.AR_Ref, article.AR_Design, qte,pu,montant, group.Key.CT_Num,depot,poids); // ← quantité ajoutée
-                                }
-                                finally
-                                {
-                                    foreach (var trigger in triggers)
+                                    finally
                                     {
-                                        using (var cmd = new SqlCommand($"ENABLE TRIGGER {trigger} ON F_DOCLIGNE", connection))
-                                            cmd.ExecuteNonQuery();
+                                        foreach (var t in triggers)
+                                            new SqlCommand($"ENABLE TRIGGER {t} ON F_DOCLIGNE", connection).ExecuteNonQuery();
                                     }
                                 }
                             }
@@ -698,22 +865,33 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                     }
                     catch (Exception ex)
                     {
-                        erreurs.Add($"• {group.Key.Fournisseur} : {ex.Message}");
+                        erreurs.Add($"• {fournisseur} : {ex.Message}");
                     }
                 }
 
-                // 5. Rapport final
+                // 5. Résultat final
                 if (erreurs.Count > 0)
+                {
                     MessageBox.Show(
                         $"{paGeneresCount} PA(s) générés.\n\nErreurs :\n{string.Join("\n", erreurs)}",
                         "Résultat partiel", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
                 else
+                {
                     MessageBox.Show(
                         $"✅ {paGeneresCount} PA(s) générés avec succès.",
                         "Succès", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
 
                 // 6. Reset sélection
                 checkStates.Clear();
+                UpdateSelectionCount();
+                layoutView.RefreshData();
+
+                // 6. Reset
+                checkStatesFournisseurs.Clear();
+                checkStatesArticles.Clear();
+
                 UpdateSelectionCount();
                 layoutView.RefreshData();
             };
