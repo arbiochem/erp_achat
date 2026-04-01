@@ -19,6 +19,7 @@ using DevExpress.DataAccess.UI.Excel;
 using DevExpress.DataProcessing;
 using DevExpress.DataProcessing.InMemoryDataProcessor;
 using DevExpress.DataProcessing.InMemoryDataProcessor.GraphGenerator;
+using DevExpress.Map.Native;
 using DevExpress.Pdf.Xmp;
 using DevExpress.Spreadsheet;
 using DevExpress.UIAutomation;
@@ -67,16 +68,19 @@ using System.Net;
 using System.Reflection;
 using System.Runtime.Remoting.Contexts;
 using System.Security.AccessControl;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static DevExpress.Utils.Drawing.Helpers.NativeMethods;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 using Exception = System.Exception;
 using FieldInfo = DevExpress.DataAccess.Excel.FieldInfo;
+using SummaryItemType = DevExpress.Data.SummaryItemType;
 using TextEdit = DevExpress.XtraEditors.TextEdit;
 
 
@@ -91,7 +95,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                                  $"User ID=Dev;Password=1234;TrustServerCertificate=True;" +
                                                  $"Connection Timeout=240;";
 
-        private static string connectionString_f = $"Server={serveripPrincipale};Database=ARBIOCHEM_ACHAT;" +
+        private static string connectionString_f = $"Server={serveripPrincipale};Database=TRANSIT;" +
                                                  $"User ID=Dev;Password=1234;TrustServerCertificate=True;" +
                                                  $"Connection Timeout=240;";
         private readonly AppDbContext _context;
@@ -123,12 +127,15 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         private string dopiece;
 
         private int StatutActuel;
+        decimal _recup_cours;
+
 
 
         //update
         public frmEditDocument(string DoPiece, string typeDocument, ucDocuments parent, System.Windows.Forms.BindingSource source)
         {
             InitializeComponent();
+
 
             CustomLayout();
             _context = new AppDbContext();
@@ -143,7 +150,6 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             InitializeChamps(DoPiece);
             dopiece = DoPiece;
             LoadCodeTaxe();
-            InitializeGrid(gcLigneEdit, DoPiece);
             ChargerListeAcheteur();
             ChargerDepot();
             ChargerDevise();
@@ -189,12 +195,24 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             }
 
 
-            
             StatutActuel = (int)_listeDocs
                 .Where(doc => doc.DO_Piece == DoPiece)
                 .Select(doc => doc.DO_Statut)
                 .FirstOrDefault();
 
+            txtCours.EditValueChanged -= txtCours_EditValueChanged;
+            txtCours.Text = (_context.F_DOCENTETE
+            .Where(d => d.DO_Piece.Trim() == DoPiece.Trim())
+            .Select(d => (decimal?)d.DO_Cours)
+            .FirstOrDefault() ?? 0m)
+            .ToString();
+
+
+            InitializeGrid(gcLigneEdit, DoPiece.Trim());
+            gvLigneEdit.UpdateSummary();
+            gvLigneEdit.RefreshData();
+
+            ExecuteStockAlert();
         }
 
        
@@ -281,7 +299,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 //comboBoxAffaire.DataSource = _listePlanAnalitique.Where(p => p.N_Analytique == 1).Select(p => p.CA_Num + " - " + p.CA_Intitule).ToList();
                 //comboBoxAffaire.SelectedIndex = -1;
                 LoadDocLie(DoPiece);
-                
+
             }
             catch (System.Exception ex)
             {
@@ -379,6 +397,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             lkStatut.DataBindings.Add("EditValue", bindingSource, "DO_Statut");
             dateSaisie.DataBindings.Add("Text", bindingSource, "DO_Date");
             datelivrprev.DataBindings.Add("Text", bindingSource, "DO_DateLivr");
+            datecommande.DataBindings.Add("Text", bindingSource, "DO_DateExpedition");
             lkEdCollaborateur.DataBindings.Add("EditValue", bindingSource, "CO_No");
             txtCoord1.DataBindings.Add("Text", bindingSource, "DO_Coord01");
             lkDepot.DataBindings.Add("EditValue", bindingSource, "DE_No");
@@ -388,13 +407,13 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         }
         private void SetupRepositoryItemLookUpEdit()
         {
-            RepositoryItemLookUpEdit repoLookup = new RepositoryItemLookUpEdit();
+            /*RepositoryItemLookUpEdit repoLookup = new RepositoryItemLookUpEdit();
             repoLookup.DataSource = GetArticleData(); // Récupère les articles depuis la base
             repoLookup.DisplayMember = "AR_Ref"; // Ce qui s'affiche dans la liste
             repoLookup.ValueMember = "AR_Ref"; // Ce qui est stocké dans la cellule
             repoLookup.PopulateColumns();
             gvLigneEdit.Columns["AR_Ref"].ColumnEdit = repoLookup; // Associe le repository à la colonne
-            repoLookup.ImmediatePopup = true;
+            repoLookup.ImmediatePopup = true;*/
 
             RepositoryItemLookUpEdit repoLookupFrns = new RepositoryItemLookUpEdit();
             repoLookupFrns.DataSource = GetFrnsData();
@@ -439,12 +458,12 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             dopiecetxt.Text = DoPiece;
             dateSaisie.Text = ucDocuments.doDate.ToString("dd/MM/yyyy");
             txtDoRef.Text = ucDocuments.doRef;
-            txtCours.Text = ucDocuments.doCours.ToString();
+            //txtCours.Text = ucDocuments.doCours.ToString();
             txtCours.Properties.Mask.MaskType = DevExpress.XtraEditors.Mask.MaskType.Numeric;
             txtCours.Properties.Mask.EditMask = "n2";
             txtCours.Properties.Mask.UseMaskAsDisplayFormat = true;
-            datelivrprev.Text = ucDocuments.doDateLivrPrev.ToString("dd/MM/yyyy"); ;
-            txtDoRef.Text = ucDocuments.doRef;
+            //datelivrprev.Text = ucDocuments.doDateLivrPrev.ToString("dd/MM/yyyy"); ;
+            //txtDoRef.Text = ucDocuments.doRef;
             var statutList = new List<dynamic>
                 {
                     new { Value = 0, Text = "Saisie" },
@@ -459,7 +478,6 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             lkStatut.Properties.ValueMember = "Value";
             lkStatut.Properties.DisplayMember = "Text";
 
-            lkEdFrns.EditValue = ucDocuments.doTiers;
             lkStatut.EditValue = ucDocuments.doStatut;
             lkEdCollaborateur.EditValue = ucDocuments.CoNo;
             lkDepot.EditValue = ucDocuments.deno;
@@ -469,24 +487,48 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             lkExpedition.EditValue = ucDocuments.doExpedit;
             txtCoord1.Text = ucDocuments.doEntete;
 
-
         }
+
+        private string connectionStrings = "Server=26.53.123.231;Database=TRANSIT;User Id=Dev;Password=1234;";
+        private string recuperer_dotiers(string dopiece)
+        {
+            string recup = "";
+            string query = "SELECT DO_Tiers FROM F_DOCENTETE WHERE DO_Piece = @dopiece";
+
+            using (var connection = new SqlConnection(connectionStrings))
+            {
+                connection.Open();
+                using (var cmd = new SqlCommand(query, connection))
+                {
+                    cmd.Parameters.Add("@dopiece", SqlDbType.Char, 13).Value = dopiece.PadRight(13);
+
+                    object result = cmd.ExecuteScalar();
+
+                    if (result != null && result != DBNull.Value)
+                    {
+                        recup = result.ToString().Trim();
+                    }
+                }
+            }
+
+            return recup;
+        }
+
         List<F_COLLABORATEUR> _listeAcheteurs;
         List<F_DEPOT> _listeDepot;
         List<P_DEVISE> _listeDevise;
         private void ChargerListeFournisseurs()
         {
             _listeFrns = GetAllFournisseurs();
-
             lkEdFrns.Properties.DataSource = _listeFrns;
-            lkEdFrns.Properties.ValueMember = "CT_Num"; // Clé réelle stockée
-            lkEdFrns.Properties.DisplayMember = "CT_Intitule"; // Texte affiché
+            lkEdFrns.Properties.ValueMember = "CT_Num";
+            lkEdFrns.Properties.DisplayMember = "CT_Intitule";
             lkEdFrns.Properties.PopulateColumns();
             lkEdFrns.Properties.Columns.Clear();
-
             lkEdFrns.Properties.Columns.Add(new LookUpColumnInfo("CT_Num", "Code", 50));
             lkEdFrns.Properties.Columns.Add(new LookUpColumnInfo("CT_Intitule", "Fournisseur"));
 
+            // ✅ Toujours EN DERNIER après tout le setup
         }
         public List<F_COMPTET> GetAllFournisseurs()
         {
@@ -743,70 +785,75 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                     MessageBoxIcon.Error);
             }
         }
+
         public void InitializeGrid(GridControl gc, string DoPiece)
         {
             Lignes.AfficherLignes(gcLigneEdit, DoPiece);
             Lignes.cacherColonnes(gvLigneEdit);
 
-            if (gvLigneEdit.Columns["Montant Total en devise"] != null)
+            // ─── Helpers ───────────────────────────────────────────
+            void FormatColonne(string fieldName, string format, bool readOnly = false)
             {
-                gvLigneEdit.Columns["Montant Total en devise"].SummaryItem.SummaryType = DevExpress.Data.SummaryItemType.Custom;
-                gvLigneEdit.Columns["Montant Total en devise"].SummaryItem.DisplayFormat = "{0:n2}";
+                var col = gvLigneEdit.Columns[fieldName];
+                if (col == null) return;
+                col.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
+                col.DisplayFormat.FormatString = format;
+                if (readOnly) col.OptionsColumn.ReadOnly = true;
             }
 
-            if (gvLigneEdit.Columns["DL_MontantHT"] != null)
+            void SummaryColonne(string fieldName)
             {
-                gvLigneEdit.Columns["DL_MontantHT"].SummaryItem.SummaryType = DevExpress.Data.SummaryItemType.Custom;
-                gvLigneEdit.Columns["DL_MontantHT"].SummaryItem.DisplayFormat = "{0:n2}";
+                var col = gvLigneEdit.Columns[fieldName];
+                if (col == null) return;
+                col.SummaryItem.SummaryType = DevExpress.Data.SummaryItemType.Sum;
+                col.SummaryItem.DisplayFormat = "{0:N2}";
+                col.SummaryItem.FieldName = fieldName; // ✅ Lier explicitement
             }
 
-            if (gvLigneEdit.Columns["DL_MontantTTC"] != null)
-            {
-                gvLigneEdit.Columns["DL_MontantTTC"].SummaryItem.SummaryType = DevExpress.Data.SummaryItemType.Custom;
-                gvLigneEdit.Columns["DL_MontantTTC"].SummaryItem.DisplayFormat = "{0:n2}";
-            }
-            if (gvLigneEdit.Columns["DL_MontantRegle"] != null)
-            {
-                gvLigneEdit.Columns["DL_MontantRegle"].SummaryItem.SummaryType = DevExpress.Data.SummaryItemType.Custom;
-                gvLigneEdit.Columns["DL_MontantRegle"].SummaryItem.DisplayFormat = "{0:n2}";
-            }
-
-            gvLigneEdit.Columns["DL_Qte"].DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
-            gvLigneEdit.Columns["DL_Qte"].DisplayFormat.FormatString = "N2";
-            gvLigneEdit.Columns["DL_Remise01REM_Valeur"].DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
-            gvLigneEdit.Columns["DL_Remise01REM_Valeur"].DisplayFormat.FormatString = "N2";
-            gvLigneEdit.Columns["DL_PrixUnitaire"].DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
-            gvLigneEdit.Columns["DL_PrixUnitaire"].DisplayFormat.FormatString = "N2";
-            gvLigneEdit.Columns["DL_Taxe1"].DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
-            gvLigneEdit.Columns["DL_Taxe1"].DisplayFormat.FormatString = "N2";
-            gvLigneEdit.Columns["DL_PUDevise"].DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
-            gvLigneEdit.Columns["DL_PUDevise"].DisplayFormat.FormatString = "N2";
-            gvLigneEdit.Columns["DL_Frais"].DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
-            gvLigneEdit.Columns["DL_Frais"].DisplayFormat.FormatString = "N2";
-
-            gvLigneEdit.Columns["DL_NonLivre"].DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
-            gvLigneEdit.Columns["DL_NonLivre"].DisplayFormat.FormatString = "N0";
-
-            gvLigneEdit.Columns["DL_MontantTTC"].DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
-            gvLigneEdit.Columns["DL_MontantTTC"].DisplayFormat.FormatString = "N2";
-
-            gvLigneEdit.Columns["DL_MontantHT"].DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
-            gvLigneEdit.Columns["DL_MontantHT"].DisplayFormat.FormatString = "N2";
-
-            gvLigneEdit.Columns["DL_MontantRegle"].DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
-            gvLigneEdit.Columns["DL_MontantRegle"].DisplayFormat.FormatString = "N2";
-
-            gvLigneEdit.Columns["DL_PrixRU"].DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
-            gvLigneEdit.Columns["DL_PrixRU"].DisplayFormat.FormatString = "N2";
-            gvLigneEdit.Columns["DL_PrixRU"].OptionsColumn.ReadOnly = true;
-            gvLigneEdit.Columns["DL_Frais"].OptionsColumn.ReadOnly = true;
-            gvLigneEdit.Columns["DL_MontantHT"].OptionsColumn.ReadOnly = true;
-            gvLigneEdit.Columns["DL_MontantRegle"].OptionsColumn.ReadOnly = true;
-
+            // ─── Summary ───────────────────────────────────────────
+            SummaryColonne("Montant Total en devise");
+            SummaryColonne("DL_MontantHT");
+            SummaryColonne("DL_Frais");
+            SummaryColonne("DL_MontantTTC");
+            SummaryColonne("DL_MontantRegle");
+            SummaryColonne("DL_PoidsNet");
             
+
+            // ─── Alignement colonne MontantHT ──────────────────────
+            GridColumn colMht = gvLigneEdit.Columns["DL_MontantHT"];
+            if (colMht != null)
+            {
+                colMht.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
+            }
+
+            // ─── Format N2 ─────────────────────────────────────────
+            foreach (var field in new[]
+            {
+                "DL_Qte", "DL_Remise01REM_Valeur", "DL_PrixUnitaire",
+                "DL_Taxe1", "DL_PUDevise", "DL_Frais",
+                "DL_MontantTTC", "DL_MontantHT", "DL_MontantRegle","DL_Frais","DL_PoidsNet",
+                "Montant Total en devise"
+            })
+            {
+                FormatColonne(field, "N2");
+            }
+
+            // ─── Format N0 ─────────────────────────────────────────
+            FormatColonne("DL_NonLivre", "N0");
+
+            // ─── ReadOnly ──────────────────────────────────────────
+            FormatColonne("DL_PrixRU", "N2", readOnly: true);
+            FormatColonne("DL_Frais", "N2", readOnly: true);
+            FormatColonne("DL_MontantHT", "N2", readOnly: true);
+            FormatColonne("DL_MontantRegle", "N2", readOnly: true);
+            FormatColonne("DL_PoidsNet", "N2", readOnly: true);      
+
+            // ─── Refresh ───────────────────────────────────────────
             gvLigneEdit.BestFitColumns();
             gvLigneEdit.UpdateSummary();
+            gvLigneEdit.RefreshData();
         }
+
         public GridControl GridLigneEdit => gcLigneEdit;
         private void checkEdit_CheckedChanged(object sender, EventArgs e)
         {
@@ -946,6 +993,21 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
                 }
             }
+
+            string sql = "EXEC SP_CalculCoutRevientParValeur @DO_Piece, @prix_total,@poids_total";
+
+            _context.Database.ExecuteSqlCommand(
+               sql,
+               new SqlParameter("@DO_Piece", dopiecetxt.Text),
+               new SqlParameter("@prix_total", Convert.ToDecimal(txt_prix.Text)),
+               new SqlParameter("@poids_total", Convert.ToDecimal(txt_poids.Text))
+            );
+
+
+            // Rafraîchir la grille du parent
+            InitializeGrid(GridLigneEdit, dopiecetxt.Text);
+
+            txtCours_EditValueChanged(sender, e);
         }
 
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoOptimization)]
@@ -953,8 +1015,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         {
             try
             {
-
-                
+               
                 TreeListNode focusedNode = treeList1.FocusedNode;
                 short typeDoc = (short)_f_DOCENTETEService.GetDocTypeNo(dopiecetxt.Text.Substring(0, 3));
 
@@ -975,6 +1036,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
 
                     string AR_Ref = focusedNode.GetValue("REFERENCE").ToString();
+                    //string AR_Ref = focusedNode.GetValue("AR_Ref").ToString();
                     string DL_Design = focusedNode.GetValue("DESIGNATION").ToString();
 
                     string DO_Piece = dopiecetxt.Text;//focusedNode.GetValue("DO_Piece").ToString();
@@ -1183,8 +1245,68 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 MessageBox.Show($"Une erreur est survenue : {ex.Message}, {m}", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
+            GridColumn pu_tonne = gvLigneEdit.Columns["PU par tonne"];
+            if (pu_tonne == null)
+            {
+                pu_tonne = gvLigneEdit.Columns.AddField("PU par tonne");
+                pu_tonne.Caption = "PU par tonne";
+                pu_tonne.UnboundType = DevExpress.Data.UnboundColumnType.Decimal;
+                pu_tonne.Visible = true;
+                pu_tonne.FieldName = "PU par tonne";
+                pu_tonne.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+            }
+
+            int indexDesign = gvLigneEdit.Columns["DL_Design"].VisibleIndex;
+
+            pu_tonne.VisibleIndex = indexDesign + 1;
+
+            RepositoryItemSpinEdit spin = new RepositoryItemSpinEdit();
+            spin.IsFloatValue = true;
+            spin.Mask.MaskType = DevExpress.XtraEditors.Mask.MaskType.Numeric;
+            spin.Mask.EditMask = "n2";
+            spin.Mask.UseMaskAsDisplayFormat = true;
+
+            // IMPORTANT : Gérer l'événement EditValueChanged du SpinEdit
+            spin.EditValueChanged += (s, e) =>
+            {
+                gvLigneEdit.PostEditor();  // Force la validation immédiate
+                gvLigneEdit.UpdateCurrentRow();
+            };
+
+            gvLigneEdit.GridControl.RepositoryItems.Add(spin);
+            pu_tonne.ColumnEdit = spin;
+
+            gvLigneEdit.CustomUnboundColumnData += (sender, e) =>
+            {
+                if (e.Column.FieldName == "PU par tonne")
+                {
+                    int row = e.ListSourceRowIndex;
+
+                    if (e.IsGetData)
+                    {
+                        if (puTonneValues.ContainsKey(row))
+                            e.Value = puTonneValues[row];
+                        else
+                            e.Value = 0m;
+                    }
+                    else if (e.IsSetData)
+                    {
+                        if (e.Value != null && e.Value != DBNull.Value)
+                        {
+                            puTonneValues[row] = Convert.ToDecimal(e.Value);
+                        }
+                    }
+                }
+            };
+
+            // Forcer la mise à jour quand on change de cellule
+            gvLigneEdit.FocusedColumnChanged += (sender, e) =>
+            {
+                gvLigneEdit.PostEditor();
+                gvLigneEdit.UpdateCurrentRow();
+            };
         }
-        
+
         private void Hyperlink_EditDLMontantRegl(object sender, EventArgs e)
         {
             int row = gvLigneEdit.FocusedRowHandle;
@@ -1246,276 +1368,225 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         }
         public void UPdateLigne(int row)
         {
-            object poidsNet = gvLigneEdit.GetRowCellValue(row, "DL_PoidsNet");
-            object qtes = gvLigneEdit.GetRowCellValue(row, "DL_Qte");
-            object prixUnitaire = gvLigneEdit.GetRowCellValue(row, "DL_PrixUnitaire");
-            if (prixUnitaire != DBNull.Value && Convert.ToDecimal(prixUnitaire) > 0)
+            try
             {
-                if (qtes != DBNull.Value && Convert.ToDecimal(qtes) > 0)
+                object poidsNet = gvLigneEdit.GetRowCellValue(row, "DL_PoidsNet");
+                object qtes = gvLigneEdit.GetRowCellValue(row, "DL_Qte");
+                object prixUnitaire = gvLigneEdit.GetRowCellValue(row, "DL_PrixUnitaire");
+
+                if (prixUnitaire != null && prixUnitaire != DBNull.Value && Convert.ToDecimal(prixUnitaire) > 0)
                 {
-                    if (poidsNet != DBNull.Value)
+                    if (qtes != null && qtes != DBNull.Value && Convert.ToDecimal(qtes) > 0)
                     {
-                        decimal tot1 = Convert.ToDecimal(txt_poids.Text.ToString());
-                        object tot2 = gvLigneEdit.GetRowCellValue(row, "DL_PoidsNet");
-                        decimal d = Convert.ToDecimal(tot2.ToString());
-
-                        if (d > tot1)
+                        if (poidsNet != null && poidsNet != DBNull.Value)
                         {
-                            MessageBox.Show("Le poids ne doit pas être supérieur au poids total FRET", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
-                        else
-                        {
-                            decimal totalPoids = 0;
+                            decimal tot1 = Convert.ToDecimal(txt_poids.Text);
+                            decimal d = Convert.ToDecimal(poidsNet.ToString());
 
-                            for (int i = 0; i < gvLigneEdit.RowCount; i++)
+                            if (d > tot1)
                             {
-                                object values = gvLigneEdit.GetRowCellValue(i, "DL_PoidsNet");
-
-                                if (values != null && values != DBNull.Value)
-                                    totalPoids += Convert.ToDecimal(values);
-                            }
-
-                            if (totalPoids > tot1)
-                            {
-                                MessageBox.Show("Le total des poids ne doit pas être supérieur au poids total FRET", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                MessageBox.Show("Le poids ne doit pas être supérieur au poids total FRET", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             }
                             else
                             {
-                                laligneamettreajour = row;
-                                object value = gvLigneEdit.GetRowCellValue(row, "DL_Qte");
-                                int qte = 0;
-                                if (value != null && value != DBNull.Value && value.ToString() != "")
+                                decimal totalPoids = 0;
+                                for (int i = 0; i < gvLigneEdit.RowCount; i++)
                                 {
-                                    qte = Convert.ToInt32(value);
+                                    object values = gvLigneEdit.GetRowCellValue(i, "DL_PoidsNet");
+                                    if (values != null && values != DBNull.Value)
+                                        totalPoids += Convert.ToDecimal(values);
+                                }
+
+                                if (totalPoids > tot1)
+                                {
+                                    MessageBox.Show("Le total des poids ne doit pas être supérieur au poids total FRET", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 }
                                 else
                                 {
-                                    qte = 0;
-                                    gvLigneEdit.SetRowCellValue(row, "DL_Qte", qte);
-                                }
-                                object frns = gvLigneEdit.GetRowCellValue(row, "CT_Num");
-                                if (frns != null && frns != DBNull.Value && frns.ToString() != "")
-                                {
-                                }
-                                else
-                                {
-                                    MessageBox.Show("Veuillez renseigner un fournisseur!", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                    return;
-                                }
-                                object dlremiseobj = gvLigneEdit.GetRowCellValue(row, "DL_Remise01REM_Valeur");
-                                int dlremise = 0;
-                                if (dlremiseobj != null && dlremiseobj != DBNull.Value && dlremiseobj.ToString() != "")
-                                {
-                                    dlremise = Convert.ToInt32(dlremiseobj);
-                                }
-                                else
-                                {
-                                    dlremise = 0;
-                                    gvLigneEdit.SetRowCellValue(row, "DL_Remise01REM_Valeur", dlremise);
-                                }
+                                    laligneamettreajour = row;
 
-                                object dlTaxe1obj = gvLigneEdit.GetRowCellValue(row, "DL_Taxe1");
-                                int dlTaxe1 = 0;
-                                if (dlTaxe1obj != null && dlTaxe1obj != DBNull.Value && dlTaxe1obj.ToString() != "")
-                                {
-                                    dlTaxe1 = Convert.ToInt32(dlTaxe1obj);
-                                }
-                                else
-                                {
-                                    dlTaxe1 = ucDocuments.doTaxe1;
-                                    gvLigneEdit.SetRowCellValue(row, "DO_Taxe1", dlTaxe1);
-                                }
+                                    // QTE
+                                    object value = gvLigneEdit.GetRowCellValue(row, "DL_Qte");
+                                    int qte = (value != null && value != DBNull.Value && value.ToString() != "")
+                                        ? Convert.ToInt32(value) : 0;
+                                    if (qte == 0) gvLigneEdit.SetRowCellValue(row, "DL_Qte", 0);
 
-                                object dlPuDeviseobj = gvLigneEdit.GetRowCellValue(row, "DL_PuDevise");
-                                decimal dlPuDevise = 0;
-                                if (dlPuDeviseobj != null && dlPuDeviseobj != DBNull.Value && dlPuDeviseobj.ToString() != "")
-                                {
-                                    dlPuDevise = Convert.ToDecimal(dlPuDeviseobj);
-                                }
-                                else
-                                {
-                                    dlPuDevise = 0;
-                                    gvLigneEdit.SetRowCellValue(row, "DL_PuDevise", dlPuDevise);
-                                }
-
-                                object dlFraisobj = gvLigneEdit.GetRowCellValue(row, "DL_Frais");
-                                decimal dlFrais = 0;
-                                if (dlFraisobj != null && dlFraisobj != DBNull.Value && dlFraisobj.ToString() != "")
-                                {
-                                    dlFrais = Convert.ToDecimal(dlFraisobj);
-                                }
-                                else
-                                {
-                                    dlFrais = 0;
-                                    gvLigneEdit.SetRowCellValue(row, "DL_Frais", dlFrais);
-                                }
-
-                                object dlNonLivreobj = gvLigneEdit.GetRowCellValue(row, "DL_NonLivr");
-                                int dlNonLivre = 0;
-                                if (dlNonLivreobj != null && dlNonLivreobj != DBNull.Value && dlNonLivreobj.ToString() != "")
-                                {
-                                    dlNonLivre = Convert.ToInt32(dlNonLivreobj);
-                                }
-                                else
-                                {
-                                    dlNonLivre = 0;
-                                    gvLigneEdit.SetRowCellValue(row, "DL_NonLivre", dlNonLivre);
-                                }
-
-                                object dlMontantHTobj = gvLigneEdit.GetRowCellValue(row, "DL_MontantHT");
-                                decimal dlMontantHT = 0;
-                                if (dlMontantHTobj != null && dlMontantHTobj != DBNull.Value && dlMontantHTobj.ToString() != "")
-                                {
-                                    dlMontantHT = Convert.ToDecimal(dlMontantHTobj);
-                                }
-                                else
-                                {
-                                    dlMontantHT = 0;
-                                    gvLigneEdit.SetRowCellValue(row, "DL_MontantHT", dlMontantHT);
-                                }
-
-                                object dlMontantTTCobj = gvLigneEdit.GetRowCellValue(row, "DL_MontantTTC");
-                                decimal dlMontantTTC = 0;
-                                if (dlMontantTTCobj != null && dlMontantTTCobj != DBNull.Value && dlMontantTTCobj.ToString() != "")
-                                {
-                                    dlMontantTTC = Convert.ToDecimal(dlMontantTTCobj);
-                                }
-                                else
-                                {
-                                    dlMontantTTC = 0;
-                                    gvLigneEdit.SetRowCellValue(row, "DL_MontantTTC", dlMontantTTC);
-                                }
-
-                                object dlPiecefrnsobj = gvLigneEdit.GetRowCellValue(row, "DL_PieceFourniss");
-                                string dlPiecefrns = dlPiecefrnsobj.ToString();
-                                if (dlPiecefrnsobj != null && dlPiecefrnsobj != DBNull.Value && dlPiecefrnsobj.ToString() != "")
-                                {
-                                    dlPiecefrns = Convert.ToString(dlPiecefrnsobj);
-                                }
-                                else
-                                {
-                                    dlPiecefrns = string.Empty;
-                                }
-
-                                object dlDatePiecefrnsobj = gvLigneEdit.GetRowCellValue(row, "DL_DatePieceFourniss");
-                                DateTime dlDatePiecefrns;
-
-                                if (dlDatePiecefrnsobj != null && !Convert.IsDBNull(dlDatePiecefrnsobj) &&
-                                    !string.IsNullOrEmpty(dlDatePiecefrnsobj.ToString()))
-                                {
-                                    dlDatePiecefrns = Convert.ToDateTime(dlDatePiecefrnsobj);
-                                }
-                                else
-                                {
-                                    dlDatePiecefrns = DateTime.Now;
-                                }
-
-
-
-                                int? dl_No = 0;
-                                try
-                                {
-
-                                    if (row >= 0)
+                                    // FOURNISSEUR
+                                    object frns = gvLigneEdit.GetRowCellValue(row, "CT_Num");
+                                    if (frns == null || frns == DBNull.Value || frns.ToString() == "")
                                     {
-                                        decimal remisePourcent = Convert.ToDecimal(gvLigneEdit.GetRowCellValue(row, "DL_Remise01REM_Valeur"));
-                                        decimal puBrut = Convert.ToDecimal(gvLigneEdit.GetRowCellValue(row, "DL_PrixUnitaire"));
-                                        decimal puNet = puBrut * (1 - remisePourcent / 100);
-                                        int quantiteEcriteStock = qte;
-                                        dl_No = Convert.ToInt32(gvLigneEdit.GetRowCellValue(row, "DL_No"));
-
-                                        DataTable dt = (DataTable)gvLigneEdit.GridControl.DataSource;
-                                        string doPiece = dopiecetxt.Text;//dt.Rows[row]["DO_Piece"].ToString();
-                                        decimal totalHTNet = dt.AsEnumerable()
-                                        .Where(r =>
-                                            r["DL_MontantHT"] != DBNull.Value &&
-                                            r["DO_Piece"] != DBNull.Value &&
-                                            r["Retenu"] != DBNull.Value &&
-                                            Convert.ToInt32(r["Retenu"]) != 0 &&
-                                            r["DO_Piece"].ToString() == doPiece
-                                        )
-                                        .Sum(r => Convert.ToDecimal(r["DL_MontantHT"]));
-
-                                        decimal totalTTCNet = dt.AsEnumerable()
-                                                        .Where(r =>
-                                                            r["DL_MontantTTC"] != DBNull.Value &&
-                                                            r["DO_Piece"] != DBNull.Value &&
-                                                            r["Retenu"] != DBNull.Value &&
-                                                            Convert.ToInt32(r["Retenu"]) != 0 &&
-                                                            r["DO_Piece"].ToString() == doPiece
-                                                        )
-                                                        .Sum(r => Convert.ToDecimal(r["DL_MontantTTC"]));
-                                        //// Mise à jour entête de document (F_DOCENTETE)
-                                        int retenu = Convert.ToInt16(gvLigneEdit.GetRowCellValue(row, "Retenu"));
-                                        _f_DOCENTETEService.UpdateDO_Totaux_HT_Net_TTC(dopiecetxt.Text, puNet, quantiteEcriteStock, totalHTNet, totalTTCNet);
-
-
-                                        //// Mise à jour du stock des articles (F_ARTSTOCK) (Montant du stock et quantité en stock)
-                                        //int? DE_No = Convert.ToInt32(lkDepot.EditValue);
-                                        //_f_ARTSTOCKService.UpdateMontantEtQuantiteStock(_typeDocument, arRef, quantiteEcriteStock, previousQuantiteEcriteStock, DE_No);
-
-
-
-                                        //// Mise à jour du ligne de document (F_DOCLIGNE) (Mise à jour des quantités, des poids et des prix (PrixRU et CMUP))
-                                        string CtNum = Convert.ToString(gvLigneEdit.GetRowCellValue(row, "CT_Num"));
-                                        string? dl_Designe = Convert.ToString(gvLigneEdit.GetRowCellValue(row, "DL_Design"));
-                                        string arRef = Convert.ToString(gvLigneEdit.GetRowCellValue(row, "AR_Ref"));
-
-
-                                        object dlLigneObj = gvLigneEdit.GetRowCellValue(row, "DL_Ligne");
-                                        int dlLigne = 0;
-                                        if (dlLigneObj != null && dlLigneObj != DBNull.Value && dlLigneObj.ToString() != "")
-                                        {
-                                            dlLigne = (int)Convert.ToInt64(dlLigneObj);
-                                        }
-                                        else
-                                        {
-                                            dlLigne = 0;
-                                            gvLigneEdit.SetRowCellValue(row, "DL_Ligne", dlLigne);
-                                        }
-                                        string strDL_No = Convert.ToString(gvLigneEdit.GetRowCellValue(row, "DL_No"));
-                                        decimal montantRegl = _f_DOCLIGNERepository.GetMontantRegleByPieceArRef(dopiece, arRef, CtNum);
-                                        decimal poids = Convert.ToDecimal(gvLigneEdit.GetRowCellValue(row, "DL_PoidsNet"));
-                                        var val = gvLigneEdit.GetListSourceRowCellValue(row, "Unite");
-
-                                        string unite = val == null ? "" : val.ToString();
-
-
-                                        _f_DOCLIGNEService.UpdateF_DOCLIGNE(dopiecetxt.Text, CtNum, arRef, dl_Designe, puBrut, dlLigne, quantiteEcriteStock, _typeDocument, dlTaxe1, dlMontantHT, dlMontantTTC, retenu, remisePourcent, dlPiecefrns, dlDatePiecefrns, montantRegl, poids, unite);
-
-                                        //// Mise à jour du stock de l'article dans un emplacement concerné
-                                        //_f_ARTSTOCKEMPLService.UpdateArtstockEmpl(_typeDocument, ct_Num, dl_Ligne, arRef, previousQuantiteEcriteStock, quantiteEcriteStock, DE_No);
-
-                                        //// Mise à jour de la quantité prise dans l'emplacement concerné (DL_Qte)
-                                        //_f_DOCLIGNEEMPLRepository.UpdateDL_Qte(_typeDocument, _currentDocPieceNo, dl_Ligne, quantiteEcriteStock);
-
+                                        MessageBox.Show("Veuillez renseigner un fournisseur!", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                        return;
                                     }
-                                    InitializeGrid(gcLigneEdit, dopiecetxt.Text);
-                                    gvLigneEdit.UpdateSummary();
 
-                                }
-                                catch (System.Exception ex)
-                                {
-                                    MethodBase m = MethodBase.GetCurrentMethod();
-                                    MessageBox.Show($"Une erreur est survenue : {ex.Message}, {m}", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    // REMISE
+                                    object dlremiseobj = gvLigneEdit.GetRowCellValue(row, "DL_Remise01REM_Valeur");
+                                    int dlremise = (dlremiseobj != null && dlremiseobj != DBNull.Value && dlremiseobj.ToString() != "")
+                                        ? Convert.ToInt32(dlremiseobj) : 0;
+                                    if (dlremise == 0) gvLigneEdit.SetRowCellValue(row, "DL_Remise01REM_Valeur", 0);
+
+                                    // TAXE1
+                                    object dlTaxe1obj = gvLigneEdit.GetRowCellValue(row, "DL_Taxe1");
+                                    int dlTaxe1 = (dlTaxe1obj != null && dlTaxe1obj != DBNull.Value && dlTaxe1obj.ToString() != "")
+                                        ? Convert.ToInt32(dlTaxe1obj) : ucDocuments.doTaxe1;
+                                    if (dlTaxe1obj == null || dlTaxe1obj == DBNull.Value)
+                                        gvLigneEdit.SetRowCellValue(row, "DO_Taxe1", dlTaxe1);
+
+                                    // PU DEVISE
+                                    object dlPuDeviseobj = gvLigneEdit.GetRowCellValue(row, "DL_PuDevise");
+                                    decimal dlPuDevise = (dlPuDeviseobj != null && dlPuDeviseobj != DBNull.Value && dlPuDeviseobj.ToString() != "")
+                                        ? Convert.ToDecimal(dlPuDeviseobj) : 0m;
+                                    if (dlPuDevise == 0) gvLigneEdit.SetRowCellValue(row, "DL_PuDevise", 0m);
+
+                                    // FRAIS
+                                    object dlFraisobj = gvLigneEdit.GetRowCellValue(row, "DL_Frais");
+                                    decimal dlFrais = (dlFraisobj != null && dlFraisobj != DBNull.Value && dlFraisobj.ToString() != "")
+                                        ? Convert.ToDecimal(dlFraisobj) : 0m;
+                                    if (dlFrais == 0) gvLigneEdit.SetRowCellValue(row, "DL_Frais", 0m);
+
+                                    // NON LIVRE
+                                    object dlNonLivreobj = gvLigneEdit.GetRowCellValue(row, "DL_NonLivr");
+                                    int dlNonLivre = (dlNonLivreobj != null && dlNonLivreobj != DBNull.Value && dlNonLivreobj.ToString() != "")
+                                        ? Convert.ToInt32(dlNonLivreobj) : 0;
+                                    if (dlNonLivre == 0) gvLigneEdit.SetRowCellValue(row, "DL_NonLivre", 0);
+
+                                    // MONTANT HT
+                                    object dlMontantHTobj = gvLigneEdit.GetRowCellValue(row, "DL_MontantHT");
+                                    decimal dlMontantHT = (dlMontantHTobj != null && dlMontantHTobj != DBNull.Value && dlMontantHTobj.ToString() != "")
+                                        ? Convert.ToDecimal(dlMontantHTobj) : 0m;
+                                    if (dlMontantHT == 0) gvLigneEdit.SetRowCellValue(row, "DL_MontantHT", 0m);
+
+                                    // MONTANT TTC
+                                    object dlMontantTTCobj = gvLigneEdit.GetRowCellValue(row, "DL_MontantTTC");
+                                    decimal dlMontantTTC = (dlMontantTTCobj != null && dlMontantTTCobj != DBNull.Value && dlMontantTTCobj.ToString() != "")
+                                        ? Convert.ToDecimal(dlMontantTTCobj) : 0m;
+                                    if (dlMontantTTC == 0) gvLigneEdit.SetRowCellValue(row, "DL_MontantTTC", 0m);
+
+                                    // PIECE FOURNISSEUR ✅ corrigé
+                                    object dlPiecefrnsobj = gvLigneEdit.GetRowCellValue(row, "DL_PieceFourniss");
+                                    string dlPiecefrns = (dlPiecefrnsobj != null && dlPiecefrnsobj != DBNull.Value && dlPiecefrnsobj.ToString() != "")
+                                        ? dlPiecefrnsobj.ToString().Trim() : string.Empty;
+
+                                    // DATE PIECE FOURNISSEUR
+                                    object dlDatePiecefrnsobj = gvLigneEdit.GetRowCellValue(row, "DL_DatePieceFourniss");
+                                    DateTime dlDatePiecefrns = (dlDatePiecefrnsobj != null && dlDatePiecefrnsobj != DBNull.Value && dlDatePiecefrnsobj.ToString() != "")
+                                        ? Convert.ToDateTime(dlDatePiecefrnsobj) : DateTime.Now;
+
+                                    try
+                                    {
+                                        if (row >= 0)
+                                        {
+                                            decimal remisePourcent = (dlremiseobj != null && dlremiseobj != DBNull.Value)
+                                                ? Convert.ToDecimal(dlremiseobj) : 0m;
+                                            decimal puBrut = Convert.ToDecimal(prixUnitaire);
+                                            decimal puNet = puBrut * (1 - remisePourcent / 100);
+                                            int quantiteEcriteStock = qte;
+
+                                            // DL_No ✅ corrigé
+                                            object dlNoObj = gvLigneEdit.GetRowCellValue(row, "DL_No");
+                                            int? dl_No = (dlNoObj != null && dlNoObj != DBNull.Value)
+                                                ? Convert.ToInt32(dlNoObj) : 0;
+
+                                            DataTable dt = (DataTable)gvLigneEdit.GridControl.DataSource;
+                                            string doPiece = dopiecetxt.Text;
+
+                                            decimal totalHTNet = dt.AsEnumerable()
+                                                .Where(r =>
+                                                    r["DL_MontantHT"] != DBNull.Value &&
+                                                    r["DO_Piece"] != DBNull.Value &&
+                                                    r["Retenu"] != DBNull.Value &&
+                                                    Convert.ToInt32(r["Retenu"]) != 0 &&
+                                                    r["DO_Piece"].ToString() == doPiece)
+                                                .Sum(r => Convert.ToDecimal(r["DL_MontantHT"]));
+
+                                            decimal totalTTCNet = dt.AsEnumerable()
+                                                .Where(r =>
+                                                    r["DL_MontantTTC"] != DBNull.Value &&
+                                                    r["DO_Piece"] != DBNull.Value &&
+                                                    r["Retenu"] != DBNull.Value &&
+                                                    Convert.ToInt32(r["Retenu"]) != 0 &&
+                                                    r["DO_Piece"].ToString() == doPiece)
+                                                .Sum(r => Convert.ToDecimal(r["DL_MontantTTC"]));
+
+                                            // RETENU
+                                            int retenu = int.TryParse(
+                                                gvLigneEdit.GetRowCellValue(row, "Retenu")?.ToString(),
+                                                out int retenuOut) ? retenuOut : 0;
+
+                                            _f_DOCENTETEService.UpdateDO_Totaux_HT_Net_TTC(
+                                                dopiecetxt.Text, puNet, quantiteEcriteStock, totalHTNet, totalTTCNet);
+
+                                            // INFOS LIGNE
+                                            string CtNum = Convert.ToString(gvLigneEdit.GetRowCellValue(row, "CT_Num")).Trim() ?? "";
+                                            string dl_Designe = Convert.ToString(gvLigneEdit.GetRowCellValue(row, "DL_Design")).Trim() ?? "";
+                                            string arRef = Convert.ToString(gvLigneEdit.GetRowCellValue(row, "AR_Ref")).Trim() ?? "";
+
+                                            // DL_LIGNE ✅ corrigé
+                                            object dlLigneObj = gvLigneEdit.GetRowCellValue(row, "DL_Ligne");
+                                            int dlLigne = (dlLigneObj != null && dlLigneObj != DBNull.Value && dlLigneObj.ToString() != "")
+                                                ? (int)Convert.ToInt64(dlLigneObj) : 0;
+                                            if (dlLigne == 0) gvLigneEdit.SetRowCellValue(row, "DL_Ligne", 0);
+
+                                            // POIDS ✅ corrigé
+                                            object poidsObj = gvLigneEdit.GetRowCellValue(row, "DL_PoidsNet");
+                                            decimal poids = (poidsObj != null && poidsObj != DBNull.Value)
+                                                ? Convert.ToDecimal(poidsObj) : 0m;
+
+                                            // UNITE
+                                            var valUnite = gvLigneEdit.GetListSourceRowCellValue(row, "Unite");
+                                            string unite = valUnite == null ? "" : valUnite.ToString().Trim();
+
+                                            // MONTANT REGLE
+                                            decimal montantRegl = _f_DOCLIGNERepository.GetMontantRegleByPieceArRef(dopiece, arRef, CtNum);
+
+                                            try
+                                            {
+                                                _f_DOCLIGNEService.UpdateF_DOCLIGNE(
+                                                    dopiecetxt.Text, CtNum, arRef, dl_Designe, puBrut, dlLigne,
+                                                    quantiteEcriteStock, _typeDocument, dlTaxe1, dlMontantHT,
+                                                    dlMontantTTC, retenu, remisePourcent, dlPiecefrns,
+                                                    dlDatePiecefrns, montantRegl, poids, unite);
+                                            }catch(Exception et) { }
+                                        }
+
+                                        InitializeGrid(gcLigneEdit, dopiecetxt.Text);
+                                        gvLigneEdit.UpdateSummary();
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        MethodBase m = MethodBase.GetCurrentMethod();
+                                        MessageBox.Show($"Erreur : {ex.Message}\n{m}", "Erreur",
+                                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    }
                                 }
                             }
+
+                            string sql = "EXEC SP_CalculCoutRevientParValeur @DO_Piece, @prix_total, @poids_total";
+                            _context.Database.ExecuteSqlCommand(sql,
+                                new SqlParameter("@DO_Piece", dopiecetxt.Text),
+                                new SqlParameter("@prix_total", Convert.ToDecimal(txt_prix.Text)),
+                                new SqlParameter("@poids_total", Convert.ToDecimal(txt_poids.Text)));
+
+                            InitializeGrid(GridLigneEdit, dopiecetxt.Text);
+                        }
+                        else
+                        {
+                            MessageBox.Show("Le poids ne doit pas être vide", "Erreur",
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                     }
                     else
                     {
-                        MessageBox.Show("Le poids ne doit pas être vide", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("La quantité ne peut pas être vide", "Erreur",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
                 else
                 {
-                    MessageBox.Show("La quantité ne peut pas être vide", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Le prix unitaire ne peut pas être vide", "Erreur",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-            }
-            else
-            {
-                MessageBox.Show("Le prix unitaire ne peut pas être vide", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            }catch(Exception e) { }
         }
         //public int GetMaxValueEF()
         //{
@@ -1541,7 +1612,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             {
                 UPdateLigne(row);
                 string _currentDocPieceNo = dopiecetxt.Text;
-                var entete = _context.F_DOCENTETE.FirstOrDefault(d => d.DO_Piece == _currentDocPieceNo);
+                var entete = _context.F_DOCENTETE.FirstOrDefault(d => d.DO_Piece == _currentDocPieceNo.Trim());
 
                 if (entete != null) {
                     entete.DO_Cours = Convert.ToDecimal(txtCours.Text.ToString());
@@ -1600,6 +1671,8 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
                 btnEditLigne_Click(sender, e);
             }
+
+            txtCours_EditValueChanged(sender, e);
         }
         public static void UpdateSequence(string prefix, int currentNumber)
         {
@@ -1694,6 +1767,9 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
                     string arDesign = gvLigneEdit.GetRowCellValue(row, "DL_Design").ToString();
                     decimal puBrut = Convert.ToDecimal(gvLigneEdit.GetRowCellValue(row, "DL_PrixUnitaire"));
+                    decimal frais = Convert.ToDecimal(gvLigneEdit.GetRowCellValue(row, "DL_Frais"));
+                    decimal fret = Convert.ToDecimal(gvLigneEdit.GetRowCellValue(row, "Fret"));
+                    decimal cours = Convert.ToDecimal(txtCours.Text);
                     decimal puNet = puBrut * (1 - remisePourcent / 100);
 
                     //decimal montantHT = Convert.ToDecimal(gvLigneEdit.GetRowCellValue(row, "DL_MontantHT"));
@@ -1701,7 +1777,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                     decimal montantHT = 0;
                     if (montantHT == 0)
                     {
-                        montantHT = puNet * qte;
+                        montantHT = (puNet * qte * cours)+(frais+fret);
                         gvLigneEdit.SetRowCellValue(row, "DL_MontantHT", montantHT);
                     }
                     //decimal montantTTC = Convert.ToDecimal(gvLigneEdit.GetRowCellValue(row, "DL_MontantTTC"));
@@ -1891,6 +1967,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         private void Hyperlink_Click_AddLigne(object sender, EventArgs e)
         {
             AddLigne();
+            txtCours_EditValueChanged(sender, e);
         }
 
         private DataTable ExecuteQuery(string connectionString, string query)
@@ -1933,13 +2010,30 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
         public void ExecuteStockAlert()
         {
+            treeList1.BeginUpdate();
+
             try
             {
-                string query1 = @"SELECT * FROM dbo.VW_ETAT_STOCK WHERE CT_INTITULE='" + lkEdFrns.Text + "'";
+                // Supprime tous les nœuds
+                treeList1.ClearNodes();
 
+                // Supprime toutes les colonnes
+                treeList1.Columns.Clear();
+            }
+            finally
+            {
+                // Débloque la mise à jour et rafraîchit l'affichage
+                treeList1.EndUpdate();
+            }
+
+            try
+            {
+                //string query1 = @"SELECT * FROM dbo.VW_ETAT_STOCK WHERE CT_INTITULE='" + lkEdFrns.Text.Trim() + "' AND DEPOT IN (" + labelControl8.Text.Trim() + ")";
+                
+                string query1 = @"SELECT * FROM dbo.VW_ETAT_STOCK WHERE CT_INTITULE='" + lkEdFrns.Text.Trim() + "' AND DEPOT IN (" + labelControl8.Text.Trim() + ")";
 
                 string connectionStringArbapp = $"Server={FrmMdiParent.DataSourceNameValueParent};" +
-                                 $"Database={ucDocuments.dbNamePrincipale};" +
+                                 $"Database=TRANSIT;" +
                                  $"User ID=Dev;" +
                                  $"Password=1234;" +
                                  $"TrustServerCertificate=True;" +
@@ -1950,7 +2044,8 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 {
                     if (string.IsNullOrEmpty(connectionStringArbapp))
                     {
-                        // Log l'erreur
+                        //Voir correspondance
+                        
                         throw new ArgumentException("Chaîne de connexion vide");
                     }
 
@@ -1984,7 +2079,10 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
                 if (dtMaster == null || dtMaster.Rows.Count == 0)
                 {
-                    return;
+                    recuperer_correspondance(labelControl10);
+                    string query2 = @"SELECT * FROM dbo.VW_SEUIL_MIN_STOCK_SUM WHERE CT_INTITULE in (" + labelControl10.Text.Trim() + ") AND DEPOT IN (" + labelControl8.Text.Trim() + ")";
+
+                    dtMaster = ExecuteQuery(connectionStringArbapp, query2);
                 }
 
                 if (dtMaster == null)
@@ -2090,6 +2188,51 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             
         }
 
+        private void recuperer_correspondance(LabelControl lbl)
+        {
+            labelControl10.Text = "";
+            string connectionString = $"Server={FrmMdiParent.DataSourceNameValueParent};" +
+                                 $"Database=ARBIOCHEM;" +
+                                 $"User ID=Dev;" +
+                                 $"Password=1234;" +
+                                 $"TrustServerCertificate=True;" +
+                                 $"Connection Timeout=120;";
+
+            try
+            {
+                string query = "SELECT DISTINCT fourns FROM F_Corres WHERE num_piece = @num_piece AND fourn=@fourn ORDER BY fourns ASC";
+
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    SqlDataAdapter adapter = new SqlDataAdapter(query, conn);
+                    adapter.SelectCommand.Parameters.AddWithValue("@num_piece", dopiecetxt.Text.Trim());
+                    adapter.SelectCommand.Parameters.AddWithValue("@fourn", lkEdFrns.Text.Trim());
+
+                    DataTable dt = new DataTable();
+                    adapter.Fill(dt);
+
+                    // ✅ Construire la liste pour labelControl10
+                    List<string> fournList = new List<string>();
+
+                    foreach (DataRow row in dt.Rows)
+                    {
+                        string fourns = row["fourns"]?.ToString().Trim();
+                        if (!string.IsNullOrEmpty(fourns))
+                        {
+                            fournList.Add($"'{fourns}'"); // ✅ Avec guillemets pour le IN()
+                        }
+                    }
+                    labelControl10.Text = string.Join(",", fournList);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erreur : {ex.Message}", "Erreur",
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
         private void TreeList1_NodeCellStyle(object sender, GetCustomNodeCellStyleEventArgs e)
         {
             if (e.Node.ParentNode == null) // Uniquement pour les nœuds parents
@@ -2119,8 +2262,9 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         }
         private void hyperlinkLabelControl1_Click(object sender, EventArgs e)
         {
-            frmSites frmsite = new frmSites(this);
+            frmSites frmsite = new frmSites(this,dbPrincipale);
             frmsite.ShowDialog();
+            
         }
         private string GetArticleDescription(string arRef)
         {
@@ -2189,6 +2333,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         {
             string _currentDocPieceNo = dopiecetxt.Text;
             InitializeGrid(gcLigneEdit, _currentDocPieceNo);
+            txtCours_EditValueChanged(sender, e);
         }
 
         private Guid getcbCreationUserGuid(string usermail)
@@ -2226,8 +2371,23 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             }
             return test;
         }
+
         private void btnValider_Click(object sender, EventArgs e)
         {
+            DateTime dtc = Convert.ToDateTime(datecommande.EditValue);
+
+            using (var connection = new SqlConnection(connectionStrings))
+            {
+                connection.Open();
+                string sqlUpdate = "UPDATE F_DOCENTETE SET DO_DateExpedition=@dtc WHERE DO_Piece = @doPiece";
+                using (var cmdUpdate = new SqlCommand(sqlUpdate, connection))
+                {
+                    cmdUpdate.Parameters.Add("@doPiece", SqlDbType.Char).Value = dopiecetxt.Text.Trim();
+                    cmdUpdate.Parameters.Add("@dtc", SqlDbType.DateTime).Value = dtc;
+                    cmdUpdate.ExecuteNonQuery();
+                }
+            }
+
             if (txtCours.Text != "" || txtCours.Text == "0,00")
             {
                 decimal totalPoids = 0;
@@ -2280,13 +2440,16 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
                                             if (autorise)
                                             {
-                                                UpdateFDOCENTETE();
-                                                _ucDocuments.RafraichirDonnees();
-                                                gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
-                                                StatutActuel = Convert.ToInt32(lkStatut.EditValue);
-                                                MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                                //frmSites frmsite = new frmSites(this);
-                                               // frmsite.ShowDialog();
+                                                if (doc.DO_TotalHTNet != null)
+                                                {
+                                                    UpdateFDOCENTETE();
+                                                    //_ucDocuments.ChargerDonneesDepuisBDD();
+                                                    gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
+                                                    StatutActuel = Convert.ToInt32(lkStatut.EditValue);
+                                                    MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                                    //frmSites frmsite = new frmSites(this,dbPrincipale);
+                                                    // frmsite.ShowDialog();
+                                                }
                                             }
                                             else
                                             {
@@ -2307,13 +2470,19 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                             {
                                                 if (lkStatut.Text != "Accepté")
                                                 {
-                                                    UpdateFDOCENTETE();
-                                                    _ucDocuments.RafraichirDonnees();
-                                                    gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
-                                                    StatutActuel = Convert.ToInt32(lkStatut.EditValue);
-                                                    MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                                    frmSites frmsite = new frmSites(this);
-                                                    frmsite.ShowDialog();
+                                                    if (doc.DO_TotalHTNet != null)
+                                                    {
+                                                        UpdateFDOCENTETE();
+                                                        //_ucDocuments.RafraichirDonnees();
+                                                        gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
+                                                        StatutActuel = Convert.ToInt32(lkStatut.EditValue);
+                                                        MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                                        //frmSites frmsite = new frmSites(this, dbPrincipale);
+                                                        //frmsite.ShowDialog();
+                                                        list_depot();
+                                                        //ExecuteStockAlert();
+                                                        ChargerArtFrns();
+                                                    }
                                                 }
                                                 else
                                                 {
@@ -2341,13 +2510,19 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
                                             if (autorise)
                                             {
-                                                UpdateFDOCENTETE();
-                                                _ucDocuments.RafraichirDonnees();
-                                                gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
-                                                StatutActuel = Convert.ToInt32(lkStatut.EditValue);
-                                                MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                                frmSites frmsite = new frmSites(this);
-                                                frmsite.ShowDialog();
+                                                if (doc.DO_TotalHTNet != null)
+                                                {
+                                                    UpdateFDOCENTETE();
+                                                    //_ucDocuments.RafraichirDonnees();
+                                                    gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
+                                                    StatutActuel = Convert.ToInt32(lkStatut.EditValue);
+                                                    MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                                    //frmSites frmsite = new frmSites(this, dbPrincipale);
+                                                    //frmsite.ShowDialog();
+                                                    list_depot();
+                                                   // ExecuteStockAlert();
+                                                    ChargerArtFrns();
+                                                }
                                             }
                                             else
                                             {
@@ -2365,13 +2540,19 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
                                             if (autorise)
                                             {
-                                                UpdateFDOCENTETE();
-                                                _ucDocuments.RafraichirDonnees();
-                                                gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
-                                                StatutActuel = Convert.ToInt32(lkStatut.EditValue);
-                                                MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                                frmSites frmsite = new frmSites(this);
-                                                frmsite.ShowDialog();
+                                                if (doc.DO_TotalHTNet != null)
+                                                {
+                                                    UpdateFDOCENTETE();
+                                                    //_ucDocuments.RafraichirDonnees();
+                                                    gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
+                                                    StatutActuel = Convert.ToInt32(lkStatut.EditValue);
+                                                    MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                                    //frmSites frmsite = new frmSites(this, dbPrincipale);
+                                                    //frmsite.ShowDialog();
+                                                    list_depot();
+                                                    //ExecuteStockAlert();
+                                                    ChargerArtFrns();
+                                                }
                                             }
                                             else
                                             {
@@ -2392,21 +2573,27 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                     if (test == null)
                                     {
                                         InsertFDOCENTETE();
-                                        _ucDocuments.RafraichirDonnees();
+                                        //_ucDocuments.RafraichirDonnees();
                                         gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
                                         StatutActuel = Convert.ToInt32(lkStatut.EditValue);
                                         MessageBox.Show("Insertion terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                        frmSites frmsite = new frmSites(this);
-                                        frmsite.ShowDialog();
+                                        //frmSites frmsite = new frmSites(this,dbPrincipale);
+                                        //frmsite.ShowDialog();
+                                        list_depot();
+                                        //ExecuteStockAlert();
+                                        ChargerArtFrns();
                                     }
                                     else
                                     {
                                         UpdateFDOCENTETE();
-                                        _ucDocuments.RafraichirDonnees();
+                                        //_ucDocuments.RafraichirDonnees();
                                         gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
                                         MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                        frmSites frmsite = new frmSites(this);
-                                        frmsite.ShowDialog();
+                                        //frmSites frmsite = new frmSites(this,dbPrincipale);
+                                        //frmsite.ShowDialog();
+                                        list_depot();
+                                        //ExecuteStockAlert();
+                                        ChargerArtFrns();
                                     }
                                 }
                             }
@@ -2446,12 +2633,15 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                     if (autorise)
                                     {
                                         UpdateFDOCENTETE();
-                                        _ucDocuments.RafraichirDonnees();
+                                        //_ucDocuments.RafraichirDonnees();
                                         gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
                                         StatutActuel = Convert.ToInt32(lkStatut.EditValue);
                                         MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                        frmSites frmsite = new frmSites(this);
-                                        frmsite.ShowDialog();
+                                        //frmSites frmsite = new frmSites(this,dbPrincipale);
+                                        //frmsite.ShowDialog();
+                                        list_depot();
+                                        //ExecuteStockAlert();
+                                        ChargerArtFrns();
                                     }
                                     else
                                     {
@@ -2472,13 +2662,19 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                     {
                                         if (lkStatut.Text != "Accepté")
                                         {
-                                            UpdateFDOCENTETE();
-                                            _ucDocuments.RafraichirDonnees();
-                                            gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
-                                            StatutActuel = Convert.ToInt32(lkStatut.EditValue);
-                                            MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                            frmSites frmsite = new frmSites(this);
-                                            frmsite.ShowDialog();
+                                            if (doc.DO_TotalHTNet != null)
+                                            {
+                                                UpdateFDOCENTETE();
+                                                //_ucDocuments.RafraichirDonnees();
+                                                gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
+                                                StatutActuel = Convert.ToInt32(lkStatut.EditValue);
+                                                MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                                //frmSites frmsite = new frmSites(this, dbPrincipale);
+                                                //frmsite.ShowDialog();
+                                                list_depot();
+                                                //ExecuteStockAlert();
+                                                ChargerArtFrns();
+                                            }
                                         }
                                         else
                                         {
@@ -2507,12 +2703,15 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                     if (autorise)
                                     {
                                         UpdateFDOCENTETE();
-                                        _ucDocuments.RafraichirDonnees();
+                                        //_ucDocuments.RafraichirDonnees();
                                         gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
                                         StatutActuel = Convert.ToInt32(lkStatut.EditValue);
                                         MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                        frmSites frmsite = new frmSites(this);
-                                        frmsite.ShowDialog();
+                                        //frmSites frmsite = new frmSites(this,dbPrincipale);
+                                        //frmsite.ShowDialog();
+                                        list_depot();
+                                        //ExecuteStockAlert();
+                                        ChargerArtFrns();
                                     }
                                     else
                                     {
@@ -2531,12 +2730,15 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                     if (autorise)
                                     {
                                         UpdateFDOCENTETE();
-                                        _ucDocuments.RafraichirDonnees();
+                                        //_ucDocuments.RafraichirDonnees();
                                         gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
                                         StatutActuel = Convert.ToInt32(lkStatut.EditValue);
                                         MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                        frmSites frmsite = new frmSites(this);
-                                        frmsite.ShowDialog();
+                                        //frmSites frmsite = new frmSites(this,dbPrincipale);
+                                        //frmsite.ShowDialog();
+                                        list_depot();
+                                        //ExecuteStockAlert();
+                                        ChargerArtFrns();
                                     }
                                     else
                                     {
@@ -2557,21 +2759,27 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                             if (test == null)
                             {
                                 InsertFDOCENTETE();
-                                _ucDocuments.RafraichirDonnees();
+                                //_ucDocuments.RafraichirDonnees();
                                 gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
                                 StatutActuel = Convert.ToInt32(lkStatut.EditValue);
                                 MessageBox.Show("Insertion terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                frmSites frmsite = new frmSites(this);
-                                frmsite.ShowDialog();
+                                //frmSites frmsite = new frmSites(this,dbPrincipale);
+                                //frmsite.ShowDialog();
+                                list_depot();
+                                //ExecuteStockAlert();
+                                ChargerArtFrns();
                             }
                             else
                             {
                                 UpdateFDOCENTETE();
-                                _ucDocuments.RafraichirDonnees();
+                                //_ucDocuments.RafraichirDonnees();
                                 gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
                                 MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                frmSites frmsite = new frmSites(this);
-                                frmsite.ShowDialog();
+                                //frmSites frmsite = new frmSites(this,dbPrincipale);
+                                //frmsite.ShowDialog();
+                                list_depot();
+                                //ExecuteStockAlert();
+                                ChargerArtFrns();
                             }
                         }
                     }
@@ -2603,12 +2811,15 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                 if (autorise)
                                 {
                                     UpdateFDOCENTETE();
-                                    _ucDocuments.RafraichirDonnees();
+                                    //_ucDocuments.RafraichirDonnees();
                                     gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
                                     StatutActuel = Convert.ToInt32(lkStatut.EditValue);
                                     MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                    frmSites frmsite = new frmSites(this);
-                                    frmsite.ShowDialog();
+                                    //frmSites frmsite = new frmSites(this,dbPrincipale);
+                                    //frmsite.ShowDialog();
+                                    list_depot();
+                                    //ExecuteStockAlert();
+                                    ChargerArtFrns();
                                 }
                                 else
                                 {
@@ -2627,15 +2838,23 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
                                 if (autorise)
                                 {
+
                                     if (lkStatut.Text != "Accepté")
                                     {
-                                        UpdateFDOCENTETE();
-                                        _ucDocuments.RafraichirDonnees();
-                                        gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
-                                        StatutActuel = Convert.ToInt32(lkStatut.EditValue);
-                                        MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                        frmSites frmsite = new frmSites(this);
-                                        frmsite.ShowDialog();
+                                        if (doc.DO_TotalHTNet != null)
+                                        {
+                                            UpdateFDOCENTETE();
+                                            //_ucDocuments.RafraichirDonnees();
+                                            gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
+                                            StatutActuel = Convert.ToInt32(lkStatut.EditValue);
+                                            MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                            //frmSites frmsite = new frmSites(this, dbPrincipale);
+                                            //frmsite.ShowDialog();
+
+                                            list_depot();
+                                            //ExecuteStockAlert();
+                                            ChargerArtFrns();
+                                        }
                                     }
                                     else
                                     {
@@ -2664,12 +2883,15 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                 if (autorise)
                                 {
                                     UpdateFDOCENTETE();
-                                    _ucDocuments.RafraichirDonnees();
+                                    //_ucDocuments.RafraichirDonnees();
                                     gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
                                     StatutActuel = Convert.ToInt32(lkStatut.EditValue);
                                     MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                    frmSites frmsite = new frmSites(this);
-                                    frmsite.ShowDialog();
+                                    //frmSites frmsite = new frmSites(this,dbPrincipale);
+                                    //frmsite.ShowDialog();
+                                    list_depot();
+                                    //ExecuteStockAlert();
+                                    ChargerArtFrns();
                                 }
                                 else
                                 {
@@ -2688,12 +2910,15 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                 if (autorise)
                                 {
                                     UpdateFDOCENTETE();
-                                    _ucDocuments.RafraichirDonnees();
+                                    //_ucDocuments.RafraichirDonnees();
                                     gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
                                     StatutActuel = Convert.ToInt32(lkStatut.EditValue);
                                     MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                    frmSites frmsite = new frmSites(this);
-                                    frmsite.ShowDialog();
+                                    //frmSites frmsite = new frmSites(this,dbPrincipale);
+                                    //frmsite.ShowDialog();
+                                    list_depot();
+                                    //ExecuteStockAlert();
+                                    ChargerArtFrns();
                                 }
                                 else
                                 {
@@ -2714,21 +2939,27 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                         if (test == null)
                         {
                             InsertFDOCENTETE();
-                            _ucDocuments.RafraichirDonnees();
+                            //_ucDocuments.RafraichirDonnees();
                             gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
                             StatutActuel = Convert.ToInt32(lkStatut.EditValue);
                             MessageBox.Show("Insertion terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            frmSites frmsite = new frmSites(this);
-                            frmsite.ShowDialog();
+                            //frmSites frmsite = new frmSites(this,dbPrincipale);
+                            //frmsite.ShowDialog();
+                            list_depot();
+                            //ExecuteStockAlert();
+                            ChargerArtFrns();
                         }
                         else
                         {
                             UpdateFDOCENTETE();
-                            _ucDocuments.RafraichirDonnees();
+                            //_ucDocuments.RafraichirDonnees();
                             gvLigneEdit.SetFocusedValue(lkEdFrns.EditValue);
                             MessageBox.Show("Modification terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            frmSites frmsite = new frmSites(this);
-                            frmsite.ShowDialog();
+                            //frmSites frmsite = new frmSites(this,dbPrincipale);
+                            //frmsite.ShowDialog();
+                            list_depot();
+                            //ExecuteStockAlert();
+                            ChargerArtFrns();
                         }
                     }
                 }
@@ -3075,6 +3306,21 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                     cmd.ExecuteNonQuery();
                 }
 
+                string UPDATESql2 = @"UPDATE F_INCOTERM SET do_piece=@do_pieces WHERE do_piece=@do_piece";
+
+                using (SqlConnection conn = new SqlConnection(connectionString2))
+                using (SqlCommand cmd = new SqlCommand(UPDATESql2, conn))
+                {
+                    cmd.Parameters.Add("@do_piece", SqlDbType.VarChar, 50)
+                        .Value = dopiecetxt.Text.Trim();
+
+                    cmd.Parameters.Add("@do_pieces", SqlDbType.VarChar, 20)
+                        .Value = newDocPieceNo;
+
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                }
+
                 this.Close();
             }
             catch (System.Exception ex)
@@ -3236,154 +3482,161 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
             GridView view = sender as GridView;
 
-            if (e.Column.FieldName == "PU par tonne")
+            if(e.Column != null)
             {
-                if (decimal.TryParse(view.GetRowCellValue(e.RowHandle, "PU par tonne")?.ToString(), out decimal prixTonne))
+                if (e.Column.FieldName == "PU par tonne")
                 {
-                    decimal val = prixTonne * 1000;
-                    view.SetRowCellValue(e.RowHandle, "DL_PrixUnitaire", val); // prix par kg
-                }
-            }
-            else if (e.Column.FieldName == "DL_PrixUnitaire")
-            {
-                if (decimal.TryParse(view.GetRowCellValue(e.RowHandle, "DL_PrixUnitaire")?.ToString(), out decimal prixKg))
-                {
-                    view.SetRowCellValue(e.RowHandle, "PU par tonne", prixKg / 1000); // prix par tonne
-                }
-            }
-
-            isUpdating = false;
-
-            gvLigneEdit.PostEditor();
-
-            if (e.Column.FieldName == "AR_Ref" && e.Value != null && !string.IsNullOrWhiteSpace(e.Value.ToString()))
-            {
-                string selectedAR_Ref = e.Value.ToString();
-
-                if (e.RowHandle != DevExpress.XtraGrid.GridControl.NewItemRowHandle)
-                {
-                    gvLigneEdit.SetRowCellValue(e.RowHandle, "DL_Design", GetArticleDescription(selectedAR_Ref));
-                    gvLigneEdit.SetRowCellValue(e.RowHandle, "Action", "Remove");
-                    gvLigneEdit.SetRowCellValue(e.RowHandle, "Retenu", 1);
-                    gvLigneEdit.SetRowCellValue(e.RowHandle, "Validation", "Update");
-                    //gvLigneEdit.SetRowCellValue(e.RowHandle, "Insertion", "Add");
-                    gvLigneEdit.SetRowCellValue(e.RowHandle, "DL_PrixUnitaire", GetArticlePU(selectedAR_Ref));
-                    gvLigneEdit.SetRowCellValue(e.RowHandle, "CT_Num", GetFRNS(selectedAR_Ref));
-
-                    gvLigneEdit.BestFitColumns();
-                }
-                else
-                {
-                    gvLigneEdit.SetRowCellValue(e.RowHandle, "DL_Design", GetArticleDescription(selectedAR_Ref));
-                    gvLigneEdit.SetRowCellValue(e.RowHandle, "Action", "Remove");
-                    gvLigneEdit.SetRowCellValue(e.RowHandle, "Retenu", 1);
-                    gvLigneEdit.SetRowCellValue(e.RowHandle, "Validation", "Update");
-                    //gvLigneEdit.SetRowCellValue(e.RowHandle, "Insertion", "Add");
-                    gvLigneEdit.SetRowCellValue(e.RowHandle, "DL_PrixUnitaire", GetArticlePU(selectedAR_Ref));
-                    gvLigneEdit.SetRowCellValue(e.RowHandle, "CT_Num", GetFRNS(selectedAR_Ref));
-
-                    gvLigneEdit.BestFitColumns();
-                }
-            }
-            if (e.Column.FieldName == "DL_Qte" || e.Column.FieldName == "DL_Remise01REM_Valeur" || e.Column.FieldName == "DL_PrixUnitaire"
-                || e.Column.FieldName == "DL_Taxe1" || e.Column.FieldName == "DL_PUDevise" || e.Column.FieldName == "DL_PoidsNet" || e.Column.FieldName == "DL_Frais")
-            {
-                //GridView view = sender as GridView;
-
-                // Récupérer les valeurs
-                object prixUnitaireObj = view.GetRowCellValue(e.RowHandle, "DL_PrixUnitaire");
-                object quantiteObj = view.GetRowCellValue(e.RowHandle, "DL_Qte");
-                int qte = 0;
-                if (quantiteObj != null && quantiteObj != DBNull.Value && quantiteObj.ToString() != "")
-                {
-                    qte = Convert.ToInt32(quantiteObj);
-                }
-                else
-                {
-                    qte = 0;
-                }
-
-                object dlTaxe1obj = gvLigneEdit.GetRowCellValue(e.RowHandle, "DL_Taxe1");
-                int dlTaxe1 = 0;
-                if (dlTaxe1obj != null && dlTaxe1obj != DBNull.Value && dlTaxe1obj.ToString() != "")
-                {
-                    dlTaxe1 = Convert.ToInt32(dlTaxe1obj);
-                }
-                else
-                {
-                    dlTaxe1 = ucDocuments.doTaxe1;
-                    gvLigneEdit.SetRowCellValue(e.RowHandle, "DO_Taxe1", dlTaxe1);
-                }
-
-                object dlPuDeviseobj = gvLigneEdit.GetRowCellValue(e.RowHandle, "DL_PuDevise");
-                decimal dlPuDevise = 0;
-                if (dlPuDeviseobj != null && dlPuDeviseobj != DBNull.Value && dlPuDeviseobj.ToString() != "")
-                {
-                    dlPuDevise = Convert.ToDecimal(dlPuDeviseobj);
-                }
-                else
-                {
-                    dlPuDevise = 0;
-                    gvLigneEdit.SetRowCellValue(e.RowHandle, "DL_PuDevise", dlPuDevise);
-                }
-
-                object remiseObj = view.GetRowCellValue(e.RowHandle, "DL_Remise01REM_Valeur");
-                object tauxTVAObj = view.GetRowCellValue(e.RowHandle, "DL_Taxe1");
-
-                if (prixUnitaireObj != null && quantiteObj != null && remiseObj != null && tauxTVAObj != null &&
-                    prixUnitaireObj != DBNull.Value && quantiteObj != DBNull.Value &&
-                    remiseObj != DBNull.Value && tauxTVAObj != DBNull.Value)
-                {
-                    decimal prixUnitaire = Convert.ToDecimal(prixUnitaireObj);
-                    int quantite = Convert.ToInt32(qte);
-                    decimal remise = Convert.ToDecimal(remiseObj);
-                    decimal tauxTVA = Convert.ToDecimal(tauxTVAObj);
-                    decimal cours = Convert.ToDecimal(txtCours.Text);
-
-                    // Appliquer la remise au prix unitaire
-                    decimal prixNet = prixUnitaire * (1 - remise / 100);
-                    decimal montantHT = prixNet * quantite * cours;
-                    decimal montantTTC = montantHT * (1 + tauxTVA / 100);
-
-                    view.SetRowCellValue(e.RowHandle, "DL_MontantHT", montantHT);
-                    view.SetRowCellValue(e.RowHandle, "DL_MontantTTC", montantTTC);
-
-                    gvLigneEdit.CustomUnboundColumnData += (sender, e) =>
+                    if (decimal.TryParse(view.GetRowCellValue(e.RowHandle, "PU par tonne")?.ToString(), out decimal prixTonne))
                     {
-                        if (e.IsGetData)
-                        {
-                            if (e.Column.FieldName == "FRET")
-                            {
-                                try
-                                {
-                                    decimal poidsNet = Convert.ToDecimal(gvLigneEdit.GetListSourceRowCellValue(e.ListSourceRowIndex, "DL_PoidsNet"));
-                                    decimal prix = Convert.ToDecimal(txt_prix.Text);
-                                    decimal poids = Convert.ToDecimal(txt_poids.Text);
-
-                                    decimal fret = (poidsNet * prix) / poids;
-                                    if (fret < 0) fret = 0m;
-
-                                    e.Value = fret.ToString("N2");
-                                }catch(Exception er) { }
-                            }
-                            else if (e.Column.FieldName == "Total Frais")
-                            {
-                                try { 
-                                    decimal fret = Convert.ToDecimal(gvLigneEdit.GetListSourceRowCellValue(e.ListSourceRowIndex, "FRET"));
-                                    decimal dlFrais = Convert.ToDecimal(gvLigneEdit.GetListSourceRowCellValue(e.ListSourceRowIndex, "DL_Frais"));
-
-                                    decimal tot_frais = dlFrais + fret;
-                                    e.Value = tot_frais.ToString("N2");
-                                }
-                                catch (Exception er) { }
-                            }
-                        }
-                    };
+                        decimal val = prixTonne / 1000;
+                        view.SetRowCellValue(e.RowHandle, "DL_PrixUnitaire", val); // prix par kg
+                    }
                 }
+                else if (e.Column.FieldName == "DL_PrixUnitaire")
+                {
+                    if (decimal.TryParse(view.GetRowCellValue(e.RowHandle, "DL_PrixUnitaire")?.ToString(), out decimal prixKg))
+                    {
+                        view.SetRowCellValue(e.RowHandle, "PU par tonne", prixKg * 1000); // prix par tonne
+                    }
+                }
+
+                isUpdating = false;
+
+                gvLigneEdit.PostEditor();
+
+                if (e.Column.FieldName == "AR_Ref" && e.Value != null && !string.IsNullOrWhiteSpace(e.Value.ToString()))
+                {
+                    string selectedAR_Ref = e.Value.ToString();
+
+                    if (e.RowHandle != DevExpress.XtraGrid.GridControl.NewItemRowHandle)
+                    {
+                        gvLigneEdit.SetRowCellValue(e.RowHandle, "DL_Design", GetArticleDescription(selectedAR_Ref));
+                        gvLigneEdit.SetRowCellValue(e.RowHandle, "Action", "Remove");
+                        gvLigneEdit.SetRowCellValue(e.RowHandle, "Retenu", 1);
+                        gvLigneEdit.SetRowCellValue(e.RowHandle, "Validation", "Update");
+                        //gvLigneEdit.SetRowCellValue(e.RowHandle, "Insertion", "Add");
+                        gvLigneEdit.SetRowCellValue(e.RowHandle, "DL_PrixUnitaire", GetArticlePU(selectedAR_Ref));
+                        gvLigneEdit.SetRowCellValue(e.RowHandle, "CT_Num", GetFRNS(selectedAR_Ref));
+
+                        gvLigneEdit.BestFitColumns();
+                    }
+                    else
+                    {
+                        gvLigneEdit.SetRowCellValue(e.RowHandle, "DL_Design", GetArticleDescription(selectedAR_Ref));
+                        gvLigneEdit.SetRowCellValue(e.RowHandle, "Action", "Remove");
+                        gvLigneEdit.SetRowCellValue(e.RowHandle, "Retenu", 1);
+                        gvLigneEdit.SetRowCellValue(e.RowHandle, "Validation", "Update");
+                        //gvLigneEdit.SetRowCellValue(e.RowHandle, "Insertion", "Add");
+                        gvLigneEdit.SetRowCellValue(e.RowHandle, "DL_PrixUnitaire", GetArticlePU(selectedAR_Ref));
+                        gvLigneEdit.SetRowCellValue(e.RowHandle, "CT_Num", GetFRNS(selectedAR_Ref));
+
+                        gvLigneEdit.BestFitColumns();
+                    }
+                }
+                if (e.Column.FieldName == "DL_Qte" || e.Column.FieldName == "DL_Remise01REM_Valeur" || e.Column.FieldName == "DL_PrixUnitaire"
+                    || e.Column.FieldName == "DL_Taxe1" || e.Column.FieldName == "DL_PUDevise" || e.Column.FieldName == "DL_PoidsNet" || e.Column.FieldName == "DL_Frais")
+                {
+                    //GridView view = sender as GridView;
+
+                    // Récupérer les valeurs
+                    object prixUnitaireObj = view.GetRowCellValue(e.RowHandle, "DL_PrixUnitaire");
+                    object quantiteObj = view.GetRowCellValue(e.RowHandle, "DL_Qte");
+                    int qte = 0;
+                    if (quantiteObj != null && quantiteObj != DBNull.Value && quantiteObj.ToString() != "")
+                    {
+                        qte = Convert.ToInt32(quantiteObj);
+                    }
+                    else
+                    {
+                        qte = 0;
+                    }
+
+                    object dlTaxe1obj = gvLigneEdit.GetRowCellValue(e.RowHandle, "DL_Taxe1");
+                    int dlTaxe1 = 0;
+                    if (dlTaxe1obj != null && dlTaxe1obj != DBNull.Value && dlTaxe1obj.ToString() != "")
+                    {
+                        dlTaxe1 = Convert.ToInt32(dlTaxe1obj);
+                    }
+                    else
+                    {
+                        dlTaxe1 = ucDocuments.doTaxe1;
+                        gvLigneEdit.SetRowCellValue(e.RowHandle, "DO_Taxe1", dlTaxe1);
+                    }
+
+                    object dlPuDeviseobj = gvLigneEdit.GetRowCellValue(e.RowHandle, "DL_PuDevise");
+                    decimal dlPuDevise = 0;
+                    if (dlPuDeviseobj != null && dlPuDeviseobj != DBNull.Value && dlPuDeviseobj.ToString() != "")
+                    {
+                        dlPuDevise = Convert.ToDecimal(dlPuDeviseobj);
+                    }
+                    else
+                    {
+                        dlPuDevise = 0;
+                        gvLigneEdit.SetRowCellValue(e.RowHandle, "DL_PuDevise", dlPuDevise);
+                    }
+
+                    object remiseObj = view.GetRowCellValue(e.RowHandle, "DL_Remise01REM_Valeur");
+                    object tauxTVAObj = view.GetRowCellValue(e.RowHandle, "DL_Taxe1");
+
+                    if (prixUnitaireObj != null && quantiteObj != null && remiseObj != null && tauxTVAObj != null &&
+                        prixUnitaireObj != DBNull.Value && quantiteObj != DBNull.Value &&
+                        remiseObj != DBNull.Value && tauxTVAObj != DBNull.Value)
+                    {
+                        decimal prixUnitaire = Convert.ToDecimal(prixUnitaireObj);
+                        int quantite = Convert.ToInt32(qte);
+                        decimal remise = Convert.ToDecimal(remiseObj);
+                        decimal tauxTVA = Convert.ToDecimal(tauxTVAObj);
+                        decimal cours = Convert.ToDecimal(txtCours.Text);
+                        decimal frais = Convert.ToDecimal(view.GetRowCellValue(e.RowHandle, "DL_Frais"));
+                        decimal fret = Convert.ToDecimal(view.GetRowCellValue(e.RowHandle, "Fret"));
+
+                        // Appliquer la remise au prix unitaire
+                        decimal prixNet = prixUnitaire * (1 - remise / 100);
+                        decimal montantHT = (prixNet * quantite * cours) + (frais+fret);
+                        decimal montantTTC = montantHT * (1 + tauxTVA / 100);
+
+                        view.SetRowCellValue(e.RowHandle, "DL_MontantHT", montantHT);
+                        view.SetRowCellValue(e.RowHandle, "DL_MontantTTC", montantTTC);
+
+                        gvLigneEdit.CustomUnboundColumnData += (sender, e) =>
+                        {
+                            if (e.IsGetData)
+                            {
+                                if (e.Column.FieldName == "FRET")
+                                {
+                                    try
+                                    {
+                                        decimal poidsNet = Convert.ToDecimal(gvLigneEdit.GetListSourceRowCellValue(e.ListSourceRowIndex, "DL_PoidsNet"));
+                                        decimal prix = Convert.ToDecimal(txt_prix.Text);
+                                        decimal poids = Convert.ToDecimal(txt_poids.Text);
+
+                                        decimal fret = (poidsNet * prix) / poids;
+                                        if (fret < 0) fret = 0m;
+
+                                        e.Value = fret.ToString("N2");
+                                    }
+                                    catch (Exception er) { }
+                                }
+                                else if (e.Column.FieldName == "Total Frais")
+                                {
+                                    try
+                                    {
+                                        decimal fret = Convert.ToDecimal(gvLigneEdit.GetListSourceRowCellValue(e.ListSourceRowIndex, "FRET"));
+                                        decimal dlFrais = Convert.ToDecimal(gvLigneEdit.GetListSourceRowCellValue(e.ListSourceRowIndex, "DL_Frais"));
+
+                                        decimal tot_frais = dlFrais + fret;
+                                        e.Value = tot_frais.ToString("N2");
+                                    }
+                                    catch (Exception er) { }
+                                }
+                            }
+                        };
+                    }
+                }
+
+                gvLigneEdit.UpdateSummary();
+                gvLigneEdit.RefreshData();
             }
-            
-            gvLigneEdit.UpdateSummary();
-            gvLigneEdit.RefreshData();
         }
 
         private decimal GetArticlePU(string arRef)
@@ -3496,7 +3749,46 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             }
 
         }
+        
+        private void lister_incoterm(String cond)
+        {
+            lbl_val2.Text = "";
+            string connectionString2 =
+                                    $"Server={serveripPrincipale};Database={dbPrincipale};" +
+                                    $"User ID=Dev;Password=1234;TrustServerCertificate=True;" +
+                                    $"Connection Timeout=240;";
 
+            string query = "SELECT incoterm FROM F_INCOTERM WHERE do_piece = @do_piece";
+
+            using (SqlConnection conn = new SqlConnection(connectionString2))
+            {
+                try
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.Add("@do_piece", SqlDbType.VarChar, 50)
+                        .Value = dopiecetxt.Text.Trim();
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.HasRows == true)
+                            {
+                                lbl_val2.Text = "1";
+                                while (reader.Read())
+                                {
+                                    cmbIncoterm.Text = reader.GetString(0).ToString();
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    MethodBase m = MethodBase.GetCurrentMethod();
+                    MessageBox.Show($"Une erreur est survenue : {ex.Message}, {m}", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
         private void lister_packing(String cond)
         {
             lblval1.Text = "";
@@ -3543,11 +3835,48 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             }
         }
 
+        private void list_depot()
+        {
+            string connectionString3 =
+                                   $"Server={serveripPrincipale};Database={dbPrincipale};" +
+                                   $"User ID=Dev;Password=1234;TrustServerCertificate=True;" +
+                                   $"Connection Timeout=240;";
+
+            string query_depot = "SELECT val_depot FROM DEPOT";
+
+            using (SqlConnection conn = new SqlConnection(connectionString3))
+            {
+                try
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = new SqlCommand(query_depot, conn))
+                    {
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.HasRows == true)
+                            {
+                                while (reader.Read())
+                                {
+                                    labelControl8.Text = reader.GetString(0).ToString();
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    MethodBase m = MethodBase.GetCurrentMethod();
+                    MessageBox.Show($"Une erreur est survenue : {ex.Message}, {m}", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
         public static int intcollaborateur;
         private Dictionary<int, decimal> puTonneValues = new Dictionary<int, decimal>();
 
         private void frmEditDocument_Load_1(object sender, EventArgs e)
         {
+            lister_incoterm(dopiecetxt.Text);
             lister_packing(dopiecetxt.Text);
             if (dopiecetxt.Text.StartsWith("AFA"))
             {
@@ -3558,11 +3887,24 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 groupControl4.Enabled = false;
             }
 
+            if (!dopiecetxt.Text.StartsWith("ABR"))
+            {
+                groupControl5.Enabled = true;
+            }
+            else
+            {
+                groupControl5.Enabled = false;
+            }
+
             lbl_val.Text = "";
+
             string connectionString2 =
                                     $"Server={serveripPrincipale};Database={dbPrincipale};" +
                                     $"User ID=Dev;Password=1234;TrustServerCertificate=True;" +
                                     $"Connection Timeout=240;";
+
+
+            list_depot();
 
             string query = "SELECT mode_paiement,date_echeance FROM F_MODE_PAIEMENT WHERE do_piece = @do_piece";
 
@@ -3611,7 +3953,6 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
             if (test_exist != null)
             {
-                ExecuteStockAlert();
                 ChargerArtFrns();
                 var list = _context.F_FRETS.FirstOrDefault(p => p.DO_PIECE == dopiecetxt.Text);
 
@@ -3738,6 +4079,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
                     col1.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
                     col1.DisplayFormat.FormatString = "N2";
+                    col1.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
                 }
 
                 GridColumn col_htdevise = gvLigneEdit.Columns["Montant Total en devise"];
@@ -3759,9 +4101,9 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 col1.VisibleIndex = indexFrais + 2;
 
                 int indexPrixUnitaire = gvLigneEdit.Columns["DL_PrixUnitaire"].VisibleIndex;
-                col_unite.VisibleIndex = indexPrixUnitaire - 1;
+                col_unite.VisibleIndex = indexPrixUnitaire - 2;
 
-                int indexMontantHT = gvLigneEdit.Columns["DL_MontantHT"].VisibleIndex;
+                int indexMontantHT = gvLigneEdit.Columns["DL_PoidsNet"].VisibleIndex;
                 col_htdevise.VisibleIndex = indexMontantHT + 1;
 
                 gvLigneEdit.CustomUnboundColumnData += (sender, e) =>
@@ -3783,6 +4125,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
                                     e.Value = fret.ToString("N2");
                                 }
+
                             }
                             catch (Exception es) { }
                         }
@@ -3790,11 +4133,13 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                         {
                             try
                             {
-                                decimal PUHT = Convert.ToDecimal(gvLigneEdit.GetListSourceRowCellValue(e.ListSourceRowIndex, "DL_MontantHT"));
+                                decimal qte = Convert.ToDecimal(gvLigneEdit.GetListSourceRowCellValue(e.ListSourceRowIndex, "DL_PoidsNet"));
+                                decimal PUHT = Convert.ToDecimal(gvLigneEdit.GetListSourceRowCellValue(e.ListSourceRowIndex, "DL_PrixUnitaire"));
+                                decimal PU = Convert.ToDecimal(PUHT.ToString("N2"));
                                 if (txtCours.Text != "" && Convert.ToDecimal(txtCours.Text.ToString()) > 0)
                                 {
                                     decimal cours_devise = Convert.ToDecimal(txtCours.Text);
-                                    decimal m_devise = PUHT / cours_devise;
+                                    decimal m_devise = (PU * qte) / cours_devise;
                                     if (m_devise < 0) m_devise = 0m;
 
                                     e.Value = m_devise.ToString("N2");
@@ -3885,6 +4230,23 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
             gvLigneEdit.Columns["DL_PrixUnitaire"].Caption = "PU par Kg";
             RecalculerPrix(gvLigneEdit);
+
+            for (int i = 0; i < gvLigneEdit.RowCount; i++)
+            {
+                if (!gvLigneEdit.IsDataRow(i))
+                    continue;
+                try {
+                    UPdateLigne(i);
+                }catch(Exception et) { }
+            }
+
+            txtCours_EditValueChanged(sender, e);
+            lkEdFrns.EditValue = _context.F_DOCENTETE
+               .Where(d => d.DO_Piece.Trim() == dopiecetxt.Text.Trim())
+               .Select(d => d.DO_Tiers.Trim())
+               .FirstOrDefault() ?? "";
+
+            ExecuteStockAlert();
         }
 
         private void datelivrprev_EditValueChanged(object sender, EventArgs e)
@@ -4001,77 +4363,153 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             }
         }
 
+        bool tester_liberation()
+        {
+            bool b_test = false;
+            string connectionString2 =
+                                    $"Server={serveripPrincipale};Database={dbPrincipale};" +
+                                    $"User ID=Dev;Password=1234;TrustServerCertificate=True;" +
+                                    $"Connection Timeout=240;";
+
+            string query = "SELECT TOP 1 * FROM F_DOCLIGNE WHERE do_piece = @do_piece AND (DL_Qte=0 or DL_Qte is null)";
+
+            using (SqlConnection conn = new SqlConnection(connectionString2))
+            {
+                try
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.Add("@do_piece", SqlDbType.VarChar, 50)
+                       .Value = dopiecetxt.Text.Trim();
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.HasRows == true)
+                            {
+                                b_test = true;
+                            }
+                        }
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    MethodBase m = MethodBase.GetCurrentMethod();
+                    MessageBox.Show($"Une erreur est survenue : {ex.Message}, {m}", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            return b_test;
+        }
+
         private void barButtonItem2_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
         {
-            if (tester_cloturer(dopiecetxt.Text))
+            if (tester_liberation()==false)
             {
-                MessageBox.Show(
-                    "Ce document est déjà clôturé, vous ne pouvez plus modifier son contenu!!!!",
-                    "Modification bloquée",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error
-                );
-            }
-            else
-            {
-                string connectionStringArbio = $"Server={serveripPrincipale};" +
-                                $"Database=TRANSIT;User ID=Dev;Password=1234;" +
-                                $"TrustServerCertificate=True;Connection Timeout=120;";
-
-                using (SqlConnection connection = new SqlConnection(connectionStringArbio))
+                if (tester_cloturer(dopiecetxt.Text))
                 {
-                    connection.Open();
+                    MessageBox.Show(
+                        "Ce document est déjà clôturé, vous ne pouvez plus modifier son contenu!!!!",
+                        "Modification bloquée",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error
+                    );
+                }
+                else
+                {
+                    string connectionStringArbio = $"Server={serveripPrincipale};" +
+                                    $"Database=TRANSIT;User ID=Dev;Password=1234;" +
+                                    $"TrustServerCertificate=True;Connection Timeout=120;";
 
-                    using (SqlTransaction tran = connection.BeginTransaction())
+                    using (SqlConnection connection = new SqlConnection(connectionStringArbio))
                     {
-                        try
+                        connection.Open();
+
+                        using (SqlTransaction tran = connection.BeginTransaction())
                         {
-                            string sql = @"
+                            try
+                            {
+                                string sql = @"
                             DELETE FROM encoursutilisation
                             WHERE utilisateur = @utilisateur AND numero_doc=@numero_doc";
 
-                            using (SqlCommand cmd = new SqlCommand(sql, connection, tran))
-                            {
-                                cmd.Parameters.Add("@utilisateur", SqlDbType.VarChar)
-                                              .Value = FrmMdiParent.IDName;
-                                cmd.Parameters.Add("@numero_doc", SqlDbType.VarChar)
-                                             .Value = dopiecetxt.Text;
+                                using (SqlCommand cmd = new SqlCommand(sql, connection, tran))
+                                {
+                                    cmd.Parameters.Add("@utilisateur", SqlDbType.VarChar)
+                                                  .Value = FrmMdiParent.IDName;
+                                    cmd.Parameters.Add("@numero_doc", SqlDbType.VarChar)
+                                                 .Value = dopiecetxt.Text;
 
-                                cmd.ExecuteNonQuery();
+                                    cmd.ExecuteNonQuery();
+                                }
+
+                                // Validation
+                                tran.Commit();
                             }
+                            catch (Exception ex)
+                            {
+                                // Annulation si erreur
+                                if (tran != null)
+                                    tran.Rollback();
 
-                            // Validation
-                            tran.Commit();
+                                MessageBox.Show(
+                                    ex.Message,
+                                    "Erreur",
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Error
+                                );
+                            }
                         }
-                        catch (Exception ex)
-                        {
-                            // Annulation si erreur
-                            if (tran != null)
-                                tran.Rollback();
+                    }
 
+                    if (StatutActuel < 2)
+                    {
+                        MessageBox.Show("Le statut actuel ne permet pas de transformer le document.", "Information");
+                        return;
+                    }
+
+                    if (dopiecetxt.Text.ToString().StartsWith("APA"))
+                    {
+                        bool autorise = frmMenuAchat.verifier_droit("Projet d'achat", "TRANSFORM");
+
+                        if (autorise)
+                        {
+                            if (lkStatut.Text == "Accepté")
+                            {
+                                var dlg = new frmTransform(_typeDocument);
+                                dlg.ParentFormInstance = this;
+
+                                if (dlg.ShowDialog() == DialogResult.OK)
+                                {
+                                    this.TransformFDOCENTETE(dlg.doctype);
+                                }
+
+                                // Fix for CS0120: Use the instance of ucDocuments instead of trying to call it statically
+                                _ucDocuments.ChargerDonneesDepuisBDD();
+                            }
+                            else
+                            {
+                                MessageBox.Show(
+                                       "Le statut actuel ne vous permet pas de transformer ce document !",
+                                       "Modification bloquée",
+                                       MessageBoxButtons.OK,
+                                       MessageBoxIcon.Error);
+                            }
+                        }
+                        else
+                        {
                             MessageBox.Show(
-                                ex.Message,
-                                "Erreur",
+                                "Vous n'avez pas l'autorisation de transformer un projet d'achat !",
+                                "Transformation bloquée",
                                 MessageBoxButtons.OK,
                                 MessageBoxIcon.Error
                             );
                         }
                     }
-                }
-
-                if (StatutActuel < 2)
-                {
-                    MessageBox.Show("Le statut actuel ne permet pas de transformer le document.", "Information");
-                    return;
-                }
-
-                if (dopiecetxt.Text.ToString().StartsWith("APA"))
-                {
-                    bool autorise = frmMenuAchat.verifier_droit("Projet d'achat", "TRANSFORM");
-
-                    if (autorise)
+                    else if (dopiecetxt.Text.ToString().StartsWith("ABR"))
                     {
-                        if(lkStatut.Text == "Accepté") {
+                        bool autorise = frmMenuAchat.verifier_droit("Bon de réception", "TRANSFORM");
+
+                        if (autorise)
+                        {
                             var dlg = new frmTransform(_typeDocument);
                             dlg.ParentFormInstance = this;
 
@@ -4086,93 +4524,46 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                         else
                         {
                             MessageBox.Show(
-                                   "Le statut actuel ne vous permet pas de transformer ce document !",
-                                   "Modification bloquée",
-                                   MessageBoxButtons.OK,
-                                   MessageBoxIcon.Error);
+                                "Vous n'avez pas l'autorisation de transformer un bon de réception !",
+                                "Transformation bloquée",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error
+                            );
                         }
                     }
-                    else
+                    else if (dopiecetxt.Text.ToString().StartsWith("AFA"))
                     {
-                        MessageBox.Show(
-                            "Vous n'avez pas l'autorisation de transformer un projet d'achat !",
-                            "Transformation bloquée",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Error
-                        );
-                    }
-                }
-                else if (dopiecetxt.Text.ToString().StartsWith("ABR"))
-                {
-                    bool autorise = frmMenuAchat.verifier_droit("Bon de réception", "TRANSFORM");
+                        bool autorise = frmMenuAchat.verifier_droit("Facture", "TRANSFORM");
 
-                    if (autorise)
-                    {
-                        var dlg = new frmTransform(_typeDocument);
-                        dlg.ParentFormInstance = this;
-
-                        if (dlg.ShowDialog() == DialogResult.OK)
+                        if (autorise)
                         {
-                            this.TransformFDOCENTETE(dlg.doctype);
+                            var dlg = new frmTransform(_typeDocument);
+                            dlg.ParentFormInstance = this;
+
+                            if (dlg.ShowDialog() == DialogResult.OK)
+                            {
+                                this.TransformFDOCENTETE(dlg.doctype);
+                            }
+
+                            // Fix for CS0120: Use the instance of ucDocuments instead of trying to call it statically
+                            _ucDocuments.ChargerDonneesDepuisBDD();
                         }
-
-                        // Fix for CS0120: Use the instance of ucDocuments instead of trying to call it statically
-                        _ucDocuments.ChargerDonneesDepuisBDD();
-                    }
-                    else
-                    {
-                        MessageBox.Show(
-                            "Vous n'avez pas l'autorisation de transformer un bon de réception !",
-                            "Transformation bloquée",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Error
-                        );
-                    }
-                }
-                else if (dopiecetxt.Text.ToString().StartsWith("AFA"))
-                {
-                    bool autorise = frmMenuAchat.verifier_droit("Facture", "TRANSFORM");
-
-                    if (autorise)
-                    {
-                        var dlg = new frmTransform(_typeDocument);
-                        dlg.ParentFormInstance = this;
-
-                        if (dlg.ShowDialog() == DialogResult.OK)
+                        else
                         {
-                            this.TransformFDOCENTETE(dlg.doctype);
+                            MessageBox.Show(
+                                "Vous n'avez pas l'autorisation de transformer une facture !",
+                                "Transformation bloquée",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error
+                            );
                         }
 
-                        // Fix for CS0120: Use the instance of ucDocuments instead of trying to call it statically
-                        _ucDocuments.ChargerDonneesDepuisBDD();
-                    }
-                    else
-                    {
-                        MessageBox.Show(
-                            "Vous n'avez pas l'autorisation de transformer une facture !",
-                            "Transformation bloquée",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Error
-                        );
-                    }
-                }
-                else if (dopiecetxt.Text.ToString().StartsWith("ABC"))
-                {
-                    bool autorise = frmMenuAchat.verifier_droit("Bon de commande", "TRANSFORM");
-
-                    if (autorise)
-                    {
-                        var dlg = new frmTransform(_typeDocument);
-                        dlg.ParentFormInstance = this;
-
-                        if (dlg.ShowDialog() == DialogResult.OK)
-                        {
-                            this.TransformFDOCENTETE(dlg.doctype);
-                        }
+                        frm_nonLivre fen_non_livre=new frm_nonLivre();
+                        fen_non_livre.ShowDialog();
 
                         //MAJ Qte
 
-                        int? DE_No = Convert.ToInt32(lkDepot.EditValue);
+                        /*int? DE_No = Convert.ToInt32(lkDepot.EditValue);
                         for (int i = 0; i < gvLigneEdit.RowCount; i++)
                         {
                             string reference = gvLigneEdit.GetRowCellValue(i, "AR_Ref")?.ToString();
@@ -4180,107 +4571,133 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
                             try
                             {
-                                //string connectionString = "Server=26.71.34.164;Database=TRANSIT;Trusted_Connection=True;";
-                                /* string connectionString = "Server=localhost;Database=TRANSIT;Trusted_Connection=True;";
+                                string connectionString = $"Server={serveripPrincipale};Database=TRANSIT;" +
+                                                $"User ID=Dev;Password=1234;TrustServerCertificate=True;" +
+                                                $"Connection Timeout=240;";
 
-                                 using (SqlConnection connection = new SqlConnection(connectionString))
-                                 {
-                                     connection.Open();
+                                using (SqlConnection connection = new SqlConnection(connectionString))
+                                {
+                                    connection.Open();
 
-                                     string existingStock = @"
-                                     SELECT TOP 1 AS_QteSto
-                                     FROM F_ARTSTOCK
-                                     WHERE AR_Ref = @AR_Ref AND DE_No = @DE_No";
+                                    string existingStock = @"
+                                         SELECT TOP 1 AS_QteSto
+                                         FROM F_ARTSTOCK
+                                         WHERE AR_Ref = @AR_Ref AND DE_No = @DE_No";
 
-                                     decimal? existingQte = null;
+                                    decimal? existingQte = null;
 
-                                     using (SqlCommand checkCmd = new SqlCommand(existingStock, connection))
-                                     {
-                                         checkCmd.Parameters.AddWithValue("@AR_Ref", reference);
-                                         checkCmd.Parameters.AddWithValue("@DE_No", DE_No);
+                                    using (SqlCommand checkCmd = new SqlCommand(existingStock, connection))
+                                    {
+                                        checkCmd.Parameters.AddWithValue("@AR_Ref", reference);
+                                        checkCmd.Parameters.AddWithValue("@DE_No", DE_No);
 
-                                         var result = checkCmd.ExecuteScalar();
-                                         if (result != null && result != DBNull.Value)
-                                             existingQte = Convert.ToDecimal(result);
-                                     }
-                                     if (existingQte == null)
-                                     {
-                                         string insertSql = @"
-                                             INSERT INTO F_ARTSTOCK (
-                                                 AR_Ref,
-                                                 DE_No,
-                                                 DP_NoPrincipal,
-                                                 AS_QteSto,
-                                                 AS_QteRes,
-                                                 AS_QteCom,
-                                                 AS_QtePrepa,
-                                                 AS_MontSto,
-                                                 AS_QteMini,
-                                                 AS_QteMaxi
-                                             )
-                                             VALUES (
-                                                 @AR_Ref,
-                                                 @DE_No,
-                                                 @DP_NoPrincipal,
-                                                 @Qte,
-                                                 0, 0, 0, 0, 0, 0
-                                             )";
+                                        var result = checkCmd.ExecuteScalar();
+                                        if (result != null && result != DBNull.Value)
+                                            existingQte = Convert.ToDecimal(result);
+                                    }
+                                    if (existingQte == null)
+                                    {
+                                        string insertSql = @"
+                                                 INSERT INTO F_ARTSTOCK (
+                                                     AR_Ref,
+                                                     DE_No,
+                                                     DP_NoPrincipal,
+                                                     AS_QteSto,
+                                                     AS_QteRes,
+                                                     AS_QteCom,
+                                                     AS_QtePrepa,
+                                                     AS_MontSto,
+                                                     AS_QteMini,
+                                                     AS_QteMaxi
+                                                 )
+                                                 VALUES (
+                                                     @AR_Ref,
+                                                     @DE_No,
+                                                     @DP_NoPrincipal,
+                                                     @Qte,
+                                                     0, 0, 0, 0, 0, 0
+                                                 )";
 
-                                         using (SqlCommand insertCmd = new SqlCommand(insertSql, connection))
-                                         {
-                                             insertCmd.Parameters.AddWithValue("@AR_Ref", reference);
-                                             insertCmd.Parameters.AddWithValue("@DE_No", DE_No);
-                                             insertCmd.Parameters.AddWithValue("@DP_NoPrincipal", 1);
-                                             insertCmd.Parameters.AddWithValue("@Qte", qte);
+                                        using (SqlCommand insertCmd = new SqlCommand(insertSql, connection))
+                                        {
+                                            insertCmd.Parameters.AddWithValue("@AR_Ref", reference);
+                                            insertCmd.Parameters.AddWithValue("@DE_No", DE_No);
+                                            insertCmd.Parameters.AddWithValue("@DP_NoPrincipal", 1);
+                                            insertCmd.Parameters.AddWithValue("@Qte", qte);
 
-                                             insertCmd.ExecuteNonQuery();
-                                         }
-                                     }
-                                     else
-                                     {
-                                             string updateSql = @"
-                                             UPDATE F_ARTSTOCK
-                                             SET AS_QteSto = AS_QteSto + @Qte
-                                             WHERE AR_Ref = @AR_Ref AND DE_No = @DE_No";
+                                            insertCmd.ExecuteNonQuery();
+                                        }
+                                    }
+                                    else
+                                    {
+                                        string updateSql = @"
+                                                 UPDATE F_ARTSTOCK
+                                                 SET AS_QteSto = AS_QteSto + @Qte
+                                                 WHERE AR_Ref = @AR_Ref AND DE_No = @DE_No";
 
-                                             using (SqlCommand updateCmd = new SqlCommand(updateSql, connection))
-                                             {
-                                                 updateCmd.Parameters.AddWithValue("@AR_Ref", reference);
-                                                 updateCmd.Parameters.AddWithValue("@DE_No", DE_No);
-                                                 updateCmd.Parameters.AddWithValue("@Qte", qte);
+                                        using (SqlCommand updateCmd = new SqlCommand(updateSql, connection))
+                                        {
+                                            updateCmd.Parameters.AddWithValue("@AR_Ref", reference);
+                                            updateCmd.Parameters.AddWithValue("@DE_No", DE_No);
+                                            updateCmd.Parameters.AddWithValue("@Qte", qte);
 
-                                                 updateCmd.ExecuteNonQuery();
-                                             }
-                                     }
-                                 }*/
+                                            updateCmd.ExecuteNonQuery();
+                                        }
+                                    }
+                                }
 
                                 //MAJ des articles par lot
-                                simpleButton2_Click(sender, e);   
+                                simpleButton2_Click(sender, e);
                             }
                             catch (System.Data.Entity.Infrastructure.DbUpdateException ex)
                             {
-                               
+
                             }
                             catch (Exception ex)
                             {
                                 MessageBox.Show(ex.Message, "Erreur");
                             }
-                               
-                            
-                        }
-                        // Fix for CS0120: Use the instance of ucDocuments instead of trying to call it statically
-                        _ucDocuments.ChargerDonneesDepuisBDD();
+
+
+                        }*/
                     }
-                    else
+                    else if (dopiecetxt.Text.ToString().StartsWith("ABC"))
                     {
-                        MessageBox.Show(
-                            "Vous n'avez pas l'autorisation de transformer un bon de commande!",
-                            "Transformation bloquée",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Error
-                        );
+                        bool autorise = frmMenuAchat.verifier_droit("Bon de commande", "TRANSFORM");
+
+                        if (autorise)
+                        {
+                            var dlg = new frmTransform(_typeDocument);
+                            dlg.ParentFormInstance = this;
+
+                            if (dlg.ShowDialog() == DialogResult.OK)
+                            {
+                                this.TransformFDOCENTETE(dlg.doctype);
+                            }
+
+                            // Fix for CS0120: Use the instance of ucDocuments instead of trying to call it statically
+                            _ucDocuments.ChargerDonneesDepuisBDD();
+                        }
+                        else
+                        {
+                            MessageBox.Show(
+                                "Vous n'avez pas l'autorisation de transformer un bon de commande!",
+                                "Transformation bloquée",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error
+                            );
+                        }
                     }
                 }
+            }
+            else
+            {
+                MessageBox.Show(
+                                "Il y a des quantités vide pour ce document, veuillez enregistrer toutes les lignes en cliquant sur le lien Update dans le tableau en bas!",
+                                "Transformation bloquée",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error
+                            );
             }
         }
 
@@ -4594,6 +5011,53 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 {
                     frmEditInfos frm = new frmEditInfos(dopiece, totalTVA, this);
                     frm.ShowDialog();
+                    var view = gvLigneEdit;
+                    var colMontantHT = view.Columns["DL_montantHT"];
+                    var colFrais = view.Columns["DL_Frais"];
+                    var colFret = view.Columns["FRET"];
+                    var colQte = view.Columns["DL_QTE"];
+                    var colPU = view.Columns["DL_PrixUnitaire"];
+
+                    for (int i = 0; i < view.RowCount; i++)
+                    {
+                        // Récupération des valeurs
+                        decimal qte = Convert.ToDecimal(view.GetRowCellValue(i, colQte));
+                        decimal pu = Convert.ToDecimal(view.GetRowCellValue(i, colPU));
+                        decimal frais = Convert.ToDecimal(view.GetRowCellValue(i, colFrais));
+                        decimal fret = Convert.ToDecimal(view.GetRowCellValue(i, colFret));
+                        decimal cours = Convert.ToDecimal(txtCours.Text);
+
+                        decimal montantHT = 0;
+                        // Calcul du montant HT
+                        if (new[] { "XW", "FOB" }.Contains(cmbIncoterm.Text))
+                        {
+                            montantHT = (qte * pu * cours) + (frais + fret);
+                        }
+                        else
+                        {
+                            montantHT = (qte * pu * cours) + frais;
+                        }
+
+                        // Mise à jour de la cellule
+                        view.SetRowCellValue(i, colMontantHT, montantHT);
+
+                        // Déclenchement du handler si nécessaire
+                        var args = new DevExpress.XtraGrid.Views.Base.CellValueChangedEventArgs(
+                            i,
+                            colMontantHT,
+                            montantHT
+                        );
+                        gvLigneEdit_CellValueChanged(view, args);
+                    }
+
+                    txtCours_EditValueChanged(sender, e);
+                    for (int i = 0; i < gvLigneEdit.RowCount; i++)
+                    {
+                        if (!gvLigneEdit.IsDataRow(i))
+                            continue;
+
+                        UPdateLigne(i);
+                    }
                 }
             }
             catch (System.Exception ex)
@@ -4742,7 +5206,10 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                     string arDesign = row["DL_Design"]?.ToString()?.Trim() ?? "";
                                     decimal puBrut = row["DL_PrixUnitaire"] != DBNull.Value ? Convert.ToDecimal(row["DL_PrixUnitaire"]) : 0;
                                     decimal puNet = puBrut * (1 - remisePourcent / 100);
-                                    decimal montantHT = dlQte * puNet;
+                                    decimal frais = row["DL_Frais"] != DBNull.Value ? Convert.ToDecimal(row["DL_Frais"]) : 0;
+                                    decimal fret = row["Fret"] != DBNull.Value ? Convert.ToDecimal(row["Fret"]) : 0;
+                                    decimal cours = Convert.ToDecimal(txtCours.Text);
+                                    decimal montantHT = (dlQte * puNet * cours)+(frais+ fret) ;
                                     decimal montantTTC = montantHT * (1 + DLTaxe1 / 100);
                                     int retenu = 1;
 
@@ -5513,8 +5980,26 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 col.Caption = "FRET";
                 col.UnboundType = DevExpress.Data.UnboundColumnType.Decimal;
                 col.Visible = true;
-                col.OptionsColumn.AllowEdit = true;
-                col.OptionsColumn.ReadOnly = false;
+                col.OptionsColumn.AllowEdit = false;
+                col.OptionsColumn.ReadOnly = true;
+
+                // Format affichage avec séparateur de milliers + 2 décimales
+                col.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
+                col.DisplayFormat.FormatString = "N2";
+
+                // Résumé personnalisé
+                col.SummaryItem.SummaryType = DevExpress.Data.SummaryItemType.Custom;
+
+                // 🔹 AJOUT : Format pour le résumé aussi
+                col.SummaryItem.DisplayFormat = "{0:N2}";
+
+                gvLigneEdit.CustomSummaryCalculate += (s, e) =>
+                {
+                    if (e.Item == col.SummaryItem && e.SummaryProcess == CustomSummaryProcess.Calculate)
+                    {
+                        e.TotalValue = Convert.ToDecimal(e.TotalValue ?? 0m) + Convert.ToDecimal(e.FieldValue ?? 0m);
+                    }
+                };
             }
 
             // === POSITIONNEMENT ===
@@ -5522,7 +6007,63 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             col.VisibleIndex = indexFrais;
 
             int indexPrixUnitaire = gvLigneEdit.Columns["DL_PrixUnitaire"].VisibleIndex;
-            col_unite.VisibleIndex = indexPrixUnitaire - 1;
+            col_unite.VisibleIndex = indexPrixUnitaire - 2;
+
+            GridColumn colPU = gvLigneEdit.Columns["DL_PrixUnitaire"];
+            if (colPU != null)
+            {
+                colPU.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+            }
+
+            GridColumn colQte = gvLigneEdit.Columns["DL_Qte"];
+            if (colQte != null)
+            {
+                colQte.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+            }
+
+            GridColumn colPnet = gvLigneEdit.Columns["DL_PoidsNet"];
+            if (colPnet != null)
+            {
+                colPnet.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+            }
+
+            GridColumn colPRU = gvLigneEdit.Columns["DL_PrixRU"];
+            if (colPRU != null)
+            {
+                colPRU.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+            }
+
+            GridColumn colFret = gvLigneEdit.Columns["FRET"];
+            if (colFret != null)
+            {
+                colFret.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+            }
+
+            GridColumn colFrais = gvLigneEdit.Columns["DL_Frais"];
+            if (colFrais != null)
+            {
+                colFrais.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+                colFrais.SummaryItem.SummaryType = DevExpress.Data.SummaryItemType.Custom;
+                colFrais.SummaryItem.DisplayFormat = "{0:N2}";
+            }
+
+            GridColumn colMht = gvLigneEdit.Columns["DL_MontantHT"];
+            if (colMht != null)
+            {
+                colMht.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+
+                // ✅ Sum calcule automatiquement sans événement supplémentaire
+                colMht.SummaryItem.SummaryType = DevExpress.Data.SummaryItemType.Sum;
+                colMht.SummaryItem.DisplayFormat = "{0:N2}";
+            }
+
+            gvLigneEdit.UpdateSummary();
+
+            GridColumn colDate = gvLigneEdit.Columns["DL_DatePieceFourniss"];
+            if (colDate != null)
+            {
+                colDate.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+            }
         }
 
         private void RecalculerPrix(GridView view)
@@ -5540,13 +6081,13 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 if (decimal.TryParse(objKg?.ToString(), out prixKg))
                 {
                     // kg → tonne
-                    prixTonne = prixKg / 1000;
+                    prixTonne = prixKg * 1000;
                     view.SetRowCellValue(i, "PU par tonne", prixTonne);
                 }
                 else if (decimal.TryParse(objTonne?.ToString(), out prixTonne))
                 {
                     // tonne → kg
-                    prixKg = prixTonne * 1000;
+                    prixKg = prixTonne / 1000;
                     view.SetRowCellValue(i, "DL_PrixUnitaire", prixKg);
                 }
             }
@@ -5560,18 +6101,31 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             var colQte = view.Columns["DL_QTE"];
             var colPU = view.Columns["DL_PrixUnitaire"];
             var colMontantHT = view.Columns["DL_montantHT"];
+            var colFrais = view.Columns["DL_Frais"];
+            var colFret = view.Columns["FRET"];
 
-            if (colQte == null || colPU == null ||  colMontantHT == null) return;
+            if (colQte == null || colPU == null ||  colMontantHT == null || colFrais == null) return;
 
             for (int i = 0; i < view.RowCount; i++)
             {
                 // Récupération des valeurs
                 decimal qte = Convert.ToDecimal(view.GetRowCellValue(i, colQte));
                 decimal pu = Convert.ToDecimal(view.GetRowCellValue(i, colPU));
+                decimal frais = Convert.ToDecimal(view.GetRowCellValue(i, colFrais));
+                decimal fret = Convert.ToDecimal(view.GetRowCellValue(i, colFret));
                 decimal cours = Convert.ToDecimal(txtCours.Text);
 
                 // Calcul du montant HT
-                decimal montantHT = qte * pu * cours;
+
+                decimal montantHT = 0;
+                if (new[] { "XW", "FOB" }.Contains(cmbIncoterm.Text))
+                {
+                    montantHT = (qte * pu * cours) + (frais + fret);
+                }
+                else
+                {
+                    montantHT = (qte * pu * cours) + frais;
+                }
 
                 // Mise à jour de la cellule
                 view.SetRowCellValue(i, colMontantHT, montantHT);
@@ -5586,28 +6140,6 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             }
         }
 
-        private void txtCours_EditValueChanged(object sender, EventArgs e)
-        {
-            if (!decimal.TryParse(txtCours.Text, out decimal cours))
-                return; // On ne fait rien si la valeur est invalide
-
-            for (int i = 0; i < gvLigneEdit.RowCount; i++)
-            {
-                // Ignorer les lignes invalides (DevExpress utilise parfois des index spéciaux)
-                if (gvLigneEdit.IsGroupRow(i))
-                    continue;
-
-                decimal qte = Convert.ToDecimal(gvLigneEdit.GetRowCellValue(i, "DL_Qte") ?? 0);
-                decimal pu = Convert.ToDecimal(gvLigneEdit.GetRowCellValue(i, "DL_PrixUnitaire") ?? 0);
-
-                decimal montant = qte * pu * cours;
-
-                gvLigneEdit.SetRowCellValue(i, "DL_MontantHT", montant);
-            }
-
-            // Regénère le résumé sans appeler l’event manuellement
-            gvLigneEdit.UpdateSummary();
-        }
 
         private void simpleButton1_Click(object sender, EventArgs e)
         {
@@ -5652,6 +6184,8 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             {
                 MessageBox.Show(ex.Message, "Erreur");
             }
+
+            txtCours_EditValueChanged(sender, e);
         }
 
         private void txt_prix_KeyPress(object sender, KeyPressEventArgs e)
@@ -5779,8 +6313,9 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         {
             int dlNo = 0;
 
-            string connectionStringArbio =
-                "Server=26.53.123.231;Database=ARBIOCHEM_ACHAT;User ID=Dev;Password=1234;";
+            string connectionStringArbio = $"Server={serveripPrincipale};Database=TRANSIT;" +
+                                                 $"User ID=Dev;Password=1234;TrustServerCertificate=True;" +
+                                                 $"Connection Timeout=240;";
 
             using (SqlConnection connection = new SqlConnection(connectionStringArbio))
             {
@@ -5878,6 +6413,8 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                     conn.Open();
                     cmd.ExecuteNonQuery();
                 }
+
+                MessageBox.Show("Modification Mode de paiement terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -5965,6 +6502,141 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                         cmd.ExecuteNonQuery();
                     }
                 }
+
+            MessageBox.Show("Modification Packing List terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void simpleButton4_Click(object sender, EventArgs e)
+        {
+            string connectionString2 =
+                                    $"Server={serveripPrincipale};Database={dbPrincipale};" +
+                                    $"User ID=Dev;Password=1234;TrustServerCertificate=True;" +
+                                    $"Connection Timeout=240;";
+
+            if (string.IsNullOrWhiteSpace(lbl_val2.Text))
+            {
+                lbl_val2.Text = "1";
+                string insertSql = @"
+                    INSERT INTO F_INCOTERM
+                    (
+                        do_piece,
+                        incoterm
+                    )
+                    VALUES
+                    (
+                        @do_piece,
+                        @incoterm
+                    )";
+
+                using (SqlConnection conn = new SqlConnection(connectionString2))
+                using (SqlCommand cmd = new SqlCommand(insertSql, conn))
+                {
+                    // Paramètres TYPÉS (bonne pratique)
+                    cmd.Parameters.Add("@do_piece", SqlDbType.VarChar, 50)
+                        .Value = dopiecetxt.Text.Trim();
+
+                    cmd.Parameters.Add("@incoterm", SqlDbType.VarChar, 20)
+                        .Value = cmbIncoterm.Text?.ToString();
+
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                }
             }
+            else
+            {
+                lbl_val2.Text = "1";
+                string UPDATESql = @"
+                   UPDATE F_INCOTERM
+                        SET incoterm=@incoterm
+                   WHERE do_piece=@do_piece 
+                   ";
+
+                using (SqlConnection conn = new SqlConnection(connectionString2))
+                using (SqlCommand cmd = new SqlCommand(UPDATESql, conn))
+                {
+                    // Paramètres TYPÉS (bonne pratique)
+                    cmd.Parameters.Add("@do_piece", SqlDbType.VarChar, 50)
+                        .Value = dopiecetxt.Text.Trim();
+
+                    cmd.Parameters.Add("@incoterm", SqlDbType.VarChar, 20)
+                        .Value = cmbIncoterm.Text?.ToString();
+
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+
+            MessageBox.Show("Modification INCOTERM terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void hyperlinkLabelControl1_Click_1(object sender, EventArgs e)
+        {
+            frm_correspondance f_corres = new frm_correspondance();
+            f_corres.txtnumpiece.Text =dopiecetxt.Text.ToString();
+            f_corres.ShowDialog();
+        }
+
+        
+
+        private void txtCours_KeyUp(object sender, KeyEventArgs e)
+        {
+            txtCours_EditValueChanged(sender, EventArgs.Empty);
+        }
+
+        private void txtCours_EditValueChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                // ✅ TryParse avec culture locale
+                if (!decimal.TryParse(txtCours.Text,
+                    System.Globalization.NumberStyles.Any,
+                    System.Globalization.CultureInfo.CurrentCulture,
+                    out decimal cours) || cours <= 0)
+                    return;
+
+                // ✅ Helper pour éviter DBNull
+                decimal GetVal(int row, string field)
+                {
+                    var val = gvLigneEdit.GetRowCellValue(row, field);
+                    return (val == null || val == DBNull.Value) ? 0m : Convert.ToDecimal(val);
+                }
+
+                bool isXwOrFob = new[] { "XW", "FOB" }.Contains(cmbIncoterm.Text?.Trim());
+
+                for (int i = 0; i < gvLigneEdit.RowCount; i++)
+                {
+                    if (gvLigneEdit.IsGroupRow(i)) continue;
+
+                    decimal qte = GetVal(i, "DL_Qte");
+                    decimal pu = GetVal(i, "DL_PrixUnitaire");
+                    decimal frais = GetVal(i, "DL_Frais");
+                    decimal fret = GetVal(i, "FRET");
+
+                    decimal montant = isXwOrFob
+                        ? (qte * pu * cours) + (frais + fret)
+                        : (qte * pu * cours) + frais;
+
+                    gvLigneEdit.SetRowCellValue(i, "DL_MontantHT", montant);
+                }
+
+                gvLigneEdit.UpdateSummary();
+                gvLigneEdit.RefreshData();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erreur : {ex.Message}", "Erreur",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void txtCours_KeyUp_1(object sender, KeyEventArgs e)
+        {
+            txtCours_KeyUp(sender, e);
+        }
+
+        private void datecommande_EditValueChanged(object sender, EventArgs e)
+        {
+            datecommande.EditValue=Convert.ToDateTime(datecommande.EditValue);
+        }
     }
 }

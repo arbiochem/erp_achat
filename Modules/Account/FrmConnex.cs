@@ -23,7 +23,6 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using arbioApp.Modules.Account;
 using System.Reflection;
 
-
 namespace arbioApp
 {
     public partial class FrmConnex : DevExpress.XtraEditors.XtraForm
@@ -44,7 +43,7 @@ namespace arbioApp
         {
             InitializeComponent();
             Addserver.LoadServerConnex(cboServers);
-            //cboServers.SelectedIndex = 0;
+            cboServers.SelectedIndex = 0;
             cboServers.EditValueChanged += cboServers_EditValueChanged;
         }
         private string GetSelectedThemeFromDatabase()
@@ -238,7 +237,7 @@ namespace arbioApp
         {           
             arbioApp.Modules.Helpers.HelperToken.LoadEmailsFromDatabase(tokenEmail);
         }
-        string serverName;
+        public string serverName;
 
         private void cboServers_EditValueChanged_1(object sender, EventArgs e)
         {

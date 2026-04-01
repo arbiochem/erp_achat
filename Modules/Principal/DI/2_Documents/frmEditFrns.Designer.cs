@@ -94,6 +94,7 @@
             this.layoutControlItem10 = new DevExpress.XtraLayout.LayoutControlItem();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.layoutControl4 = new DevExpress.XtraLayout.LayoutControl();
+            this.lkCptCol = new DevExpress.XtraEditors.LookUpEdit();
             this.txtCtNum = new DevExpress.XtraEditors.TextEdit();
             this.txtCtAbr = new DevExpress.XtraEditors.TextEdit();
             this.txtCtIntitule = new DevExpress.XtraEditors.TextEdit();
@@ -103,6 +104,7 @@
             this.layoutControlItem8 = new DevExpress.XtraLayout.LayoutControlItem();
             this.layoutControlItem7 = new DevExpress.XtraLayout.LayoutControlItem();
             this.layoutControlItem9 = new DevExpress.XtraLayout.LayoutControlItem();
+            this.layoutControlItem16 = new DevExpress.XtraLayout.LayoutControlItem();
             this.layoutControlGroup2 = new DevExpress.XtraLayout.LayoutControlGroup();
             this.layoutControlItem2 = new DevExpress.XtraLayout.LayoutControlItem();
             this.layoutControlItem3 = new DevExpress.XtraLayout.LayoutControlItem();
@@ -131,8 +133,7 @@
             this.layoutControlItem29 = new DevExpress.XtraLayout.LayoutControlItem();
             this.emptySpaceItem4 = new DevExpress.XtraLayout.EmptySpaceItem();
             this.layoutControlItem36 = new DevExpress.XtraLayout.LayoutControlItem();
-            this.lkCptCol = new DevExpress.XtraEditors.LookUpEdit();
-            this.layoutControlItem16 = new DevExpress.XtraLayout.LayoutControlItem();
+            this.simpleButton1 = new DevExpress.XtraEditors.SimpleButton();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControl1)).BeginInit();
             this.layoutControl1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.bindingNavigator1)).BeginInit();
@@ -191,6 +192,7 @@
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControl4)).BeginInit();
             this.layoutControl4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.lkCptCol.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtCtNum.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtCtAbr.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtCtIntitule.Properties)).BeginInit();
@@ -200,6 +202,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem8)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem7)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem9)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem16)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlGroup2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem3)).BeginInit();
@@ -229,8 +232,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem29)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.emptySpaceItem4)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem36)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.lkCptCol.Properties)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem16)).BeginInit();
             this.SuspendLayout();
             // 
             // layoutControl1
@@ -940,6 +941,17 @@
             this.layoutControl4.TabIndex = 0;
             this.layoutControl4.Text = "layoutControl4";
             // 
+            // lkCptCol
+            // 
+            this.lkCptCol.Location = new System.Drawing.Point(116, 90);
+            this.lkCptCol.Name = "lkCptCol";
+            this.lkCptCol.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.lkCptCol.Properties.MaxLength = 13;
+            this.lkCptCol.Size = new System.Drawing.Size(494, 22);
+            this.lkCptCol.StyleController = this.layoutControl4;
+            this.lkCptCol.TabIndex = 10;
+            // 
             // txtCtNum
             // 
             this.txtCtNum.Location = new System.Drawing.Point(116, 12);
@@ -1045,6 +1057,15 @@
             this.layoutControlItem9.Text = "Commentaire";
             this.layoutControlItem9.TextLocation = DevExpress.Utils.Locations.Left;
             this.layoutControlItem9.TextSize = new System.Drawing.Size(92, 17);
+            // 
+            // layoutControlItem16
+            // 
+            this.layoutControlItem16.Control = this.lkCptCol;
+            this.layoutControlItem16.Location = new System.Drawing.Point(0, 78);
+            this.layoutControlItem16.Name = "layoutControlItem16";
+            this.layoutControlItem16.Size = new System.Drawing.Size(602, 26);
+            this.layoutControlItem16.Text = "Compte collectif";
+            this.layoutControlItem16.TextSize = new System.Drawing.Size(92, 16);
             // 
             // layoutControlGroup2
             // 
@@ -1323,25 +1344,15 @@
             this.layoutControlItem36.TextSize = new System.Drawing.Size(0, 0);
             this.layoutControlItem36.TextVisible = false;
             // 
-            // lkCptCol
+            // simpleButton1
             // 
-            this.lkCptCol.Location = new System.Drawing.Point(116, 90);
-            this.lkCptCol.Name = "lkCptCol";
-            this.lkCptCol.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
-            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
-            this.lkCptCol.Properties.MaxLength = 13;
-            this.lkCptCol.Size = new System.Drawing.Size(494, 22);
-            this.lkCptCol.StyleController = this.layoutControl4;
-            this.lkCptCol.TabIndex = 10;
-            // 
-            // layoutControlItem16
-            // 
-            this.layoutControlItem16.Control = this.lkCptCol;
-            this.layoutControlItem16.Location = new System.Drawing.Point(0, 78);
-            this.layoutControlItem16.Name = "layoutControlItem16";
-            this.layoutControlItem16.Size = new System.Drawing.Size(602, 26);
-            this.layoutControlItem16.Text = "Compte collectif";
-            this.layoutControlItem16.TextSize = new System.Drawing.Size(92, 16);
+            this.simpleButton1.Appearance.Font = new System.Drawing.Font("Verdana", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.simpleButton1.Appearance.Options.UseFont = true;
+            this.simpleButton1.Location = new System.Drawing.Point(515, -2);
+            this.simpleButton1.Name = "simpleButton1";
+            this.simpleButton1.Size = new System.Drawing.Size(139, 31);
+            this.simpleButton1.TabIndex = 2;
+            this.simpleButton1.Text = "Correspondance";
             // 
             // frmEditFrns
             // 
@@ -1413,6 +1424,7 @@
             this.groupBox1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.layoutControl4)).EndInit();
             this.layoutControl4.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.lkCptCol.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtCtNum.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtCtAbr.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtCtIntitule.Properties)).EndInit();
@@ -1422,6 +1434,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem8)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem7)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem9)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem16)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlGroup2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem3)).EndInit();
@@ -1451,8 +1464,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem29)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.emptySpaceItem4)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem36)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.lkCptCol.Properties)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem16)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -1562,5 +1573,6 @@
         private DevExpress.XtraLayout.LayoutControlItem layoutControlItem10;
         private DevExpress.XtraEditors.LookUpEdit lkCptCol;
         private DevExpress.XtraLayout.LayoutControlItem layoutControlItem16;
+        private DevExpress.XtraEditors.SimpleButton simpleButton1;
     }
 }

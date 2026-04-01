@@ -201,7 +201,6 @@ namespace arbioApp
                 FrmConnex frm = new FrmConnex();
                 frm.ShowDialog();
             }
-            Process.Start(appPath);
         }
         string appPath = @"C:\arApplication\arbUpdater.exe";
 

@@ -1,5 +1,6 @@
 ﻿using arbioApp.Models;
 using arbioApp.Modules.Principal.DI._2_Documents;
+using arbioApp.Utils.Connection;
 using DevExpress.Utils.DirectXPaint;
 using DevExpress.Utils.Extensions;
 using DevExpress.XtraCharts.Designer.Native;
@@ -221,7 +222,6 @@ namespace arbioApp.Modules.Principal.DI
                         using (SqlConnection connection = new SqlConnection(connectionString))
                         {
                             connection.Open();
-
                             var depots = new List<(int DE_No, string DE_Intitule)>();
 
                             using (var conn = new SqlConnection(connectionString))

@@ -14,10 +14,10 @@ namespace arbioApp.Models
         }
         
         //    FANAOVANA UPDATE DATABASE
-       /* public AppDbContext()
-    :   base("Data Source=SRV-ARB;Initial Catalog=ARBIOCHEM_ACHAT;Persist Security Info=True;User ID=DEV;Password=1234;TrustServerCertificate=True")
-        {
-        }*/
+       /*public AppDbContext()
+    :  base("Data Source=SRV-ARB;Initial Catalog=TRANSIT;Persist Security Info=True;User ID=DEV;Password=1234;TrustServerCertificate=True")
+       {
+       }*/
 
 
         public DbSet<F_FRET> F_FRETS { get; set; }

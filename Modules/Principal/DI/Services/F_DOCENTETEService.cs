@@ -333,7 +333,8 @@ namespace arbioApp.Services
                     DO_DateLivrRealisee = dateLivrRealise,
                     DO_Statut = 0, 
                     DO_CodeTaxe1 = TA_Code,
-                    cbCreationUser = FrmMdiParent._id_user
+                    cbCreationUser = FrmMdiParent._id_user,
+                    Produit=""
                     //Commentaires = commentaires,
                     //Divers = divers,
 
