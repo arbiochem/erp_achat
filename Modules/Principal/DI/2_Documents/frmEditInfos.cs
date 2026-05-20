@@ -80,7 +80,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 // 2. Fournir une source vide si nécessaire
                 if (fDEVISEBindingSource.DataSource == null)
                 {
-                    fDEVISEBindingSource.DataSource = new List<F_DEVISE>();
+                    fDEVISEBindingSource.DataSource = new List<P_DEVISE>();
                     gridControlDevises.DataSource = fDEVISEBindingSource;
                 }
 
@@ -696,22 +696,69 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
         private void LoadData()
         {
-            var devises = _context.F_DEVISES.ToList();
+            var devises = _context.P_DEVISE
+            .Where(x => x.D_Intitule != "" && x.D_Intitule != "MGA")
+            .Select(x => new DeviseDto
+            {
+                cbIndice = x.cbIndice,
+                D_Intitule = x.D_Intitule,
+                D_Cours = x.D_Cours
+            })
+            .ToList();
 
             if (devises.Any())
             {
+                // 1. Binding source
                 fDEVISEBindingSource.DataSource = devises;
 
-                GridView gd_devise = new GridView(gridControlDevises);
-                gridControlDevises.MainView = gd_devise;
-                gridControlDevises.ViewCollection.Add(gd_devise);
+                // 2. Récupérer ou créer GridView UNE seule fois
+                GridView gd_devise = gridControlDevises.MainView as GridView;
+
+                if (gd_devise == null)
+                {
+                    gd_devise = new GridView(gridControlDevises);
+                    gridControlDevises.MainView = gd_devise;
+                    gridControlDevises.ViewCollection.Add(gd_devise);
+                }
+
+                // 3. Associer datasource
                 gridControlDevises.DataSource = fDEVISEBindingSource;
 
+                // 4. Générer colonnes
                 gd_devise.PopulateColumns();
-                gd_devise.Columns[0].Visible = false; // Masquer l'ID si nécessaire
+
+                foreach (DevExpress.XtraGrid.Columns.GridColumn col in gd_devise.Columns)
+                {
+                    if (col.FieldName == "cbIndice")
+                    {
+                        col.Visible = false;
+                        continue;
+                    }
+
+                    col.OptionsColumn.AllowEdit = true;
+                    col.OptionsColumn.ReadOnly = false;
+                }
+
+                // 5. Masquer ID proprement (ne pas utiliser index)
+                if (gd_devise.Columns["cbIndice"] != null)
+                    gd_devise.Columns["cbIndice"].Visible = false;
+
+                // 6. Configuration UI
                 gd_devise.OptionsView.NewItemRowPosition = NewItemRowPosition.Top;
                 gd_devise.OptionsBehavior.Editable = true;
+                gd_devise.OptionsView.ShowGroupPanel = false;
+                gd_devise.OptionsBehavior.ReadOnly = false;
+
+                // 7. Amélioration UX
+                gd_devise.BestFitColumns();
             }
+        }
+
+        public class DeviseDto
+        {
+            public short? cbIndice { get; set; }
+            public string D_Intitule { get; set; }
+            public decimal? D_Cours { get; set; }
         }
 
 
@@ -927,30 +974,30 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             
             for (int i = 0; i < view.RowCount; i++)
             {
-                string devise = view.GetRowCellValue(i, "devise")?.ToString();
-                string valeurStr = view.GetRowCellValue(i, "valeur")?.ToString();
+                string devise = view.GetRowCellValue(i, "D_Intitule")?.ToString();
+                string valeurStr = view.GetRowCellValue(i, "D_Cours")?.ToString();
 
                 if (string.IsNullOrWhiteSpace(devise))
                     continue; // Ignore les lignes vides
 
                 // Recherche de la devise existante
-                var existingDevise = _context.F_DEVISES
-                    .FirstOrDefault(d => d.devise == devise);
+                var existingDevise = _context.P_DEVISE
+                    .FirstOrDefault(d => d.D_Intitule == devise);
 
                 if (existingDevise != null)
                 {
                     // Mise à jour si elle existe
-                    existingDevise.valeur = decimal.Parse(valeurStr.ToString());
+                    existingDevise.D_Cours = decimal.Parse(valeurStr.ToString());
                 }
                 else
                 {
                     // Insertion sinon
-                    var newDevise = new F_DEVISE
+                    var newDevise = new P_DEVISE
                     {
-                        devise = devise,
-                        valeur = decimal.Parse(valeurStr.ToString())
+                        D_Intitule = devise,
+                        D_Cours = decimal.Parse(valeurStr.ToString())
                     };
-                    _context.F_DEVISES.Add(newDevise);
+                    _context.P_DEVISE.Add(newDevise);
                 }
             }
 
@@ -965,7 +1012,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             string connectionString = $"Server=SRV-ARB;Database=TRANSIT;" +
                                                  $"User ID=Dev;Password=1234;TrustServerCertificate=True;" +
                                                  $"Connection Timeout=240;";
-            string query = "SELECT valeur FROM F_DEVISE WHERE devise=@devise";
+            string query = "SELECT D_Cours FROM P_DEVISE WHERE D_Intitule=@devise";
 
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
@@ -988,9 +1035,9 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         {
             bool test = false;
 
-            string connectionString = $"Data Source=SRV-ARB;Initial Catalog=ARBIOCHEM;User ID=Dev;Password=1234;TrustServerCertificate=True";
+            string connectionString = $"Data Source=SRV-ARB;Initial Catalog=TRANSIT;User ID=Dev;Password=1234;TrustServerCertificate=True";
 
-            string query = "SELECT * FROM F_DEVISE WHERE devise=@devise";
+            string query = "SELECT * FROM P_DEVISE WHERE D_Intitule=@devise";
 
             using (SqlConnection conn = new SqlConnection(connectionString))
             {

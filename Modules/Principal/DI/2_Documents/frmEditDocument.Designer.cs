@@ -131,7 +131,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             this.hyperlinkLabelControl7 = new DevExpress.XtraEditors.HyperlinkLabelControl();
             this.doTaxe1txt = new System.Windows.Forms.TextBox();
             this.lkDepot = new DevExpress.XtraEditors.LookUpEdit();
-            this.lkCodeTaxe = new DevExpress.XtraEditors.LookUpEdit();
+            this.lkDevise = new DevExpress.XtraEditors.LookUpEdit();
             this.comboBoxAffaire = new System.Windows.Forms.ComboBox();
             this.lkEdFrns = new DevExpress.XtraEditors.LookUpEdit();
             this.lkStatut = new DevExpress.XtraEditors.LookUpEdit();
@@ -218,6 +218,8 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             this.layoutControlItem34 = new DevExpress.XtraLayout.LayoutControlItem();
             this.Root = new DevExpress.XtraLayout.LayoutControlGroup();
             this.layoutControlItem6 = new DevExpress.XtraLayout.LayoutControlItem();
+            this.fDEVISEBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.aRBIOCHEMDataSet = new arbioApp.ARBIOCHEMDataSet();
             this.ribbonPage2 = new DevExpress.XtraBars.Ribbon.RibbonPage();
             this.dockManager1 = new DevExpress.XtraBars.Docking.DockManager(this.components);
             this.dockPanel1 = new DevExpress.XtraBars.Docking.DockPanel();
@@ -229,6 +231,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.xtraOpenFileDialog1 = new DevExpress.XtraEditors.XtraOpenFileDialog(this.components);
             this.xtraOpenFileDialog2 = new DevExpress.XtraEditors.XtraOpenFileDialog(this.components);
+            this.f_DEVISETableAdapter = new arbioApp.ARBIOCHEMDataSetTableAdapters.F_DEVISETableAdapter();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControl1)).BeginInit();
             this.layoutControl1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.xtraTabControl1)).BeginInit();
@@ -278,7 +281,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             this.layoutControl2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.txtCours.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.lkDepot.Properties)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.lkCodeTaxe.Properties)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.lkDevise.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.lkEdFrns.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.lkStatut.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.lkExpedition.Properties)).BeginInit();
@@ -365,6 +368,8 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem34)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Root)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem6)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.fDEVISEBindingSource)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.aRBIOCHEMDataSet)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dockManager1)).BeginInit();
             this.dockPanel1.SuspendLayout();
             this.dockPanel1_Container.SuspendLayout();
@@ -1345,7 +1350,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             this.layoutControl2.Controls.Add(this.hyperlinkLabelControl7);
             this.layoutControl2.Controls.Add(this.doTaxe1txt);
             this.layoutControl2.Controls.Add(this.lkDepot);
-            this.layoutControl2.Controls.Add(this.lkCodeTaxe);
+            this.layoutControl2.Controls.Add(this.lkDevise);
             this.layoutControl2.Controls.Add(this.comboBoxAffaire);
             this.layoutControl2.Controls.Add(this.lkEdFrns);
             this.layoutControl2.Controls.Add(this.lkStatut);
@@ -1384,7 +1389,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             this.simpleButton2.Size = new System.Drawing.Size(248, 27);
             this.simpleButton2.StyleController = this.layoutControl2;
             this.simpleButton2.TabIndex = 19;
-            this.simpleButton2.Text = "simpleButton2";
+            this.simpleButton2.Text = "Rafraichir les données";
             this.simpleButton2.Visible = false;
             this.simpleButton2.Click += new System.EventHandler(this.simpleButton2_Click);
             // 
@@ -1400,7 +1405,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             this.txtCours.Size = new System.Drawing.Size(65, 22);
             this.txtCours.StyleController = this.layoutControl2;
             this.txtCours.TabIndex = 18;
-            this.txtCours.KeyUp += new System.Windows.Forms.KeyEventHandler(this.txtCours_KeyUp_1);
+            this.txtCours.EditValueChanged += new System.EventHandler(this.txtCours_EditValueChanged_1);
             // 
             // hyperlinkLabelControl7
             // 
@@ -1434,18 +1439,18 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             this.lkDepot.TabIndex = 14;
             this.lkDepot.EditValueChanged += new System.EventHandler(this.lkDepot_EditValueChanged);
             // 
-            // lkCodeTaxe
+            // lkDevise
             // 
-            this.lkCodeTaxe.Location = new System.Drawing.Point(701, 90);
-            this.lkCodeTaxe.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
-            this.lkCodeTaxe.MenuManager = this.ribbonControl1;
-            this.lkCodeTaxe.Name = "lkCodeTaxe";
-            this.lkCodeTaxe.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            this.lkDevise.Location = new System.Drawing.Point(701, 90);
+            this.lkDevise.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
+            this.lkDevise.MenuManager = this.ribbonControl1;
+            this.lkDevise.Name = "lkDevise";
+            this.lkDevise.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
             new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
-            this.lkCodeTaxe.Size = new System.Drawing.Size(65, 22);
-            this.lkCodeTaxe.StyleController = this.layoutControl2;
-            this.lkCodeTaxe.TabIndex = 13;
-            this.lkCodeTaxe.EditValueChanged += new System.EventHandler(this.lkCodeTaxe_EditValueChanged);
+            this.lkDevise.Size = new System.Drawing.Size(65, 22);
+            this.lkDevise.StyleController = this.layoutControl2;
+            this.lkDevise.TabIndex = 13;
+            this.lkDevise.EditValueChanged += new System.EventHandler(this.lkCodeTaxe_EditValueChanged);
             // 
             // comboBoxAffaire
             // 
@@ -1589,7 +1594,6 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             this.datecommande.Size = new System.Drawing.Size(124, 22);
             this.datecommande.StyleController = this.layoutControl2;
             this.datecommande.TabIndex = 5;
-            this.datecommande.EditValueChanged += new System.EventHandler(this.datecommande_EditValueChanged);
             // 
             // layoutControlGroup1
             // 
@@ -1774,13 +1778,12 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             // 
             // layoutControlItem18
             // 
-            this.layoutControlItem18.Control = this.lkCodeTaxe;
+            this.layoutControlItem18.Control = this.lkDevise;
             this.layoutControlItem18.Location = new System.Drawing.Point(584, 78);
             this.layoutControlItem18.Name = "layoutControlItem18";
             this.layoutControlItem18.Size = new System.Drawing.Size(174, 30);
-            this.layoutControlItem18.Text = "Code Taxe";
+            this.layoutControlItem18.Text = "Devise";
             this.layoutControlItem18.TextSize = new System.Drawing.Size(93, 16);
-            this.layoutControlItem18.Visibility = DevExpress.XtraLayout.Utils.LayoutVisibility.Never;
             // 
             // layoutControlItem36
             // 
@@ -2364,6 +2367,16 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             this.layoutControlItem6.TextSize = new System.Drawing.Size(0, 0);
             this.layoutControlItem6.TextVisible = false;
             // 
+            // fDEVISEBindingSource
+            // 
+            this.fDEVISEBindingSource.DataMember = "F_DEVISE";
+            this.fDEVISEBindingSource.DataSource = this.aRBIOCHEMDataSet;
+            // 
+            // aRBIOCHEMDataSet
+            // 
+            this.aRBIOCHEMDataSet.DataSetName = "ARBIOCHEMDataSet";
+            this.aRBIOCHEMDataSet.SchemaSerializationMode = System.Data.SchemaSerializationMode.IncludeSchema;
+            // 
             // ribbonPage2
             // 
             this.ribbonPage2.Name = "ribbonPage2";
@@ -2467,6 +2480,10 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             // 
             this.xtraOpenFileDialog2.FileName = "xtraOpenFileDialog2";
             // 
+            // f_DEVISETableAdapter
+            // 
+            this.f_DEVISETableAdapter.ClearBeforeFill = true;
+            // 
             // frmEditDocument
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 16F);
@@ -2536,7 +2553,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             this.layoutControl2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.txtCours.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.lkDepot.Properties)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.lkCodeTaxe.Properties)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.lkDevise.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.lkEdFrns.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.lkStatut.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.lkExpedition.Properties)).EndInit();
@@ -2623,6 +2640,8 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem34)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.Root)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem6)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.fDEVISEBindingSource)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.aRBIOCHEMDataSet)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dockManager1)).EndInit();
             this.dockPanel1.ResumeLayout(false);
             this.dockPanel1_Container.ResumeLayout(false);
@@ -2680,7 +2699,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         private DevExpress.XtraLayout.LayoutControlItem layoutControlItem16;
         private DevExpress.XtraEditors.LookUpEdit lkEdFrns;
         private DevExpress.XtraLayout.LayoutControlItem layoutControlItem3;
-        private DevExpress.XtraEditors.LookUpEdit lkCodeTaxe;
+        private DevExpress.XtraEditors.LookUpEdit lkDevise;
         private System.Windows.Forms.ComboBox comboBoxAffaire;
         private DevExpress.XtraLayout.LayoutControlItem layoutControlItem17;
         private DevExpress.XtraLayout.LayoutControlItem layoutControlItem18;
@@ -2834,5 +2853,8 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         private DevExpress.XtraLayout.LayoutControlItem layoutControlItem45;
         private DevExpress.XtraEditors.DateEdit datecommande;
         private DevExpress.XtraLayout.LayoutControlItem layoutControlItem46;
+        private ARBIOCHEMDataSet aRBIOCHEMDataSet;
+        private BindingSource fDEVISEBindingSource;
+        private ARBIOCHEMDataSetTableAdapters.F_DEVISETableAdapter f_DEVISETableAdapter;
     }
 }

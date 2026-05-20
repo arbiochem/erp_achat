@@ -26,7 +26,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         public DateTime dt;
         public DateTime dc;
         private readonly AppDbContext _context;
-
+        public int _devise;
         // Propriété pour récupérer la quantité saisie
         public decimal QuantiteSaisie { get; private set; }
 
@@ -57,8 +57,57 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             _fournisseur=fournisseur;
         }
 
+        private void cmbDevise_EditValueChanged(object sender, EventArgs e)
+        {
+            int cbIndice = Convert.ToInt32(cmbDevise.EditValue);
+            _devise=cbIndice;
+        }
+
+
         private void frm_saisieQuantite_Load(object sender, EventArgs e)
         {
+            DataTable dt = new DataTable();
+
+            using (SqlConnection cn = new SqlConnection(connectionStrings))
+            {
+                cn.Open();
+
+                string sql = @"
+                    SELECT
+                        cbIndice,
+                        D_Intitule
+                    FROM P_DEVISE
+                    WHERE D_Intitule <> '' and D_Intitule <> 'MGA'
+                    ORDER BY D_Intitule
+                ";
+
+                SqlDataAdapter da = new SqlDataAdapter(sql, cn);
+                da.Fill(dt);
+            }
+
+            cmbDevise.Properties.DataSource = dt;
+            cmbDevise.Properties.DisplayMember = "D_Intitule";
+            cmbDevise.Properties.ValueMember = "cbIndice";
+
+            cmbDevise.Properties.ForceInitialize();
+            cmbDevise.Properties.PopulateColumns();
+
+            // masquer ID
+            if (cmbDevise.Properties.Columns["cbIndice"] != null)
+                cmbDevise.Properties.Columns["cbIndice"].Visible = false;
+
+            if (cmbDevise.Properties.Columns["D_Intitule"] != null)
+                cmbDevise.Properties.Columns["D_Intitule"].Caption = "Devise";
+
+            cmbDevise.Properties.NullText = "";
+            cmbDevise.Properties.ShowHeader = true;
+
+            // valeur par défaut
+            if (dt.Rows.Count > 0)
+            {
+                cmbDevise.EditValue = Convert.ToInt32(dt.Rows[0]["cbIndice"]);
+            }
+
             afficher();
             lblref1.Text = _var1;
             lbl_design2.Text = _var2;
