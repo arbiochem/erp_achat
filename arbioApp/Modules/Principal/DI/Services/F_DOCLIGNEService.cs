@@ -388,8 +388,8 @@ namespace arbioApp.Modules.Principal.DI.Services
 
                 // Mise à jour DL_CMUP et DL_PrixRU
                 //decimal? CMUP = QteEtMontantArticle.AS_MontSto / (QteEtMontantArticle.AS_QteSto == 0 ? 1 : QteEtMontantArticle.AS_QteSto);
-                //f_DOCLIGNEToUpdate.DL_CMUP = CMUP;
-                //f_DOCLIGNEToUpdate.DL_PrixRU = CMUP;
+                f_DOCLIGNEToUpdate.DL_CMUP = 0;
+                f_DOCLIGNEToUpdate.DL_PrixRU = 0;
                 f_DOCLIGNEToUpdate.Retenu = retenu == 1 ? true : false;
                 f_DOCLIGNEToUpdate.DL_PieceFourniss = DL_PieceFourniss;
                 f_DOCLIGNEToUpdate.DL_DatePieceFourniss = DL_DatePieceFourniss;
