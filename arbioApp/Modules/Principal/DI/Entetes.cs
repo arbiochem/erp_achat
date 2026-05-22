@@ -112,12 +112,64 @@ namespace arbioApp.Modules.Principal.DI
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 {
                     // Vérifier si DO_Cloture existe dans la table
-                    string query = @"SELECT DO_Piece,CT_Intitule, DO_TotalTTC,
-                            CASE WHEN COL_LENGTH('dbo.ACHAT_ENTETE', 'DO_Cloture') IS NOT NULL 
-                                 THEN CAST(DO_Cloture AS INT) 
-                                 ELSE 0 
-                            END AS DO_Cloture,CO_No,DE_No,DO_TIERS,DO_Statut,DO_Expedit,DO_Coord01,DO_Ref,DO_DateLivr,DO_Date,DO_DateExpedition,A_TYPE,DO_CodeTaxe1,DO_Taxe1,DO_Type,DO_Imprim,DO_Reliquat
-                            FROM dbo.ACHAT_ENTETE ORDER BY DO_Piece ASC";
+                    string query = @"SELECT 
+                    ent.DO_Piece,
+                    ent.CT_Intitule,
+
+                    CAST(FORMAT(SUM(ligne.DL_MontantTTC)/ent.DO_Cours, 'N2') AS VARCHAR(50))
+                        + ' ' + ent.D_Intitule AS TotalTTC,
+
+                    CASE 
+                        WHEN COL_LENGTH('dbo.ACHAT_ENTETE', 'DO_Cloture') IS NOT NULL 
+                        THEN CAST(ent.DO_Cloture AS INT)
+                        ELSE 0
+                    END AS DO_Cloture,
+
+                    ent.CO_No,
+                    ent.DE_No,
+                    ent.DO_TIERS,
+                    ent.DO_Statut,
+                    ent.DO_Expedit,
+                    ent.DO_Coord01,
+                    ent.DO_Ref,
+                    ent.DO_DateLivr,
+                    ent.DO_Date,
+                    ent.DO_DateExpedition,
+                    ent.A_TYPE,
+                    ent.DO_CodeTaxe1,
+                    ent.DO_Taxe1,
+                    ent.DO_Type,
+                    ent.DO_Imprim,
+                    ent.DO_Reliquat
+
+                FROM dbo.ACHAT_ENTETE AS ent
+                INNER JOIN dbo.F_DOCLIGNE AS ligne 
+                    ON ligne.DO_Piece = ent.DO_Piece
+
+                GROUP BY
+                    ent.DO_Piece,
+                    ent.CT_Intitule,
+                    ent.D_Intitule,
+                    ent.DO_Cloture,
+                    ent.CO_No,
+                    ent.DE_No,
+                    ent.DO_TIERS,
+                    ent.DO_Statut,
+                    ent.DO_Expedit,
+                    ent.DO_Coord01,
+                    ent.DO_Ref,
+                    ent.DO_DateLivr,
+                    ent.DO_Date,
+                    ent.DO_DateExpedition,
+                    ent.A_TYPE,
+                    ent.DO_CodeTaxe1,
+                    ent.DO_Taxe1,
+                    ent.DO_Type,
+                    ent.DO_Imprim,
+                    ent.DO_Reliquat,
+                    ent.DO_Cours
+
+                ORDER BY ent.DO_Piece ASC";
                     try
                     {
                         using (SqlCommand cmd = new SqlCommand(query, connection))
@@ -208,18 +260,26 @@ namespace arbioApp.Modules.Principal.DI
                                 gc3.DataSource = bsCloture;
 
                                 // Mettre à jour le bs original avec toutes les données
-                                bs.DataSource = rownum > 0 ? (object)dataTable : null;
+                                bs.RaiseListChangedEvents = false;
+                                bs.DataSource = null;
+                                bs.DataMember = "";
+
+                                if (rownum > 0)
+                                    bs.DataSource = dataTable;
+
+                                bs.RaiseListChangedEvents = true;
+                                //bs.ResetBindings(false);
                             }
                         }
                     }
                     catch (SqlException ex) { MessageBox.Show("Erreur SQL : " + ex.Message); }
-                    catch (Exception ex) { MessageBox.Show("Erreur : " + ex.Message); }
+                    catch (Exception ex) {MessageBox.Show("Erreur : " + ex.Message); }
                 }
             }
             catch (Exception ex)
             {
                 MethodBase m = MethodBase.GetCurrentMethod();
-                MessageBox.Show($"Une erreur est survenue : {ex.Message}, {m}", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                //MessageBox.Show($"Une erreur est survenue : {ex.Message}, {m}", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

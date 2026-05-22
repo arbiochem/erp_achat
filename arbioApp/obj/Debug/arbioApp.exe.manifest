@@ -43,14 +43,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="arbioApp.exe" size="2995712">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="arbioApp.exe" size="3002880">
       <assemblyIdentity name="arbioApp" version="1.0.0.0" language="neutral" processorArchitecture="amd64" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>JlAokm3jKcMoQSY96rpuPUJ0Cd6Pl6e12hs6hROCNGA=</dsig:DigestValue>
+        <dsig:DigestValue>J0jSKMGrYk8AM67RAcrFZOqRpOBGjxtrqgcjS6gsCm8=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -2358,13 +2358,13 @@
       </hash>
     </dependentAssembly>
   </dependency>
-  <file name="arbioApp.exe.config" size="3230">
+  <file name="arbioApp.exe.config" size="5872">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>coMacqBmlqCzmHZ7xp8jr74MC6aBEjSyxTTyv97eZb4=</dsig:DigestValue>
+      <dsig:DigestValue>Ew6/MoQ/PFufqUllRCMJSANyuMm9ITmS4C+h8ziV+lw=</dsig:DigestValue>
     </hash>
   </file>
   <file name="logo.ico" size="6699">

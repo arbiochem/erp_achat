@@ -429,9 +429,7 @@ namespace arbioApp.Modules.Principal.DI.Repositories.ModelsRepository
                 F_DOCLIGNE _f_DOCLIGNEToUpdate = _context.F_DOCLIGNE.Where(dl => dl.AR_Ref == f_DOCLIGNE.AR_Ref && dl.DL_No == f_DOCLIGNE.DL_No).FirstOrDefault();
 
                 string queryUpdateF_DOCLIGNE = @"
-                DISABLE TRIGGER [dbo].[TG_CBUPD_F_DOCLIGNE] ON [dbo].[F_DOCLIGNE];
-                DISABLE TRIGGER [dbo].[TG_UPD_F_DOCLIGNE] ON [dbo].[F_DOCLIGNE];
-                DISABLE TRIGGER [dbo].[TG_UPD_CPTAF_DOCLIGNE] ON [dbo].[F_DOCLIGNE];
+                DISABLE TRIGGER ALL ON dbo.F_DOCLIGNE;
 
                 UPDATE F_DOCLIGNE
                 SET
@@ -462,9 +460,7 @@ namespace arbioApp.Modules.Principal.DI.Repositories.ModelsRepository
                    
                 WHERE DL_No = @DL_No;
 
-                ENABLE TRIGGER [dbo].[TG_CBUPD_F_DOCLIGNE] ON [dbo].[F_DOCLIGNE];
-                ENABLE TRIGGER [dbo].[TG_UPD_F_DOCLIGNE] ON [dbo].[F_DOCLIGNE];
-                ENABLE TRIGGER [dbo].[TG_UPD_CPTAF_DOCLIGNE] ON [dbo].[F_DOCLIGNE];
+                ENABLE TRIGGER ALL ON dbo.F_DOCLIGNE;
             ";
 
                 using (var context = new AppDbContext())

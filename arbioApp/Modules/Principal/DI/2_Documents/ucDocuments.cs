@@ -182,8 +182,8 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             catch (System.Exception ex)
             {
                 MethodBase m = MethodBase.GetCurrentMethod();
-                MessageBox.Show($"Une erreur est survenue : {ex.Message}, {m}", "Erreur",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                /*MessageBox.Show($"Une erreur est survenue : {ex.Message}, {m}", "Erreur",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);*/
             }
         }
 

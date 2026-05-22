@@ -8,6 +8,7 @@ using arbioApp.Modules.Principal.DI.Repositories.ModelsRepository;
 using arbioApp.Modules.Principal.DI.Services;
 using arbioApp.Repositories.ModelsRepository;
 using arbioApp.Services;
+using arbioApp.Utils.Connection;
 using DevExpress.ChartRangeControlClient.Core;
 using DevExpress.CodeParser;
 using DevExpress.DashboardWin.Design;
@@ -74,6 +75,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static arbioApp.Modules.Principal.DI._2_Documents.frmEditInfos;
+using static DevExpress.Xpo.DB.DataStoreLongrunnersWatch;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
@@ -199,6 +201,8 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
              .Select(doc => doc.DO_Statut ?? 0)
              .FirstOrDefault();
 
+            lkStatut.EditValue = StatutActuel;
+
             txtCours.EditValueChanged -= txtCours_EditValueChanged;
             txtCours.Text = (_context.F_DOCENTETE
             .Where(d => d.DO_Piece.Trim() == DoPiece.Trim())
@@ -213,8 +217,6 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
             ExecuteStockAlert();
         }
-
-
 
 
         //Nouveau
@@ -1752,7 +1754,14 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                     decimal montantHT = 0;
                     if (montantHT == 0)
                     {
-                        montantHT = (puNet * qte * cours) + (frais + fret);
+                        if (new[] { "XW", "FOB" }.Contains(cmbIncoterm.Text))
+                        {
+                            montantHT = (qte * puNet * cours) + (frais + fret);
+                        }
+                        else
+                        {
+                            montantHT = (qte * puNet * cours) + frais;
+                        }
                         gvLigneEdit.SetRowCellValue(row, "DL_MontantHT", montantHT);
                     }
                     //decimal montantTTC = Convert.ToDecimal(gvLigneEdit.GetRowCellValue(row, "DL_MontantTTC"));
@@ -2427,7 +2436,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
                                             if (autorise)
                                             {
-                                                if (lkStatut.Text != "Accepté")
+                                                if (lkStatut.Text != "Confirmé")
                                                 {
                                                     if (doc.DO_TotalHTNet != null)
                                                     {
@@ -3198,7 +3207,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
                 int number = int.Parse(dopiecetxt.Text.Substring(dopiecetxt.Text.Length - 4));
                 decimal DoTaxe1 = Convert.ToDecimal(doTaxe1txt.Text);
-                //short DoStatut = Convert.ToInt16(lkStatut.EditValue);
+                short DoStatut = Convert.ToInt16(lkStatut.EditValue);
                 short newDoType = Convert.ToInt16(TransformDoType(doctype, dopiecetxt.Text));
                 DateTime newDoDate = DateTime.Now;
 
@@ -3213,6 +3222,8 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
                 ///////////////////////////////////F_DOCLIGNE
 
+                
+
                 using (_context)
                 {
                     List<F_DOCLIGNE> listeDoclignesToUpdate = _f_DOCLIGNERepository.GetAll_F_DOCLIGNE_Of_DOCENTETE(_currentDocPieceNo);
@@ -3222,15 +3233,17 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                     {
                         foreach (var ligne in listeDoclignesToUpdate)
                         {
-                            bool retenu = (bool)ligne.Retenu;
-                            if (retenu == true) // ou simplement: if (ligne.Retenu)
-                            {
+                            //bool retenu = (bool)ligne.Retenu;
+                            /*if (retenu == true) // ou simplement: if (ligne.Retenu)
+                            {*/
                                 int dl_No = (int)ligne.DL_No;
                                 _f_DOCLIGNEService.TransformF_DOCLIGNE(newDoType, newDocPieceNo, dl_No);
-                            }
+                            //}
                         }
                     }
                 }
+
+                
                 //////////////////////////////////////////////////////////////////////////////////////////////////
                 string connectionString2 =
                                     $"Server={serveripPrincipale};Database={dbPrincipale};" +
@@ -3542,13 +3555,18 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                         decimal frais = Convert.ToDecimal(view.GetRowCellValue(e.RowHandle, "DL_Frais"));
                         decimal fret = Convert.ToDecimal(view.GetRowCellValue(e.RowHandle, "Fret"));
 
+                        decimal montantHT = 0;
                         // Appliquer la remise au prix unitaire
                         decimal prixNet = prixUnitaire * (1 - remise / 100);
-                        decimal montantHT = (prixNet * quantite * cours) + (frais + fret);
+
+                        montantHT = (prixNet * qte * cours) + (frais + fret);
+                        
                         decimal montantTTC = montantHT * (1 + tauxTVA / 100);
 
                         view.SetRowCellValue(e.RowHandle, "DL_MontantHT", montantHT);
                         view.SetRowCellValue(e.RowHandle, "DL_MontantTTC", montantTTC);
+
+
 
                         gvLigneEdit.CustomUnboundColumnData += (sender, e) =>
                         {
@@ -4091,20 +4109,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                     col1.DisplayFormat.FormatString = "N2";
                     col1.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
                 }
-
-                GridColumn col_htdevise = gvLigneEdit.Columns["Montant Total en devise"];
-                if (col_htdevise == null)
-                {
-                    col_htdevise = gvLigneEdit.Columns.AddField("Montant Total en devise");
-                    col_htdevise.Caption = "Montant Total en devise";
-                    col_htdevise.UnboundType = DevExpress.Data.UnboundColumnType.Decimal;
-                    col_htdevise.Visible = true;
-                    col_htdevise.BestFit();
-                    col_htdevise.OptionsColumn.AllowEdit = false;
-                    col_htdevise.OptionsColumn.ReadOnly = true;
-                    col_htdevise.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
-                }
-
+                
                 // === POSITIONNEMENT ===
                 int indexFrais = gvLigneEdit.Columns["DL_Frais"].VisibleIndex;
                 col.VisibleIndex = indexFrais;
@@ -4112,9 +4117,6 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
                 int indexPrixUnitaire = gvLigneEdit.Columns["DL_PrixUnitaire"].VisibleIndex;
                 col_unite.VisibleIndex = indexPrixUnitaire - 2;
-
-                int indexMontantHT = gvLigneEdit.Columns["DL_PoidsNet"].VisibleIndex;
-                col_htdevise.VisibleIndex = indexMontantHT + 1;
 
                 gvLigneEdit.CustomUnboundColumnData += (sender, e) =>
                 {
@@ -4139,30 +4141,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                             }
                             catch (Exception es) { }
                         }
-                        else if (e.Column.FieldName == "Montant Total en devise")
-                        {
-                            try
-                            {
-                                decimal qte = Convert.ToDecimal(gvLigneEdit.GetListSourceRowCellValue(e.ListSourceRowIndex, "DL_PoidsNet"));
-                                decimal PUHT = Convert.ToDecimal(gvLigneEdit.GetListSourceRowCellValue(e.ListSourceRowIndex, "DL_PrixUnitaire"));
-                                decimal PU = Convert.ToDecimal(PUHT.ToString("N2"));
-                                if (txtCours.Text != "" && Convert.ToDecimal(txtCours.Text.ToString()) > 0)
-                                {
-                                    decimal cours_devise = Convert.ToDecimal(txtCours.Text);
-                                    decimal m_devise = (PU * qte) / cours_devise;
-                                    if (m_devise < 0) m_devise = 0m;
-
-                                    string devise = lkDevise.Text;
-
-                                    e.Value = m_devise.ToString("N2");
-
-                                    col_htdevise.SummaryItem.SummaryType = DevExpress.Data.SummaryItemType.Sum;
-                                    col_htdevise.SummaryItem.DisplayFormat = "{0:n2} " + devise;
-                                    gvLigneEdit.Appearance.FooterPanel.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
-                                }
-                            }
-                            catch (Exception es) { }
-                        }
+                        
                         else if (e.Column.FieldName == "TotalFrais" && e.IsGetData)
                         {
                             decimal fret = Convert.ToDecimal(gvLigneEdit.GetListSourceRowCellValue(e.ListSourceRowIndex, "FRET"));
@@ -4556,64 +4535,54 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
                         if (autorise)
                         {
-                            var dlg = new frmTransform(_typeDocument);
-                            dlg.ParentFormInstance = this;
+                            //MAJ Qte
 
-                            if (dlg.ShowDialog() == DialogResult.OK)
+                            int? DE_No = Convert.ToInt32(lkDepot.EditValue);
+
+                            for (int i = 0; i < gvLigneEdit.RowCount; i++)
                             {
-                                this.TransformFDOCENTETE(dlg.doctype);
-                            }
+                                string reference = gvLigneEdit.GetRowCellValue(i, "AR_Ref")?.ToString();
+                                string designation = gvLigneEdit.GetRowCellValue(i, "DL_DESIGN")?.ToString();
+                                var qte = gvLigneEdit.GetRowCellValue(i, "DL_Qte");
 
-                            // Fix for CS0120: Use the instance of ucDocuments instead of trying to call it statically
-                            _ucDocuments.ChargerDonneesDepuisBDD();
-                        }
-                        else
-                        {
-                            MessageBox.Show(
-                                "Vous n'avez pas l'autorisation de transformer une facture !",
-                                "Transformation bloquée",
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Error
-                            );
-                        }
+                                frm_qte_livre fen_livre = new frm_qte_livre();
 
-                        //MAJ Qte
+                                fen_livre.Text = "Traitement du document N° " + dopiecetxt.Text;
+                                fen_livre.txtRef.Text = reference;
+                                fen_livre.txtQteDepart.Text = qte.ToString();
+                                fen_livre.txt_article.Text = designation;
+                                fen_livre.txtQteLivrer.Text = qte.ToString();
+                                fen_livre.ShowDialog();
 
-                        int? DE_No = Convert.ToInt32(lkDepot.EditValue);
-                        for (int i = 0; i < gvLigneEdit.RowCount; i++)
-                        {
-                            string reference = gvLigneEdit.GetRowCellValue(i, "AR_Ref")?.ToString();
-                            var qte = gvLigneEdit.GetRowCellValue(i, "DL_Qte");
-
-                            try
-                            {
-                                string connectionString = $"Server={serveripPrincipale};Database=TRANSIT;" +
-                                                $"User ID=Dev;Password=1234;TrustServerCertificate=True;" +
-                                                $"Connection Timeout=240;";
-
-                                using (SqlConnection connection = new SqlConnection(connectionString))
+                                try
                                 {
-                                    connection.Open();
+                                    string connectionString = $"Server={serveripPrincipale};Database=TRANSIT;" +
+                                                    $"User ID=Dev;Password=1234;TrustServerCertificate=True;" +
+                                                    $"Connection Timeout=240;";
 
-                                    string existingStock = @"
+                                    using (SqlConnection connection = new SqlConnection(connectionString))
+                                    {
+                                        connection.Open();
+
+                                        string existingStock = @"
                                          SELECT TOP 1 AS_QteSto
                                          FROM F_ARTSTOCK
                                          WHERE AR_Ref = @AR_Ref AND DE_No = @DE_No";
 
-                                    decimal? existingQte = null;
+                                        decimal? existingQte = null;
 
-                                    using (SqlCommand checkCmd = new SqlCommand(existingStock, connection))
-                                    {
-                                        checkCmd.Parameters.AddWithValue("@AR_Ref", reference);
-                                        checkCmd.Parameters.AddWithValue("@DE_No", DE_No);
+                                        using (SqlCommand checkCmd = new SqlCommand(existingStock, connection))
+                                        {
+                                            checkCmd.Parameters.AddWithValue("@AR_Ref", reference);
+                                            checkCmd.Parameters.AddWithValue("@DE_No", DE_No);
 
-                                        var result = checkCmd.ExecuteScalar();
-                                        if (result != null && result != DBNull.Value)
-                                            existingQte = Convert.ToDecimal(result);
-                                    }
-                                    if (existingQte == null)
-                                    {
-                                        string insertSql = @"
+                                            var result = checkCmd.ExecuteScalar();
+                                            if (result != null && result != DBNull.Value)
+                                                existingQte = Convert.ToDecimal(result);
+                                        }
+                                        if (existingQte == null)
+                                        {
+                                            string insertSql = @"
                                                  INSERT INTO F_ARTSTOCK (
                                                      AR_Ref,
                                                      DE_No,
@@ -4634,47 +4603,68 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                                      0, 0, 0, 0, 0, 0
                                                  )";
 
-                                        using (SqlCommand insertCmd = new SqlCommand(insertSql, connection))
-                                        {
-                                            insertCmd.Parameters.AddWithValue("@AR_Ref", reference);
-                                            insertCmd.Parameters.AddWithValue("@DE_No", DE_No);
-                                            insertCmd.Parameters.AddWithValue("@DP_NoPrincipal", 1);
-                                            insertCmd.Parameters.AddWithValue("@Qte", qte);
+                                            using (SqlCommand insertCmd = new SqlCommand(insertSql, connection))
+                                            {
+                                                insertCmd.Parameters.AddWithValue("@AR_Ref", reference);
+                                                insertCmd.Parameters.AddWithValue("@DE_No", DE_No);
+                                                insertCmd.Parameters.AddWithValue("@DP_NoPrincipal", 1);
+                                                insertCmd.Parameters.AddWithValue("@Qte", qte);
 
-                                            insertCmd.ExecuteNonQuery();
+                                                //insertCmd.ExecuteNonQuery();
+                                            }
                                         }
-                                    }
-                                    else
-                                    {
-                                        string updateSql = @"
+                                        else
+                                        {
+                                            string updateSql = @"
                                                  UPDATE F_ARTSTOCK
                                                  SET AS_QteSto = AS_QteSto + @Qte
                                                  WHERE AR_Ref = @AR_Ref AND DE_No = @DE_No";
 
-                                        using (SqlCommand updateCmd = new SqlCommand(updateSql, connection))
-                                        {
-                                            updateCmd.Parameters.AddWithValue("@AR_Ref", reference);
-                                            updateCmd.Parameters.AddWithValue("@DE_No", DE_No);
-                                            updateCmd.Parameters.AddWithValue("@Qte", qte);
+                                            using (SqlCommand updateCmd = new SqlCommand(updateSql, connection))
+                                            {
+                                                updateCmd.Parameters.AddWithValue("@AR_Ref", reference);
+                                                updateCmd.Parameters.AddWithValue("@DE_No", DE_No);
+                                                updateCmd.Parameters.AddWithValue("@Qte", qte);
 
-                                            updateCmd.ExecuteNonQuery();
+                                                //updateCmd.ExecuteNonQuery();
+                                            }
                                         }
                                     }
+
+                                    //MAJ des articles par lot
+                                    simpleButton2_Click(sender, e);
+                                }
+                                catch (System.Data.Entity.Infrastructure.DbUpdateException ex)
+                                {
+
+                                }
+                                catch (Exception ex)
+                                {
+                                    MessageBox.Show(ex.Message, "Erreur");
                                 }
 
-                                //MAJ des articles par lot
-                                simpleButton2_Click(sender, e);
+
                             }
-                            catch (System.Data.Entity.Infrastructure.DbUpdateException ex)
+
+                            var dlg = new frmTransform(_typeDocument);
+                            dlg.ParentFormInstance = this;
+
+                            if (dlg.ShowDialog() == DialogResult.OK)
                             {
-
-                            }
-                            catch (Exception ex)
-                            {
-                                MessageBox.Show(ex.Message, "Erreur");
+                                this.TransformFDOCENTETE(dlg.doctype);
                             }
 
-
+                            // Fix for CS0120: Use the instance of ucDocuments instead of trying to call it statically
+                            _ucDocuments.ChargerDonneesDepuisBDD();
+                        }
+                        else
+                        {
+                            MessageBox.Show(
+                                "Vous n'avez pas l'autorisation de transformer une facture !",
+                                "Transformation bloquée",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error
+                            );
                         }
                     }
                     else if (dopiecetxt.Text.ToString().StartsWith("ABC"))
@@ -5033,6 +5023,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                     var colFret = view.Columns["FRET"];
                     var colQte = view.Columns["DL_QTE"];
                     var colPU = view.Columns["DL_PrixUnitaire"];
+                    var col_htdevise = view.Columns["Montant Total en devise"];
 
                     for (int i = 0; i < view.RowCount; i++)
                     {
@@ -5044,18 +5035,80 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                         decimal cours = Convert.ToDecimal(txtCours.Text);
 
                         decimal montantHT = 0;
-                        // Calcul du montant HT
                         if (new[] { "XW", "FOB" }.Contains(cmbIncoterm.Text))
                         {
                             montantHT = (qte * pu * cours) + (frais + fret);
                         }
                         else
                         {
-                            montantHT = (qte * pu * cours) + frais;
+                            montantHT = (qte * pu * cours) + (frais / cours);
                         }
 
-                        // Mise à jour de la cellule
-                        view.SetRowCellValue(i, colMontantHT, montantHT);
+                        decimal m_devise = montantHT / cours;
+                        string devise = lkDevise.Text;
+
+                        gvLigneEdit.SetRowCellValue(i, "DL_MontantHT", montantHT);
+                        Dictionary<int, decimal> deviseValues = new Dictionary<int, decimal>();
+
+                        // CREATION COLONNE
+                        GridColumn col_htdevises =
+                            gvLigneEdit.Columns.ColumnByFieldName("MontantTotalendevise");
+
+                        if (col_htdevises == null)
+                        {
+                            col_htdevises = gvLigneEdit.Columns.AddField("MontantTotalendevise");
+
+                            col_htdevises.Caption = "Montant Total en devise";
+
+                            // IMPORTANT
+                            col_htdevises.UnboundType = DevExpress.Data.UnboundColumnType.Decimal;
+
+                            col_htdevises.AppearanceCell.TextOptions.HAlignment =
+                            DevExpress.Utils.HorzAlignment.Center;
+
+                            col_htdevises.Visible = true;
+
+                            int indexMontantHT =
+                                gvLigneEdit.Columns["DL_MontantHT"].VisibleIndex;
+
+                            col_htdevises.VisibleIndex = indexMontantHT + 1;
+
+                            col_htdevises.DisplayFormat.FormatType =
+                                DevExpress.Utils.FormatType.Numeric;
+
+                            col_htdevises.DisplayFormat.FormatString = "n2";
+
+                            col_htdevises.OptionsColumn.AllowEdit = false;
+                            col_htdevises.OptionsColumn.ReadOnly = true;
+
+                            // EVENEMENT UNBOUND
+                            gvLigneEdit.CustomUnboundColumnData += (s, e) =>
+                            {
+                                if (e.Column.FieldName == "MontantTotalendevise")
+                                {
+                                    // LECTURE
+                                    if (e.IsGetData)
+                                    {
+                                        if (deviseValues.ContainsKey(e.ListSourceRowIndex))
+                                            e.Value = deviseValues[e.ListSourceRowIndex];
+                                    }
+
+                                    // ECRITURE
+                                    if (e.IsSetData)
+                                    {
+                                        deviseValues[e.ListSourceRowIndex] =
+                                            Convert.ToDecimal(e.Value);
+                                    }
+                                }
+                            };
+                        }
+
+                        // ECRITURE VALEUR
+                        deviseValues[i] = Convert.ToDecimal(m_devise);
+
+                        gvLigneEdit.RefreshRow(i);
+                        gvLigneEdit.RefreshData();
+
 
                         // Déclenchement du handler si nécessaire
                         var args = new DevExpress.XtraGrid.Views.Base.CellValueChangedEventArgs(
@@ -5225,7 +5278,18 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                     decimal frais = row["DL_Frais"] != DBNull.Value ? Convert.ToDecimal(row["DL_Frais"]) : 0;
                                     decimal fret = row["Fret"] != DBNull.Value ? Convert.ToDecimal(row["Fret"]) : 0;
                                     decimal cours = Convert.ToDecimal(txtCours.Text);
-                                    decimal montantHT = (dlQte * puNet * cours) + (frais + fret);
+
+                                    decimal montantHT = 0;
+                                    if (new[] { "XW", "FOB" }.Contains(cmbIncoterm.Text))
+                                    {
+                                        montantHT = (dlQte * puNet * cours) + (frais + fret);
+                                    }
+                                    else
+                                    {
+                                        montantHT = (dlQte * puNet * cours) + frais;
+                                    }
+
+
                                     decimal montantTTC = montantHT * (1 + DLTaxe1 / 100);
                                     int retenu = 1;
 
@@ -6115,6 +6179,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             var colMontantHT = view.Columns["DL_montantHT"];
             var colFrais = view.Columns["DL_Frais"];
             var colFret = view.Columns["FRET"];
+            var col_htdevise= view.Columns["Montant Total en devise"];
 
             if (colQte == null || colPU == null || colMontantHT == null || colFrais == null) return;
 
@@ -6139,9 +6204,76 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                     montantHT = (qte * pu * cours) + frais;
                 }
 
-                // Mise à jour de la cellule
-                view.SetRowCellValue(i, colMontantHT, montantHT);
+                decimal m_devise = montantHT / cours;
+                string devise = lkDevise.Text;
 
+                gvLigneEdit.SetRowCellValue(i, "DL_MontantHT", montantHT);
+
+                Dictionary<int, decimal> deviseValues = new Dictionary<int, decimal>();
+
+                // CREATION COLONNE
+                GridColumn col_htdevises =
+                    gvLigneEdit.Columns.ColumnByFieldName("MontantTotalendevise");
+
+                if (col_htdevises == null)
+                {
+                    col_htdevises = gvLigneEdit.Columns.AddField("MontantTotalendevise");
+
+                    col_htdevises.Caption = "Montant Total en devise";
+
+                    // IMPORTANT
+                    col_htdevises.UnboundType = DevExpress.Data.UnboundColumnType.Decimal;
+
+                    col_htdevises.AppearanceCell.TextOptions.HAlignment =
+                    DevExpress.Utils.HorzAlignment.Center;
+
+                    col_htdevises.Visible = true;
+
+                    int indexMontantHT =
+                        gvLigneEdit.Columns["DL_MontantHT"].VisibleIndex;
+
+                    col_htdevises.VisibleIndex = indexMontantHT + 1;
+
+                    col_htdevises.DisplayFormat.FormatType =
+                        DevExpress.Utils.FormatType.Numeric;
+
+                    col_htdevises.DisplayFormat.FormatString = "n2";
+
+                    col_htdevises.OptionsColumn.AllowEdit = false;
+                    col_htdevises.OptionsColumn.ReadOnly = true;
+
+                    // EVENEMENT UNBOUND
+                    gvLigneEdit.CustomUnboundColumnData += (s, e) =>
+                    {
+                        if (e.Column.FieldName == "MontantTotalendevise")
+                        {
+                            // LECTURE
+                            if (e.IsGetData)
+                            {
+                                if (deviseValues.ContainsKey(e.ListSourceRowIndex))
+                                    e.Value = deviseValues[e.ListSourceRowIndex];
+                            }
+
+                            // ECRITURE
+                            if (e.IsSetData)
+                            {
+                                deviseValues[e.ListSourceRowIndex] =
+                                    Convert.ToDecimal(e.Value);
+                            }
+                        }
+                    };
+                }
+
+                // ECRITURE VALEUR
+                deviseValues[i] = Convert.ToDecimal(m_devise);
+
+                gvLigneEdit.RefreshRow(i);
+                gvLigneEdit.RefreshData();
+
+
+                col_htdevise.SummaryItem.SummaryType = DevExpress.Data.SummaryItemType.Sum;
+                col_htdevise.SummaryItem.DisplayFormat = "{0:n2} " + devise;
+                gvLigneEdit.Appearance.FooterPanel.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
                 // Déclenchement du handler si nécessaire
                 var args = new DevExpress.XtraGrid.Views.Base.CellValueChangedEventArgs(
                     i,
@@ -6169,17 +6301,94 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                     decimal pu = Convert.ToDecimal(gvLigneEdit.GetRowCellValue(i, "DL_PrixUnitaire") ?? 0);
                     decimal frais = Convert.ToDecimal(gvLigneEdit.GetRowCellValue(i, "DL_Frais") ?? 0);
                     decimal fret = Convert.ToDecimal(gvLigneEdit.GetRowCellValue(i, "FRET") ?? 0);
-                    decimal montant = 0;
-                    if (new[] { "XW", "FOB" }.Contains(cmbIncoterm.Text))
+                    decimal montantHT = Convert.ToDecimal(gvLigneEdit.GetRowCellValue(i, "DL_MontantHT") ?? 0);
+                   
+                    decimal m_devise = montantHT / cours;
+                    string devise = lkDevise.Text;
+
+                    gvLigneEdit.SetRowCellValue(i, "DL_MontantHT", montantHT);
+
+                    Dictionary<int, decimal> deviseValues = new Dictionary<int, decimal>();
+
+                    // CREATION COLONNE
+                    GridColumn col_htdevises =
+                        gvLigneEdit.Columns.ColumnByFieldName("MontantTotalendevise");
+
+                    if (col_htdevises == null)
                     {
-                        montant = (qte * pu * cours) + (frais + fret);
-                    }
-                    else
-                    {
-                        montant = (qte * pu * cours) + frais;
+                        col_htdevises = gvLigneEdit.Columns.AddField("MontantTotalendevise");
+
+                        col_htdevises.Caption = "Montant Total en devise";
+
+                        // IMPORTANT
+                        col_htdevises.UnboundType = DevExpress.Data.UnboundColumnType.Decimal;
+
+                        col_htdevises.AppearanceCell.TextOptions.HAlignment =
+                        DevExpress.Utils.HorzAlignment.Center;
+
+                        col_htdevises.Visible = true;
+
+                        int indexMontantHT =
+                            gvLigneEdit.Columns["DL_MontantHT"].VisibleIndex;
+
+                        col_htdevises.VisibleIndex = indexMontantHT + 1;
+
+                        col_htdevises.DisplayFormat.FormatType =
+                            DevExpress.Utils.FormatType.Numeric;
+
+                        col_htdevises.DisplayFormat.FormatString = "n2";
+
+                        col_htdevises.OptionsColumn.AllowEdit = false;
+                        col_htdevises.OptionsColumn.ReadOnly = true;
+
+                        // EVENEMENT UNBOUND
+                        gvLigneEdit.CustomUnboundColumnData += (s, e) =>
+                        {
+                            if (e.Column.FieldName == "MontantTotalendevise")
+                            {
+                                // LECTURE
+                                if (e.IsGetData)
+                                {
+                                    if (deviseValues.ContainsKey(e.ListSourceRowIndex))
+                                        e.Value = deviseValues[e.ListSourceRowIndex];
+                                }
+
+                                // ECRITURE
+                                if (e.IsSetData)
+                                {
+                                    deviseValues[e.ListSourceRowIndex] =
+                                        Convert.ToDecimal(e.Value);
+                                }
+                            }
+                        };
                     }
 
-                    gvLigneEdit.SetRowCellValue(i, "DL_MontantHT", montant);
+                    // ECRITURE VALEUR
+                    deviseValues[i] = Convert.ToDecimal(m_devise);
+
+                    gvLigneEdit.RefreshRow(i);
+                    gvLigneEdit.RefreshData();
+
+
+                    void SummaryColonne(string fieldName)
+                    {
+                        var col = gvLigneEdit.Columns[fieldName];
+                        if (col == null) return;
+                        col.SummaryItem.SummaryType = DevExpress.Data.SummaryItemType.Sum;
+
+                        if (fieldName != "MontantTotalendevise")
+                        {
+                            col.SummaryItem.DisplayFormat = "{0:n2}";
+                        }
+                        else
+                        {
+                            col.SummaryItem.DisplayFormat = "{0:n2} "+lkDevise.Text;
+                        }
+                    }
+
+                    SummaryColonne("MontantTotalendevise");
+                    SummaryColonne("DL_MontantHT");
+                    SummaryColonne("DL_Frais");
                 }
 
                 // Regénère le résumé sans appeler l’event manuellement

@@ -416,24 +416,32 @@ namespace arbioApp.Modules.Principal.DI.Services
                 switch (DO_Type)
                 {
                     case 12:
-                        f_DOCLIGNEToUpdate.DO_Piece = "ABC" + DO_Piece; //BON DE COMMANDE
+                        f_DOCLIGNEToUpdate.DO_Piece = "ABC" + DO_Piece;
                         break;
                     case 13:
-                        f_DOCLIGNEToUpdate.DO_Piece = "ABL" + DO_Piece; //BON DE LIVRAISON
+                        f_DOCLIGNEToUpdate.DO_Piece = "ABL" + DO_Piece;
                         break;
                     case 18:
-                        f_DOCLIGNEToUpdate.DO_Piece = "ABR" + DO_Piece; //BON DE RETOUR
+                        f_DOCLIGNEToUpdate.DO_Piece = "ABR" + DO_Piece;
                         break;
                     case 16:
-                        f_DOCLIGNEToUpdate.DO_Piece = "AFA" + DO_Piece; //FACTURE D'ACHAT
+                        f_DOCLIGNEToUpdate.DO_Piece = "AFA" + DO_Piece;
                         break;
                     default:
                         throw new ArgumentException("Invalid document type", nameof(DO_Type));
-                        break;
                 }
 
-
-                _f_DOCLIGNERepository.Update(f_DOCLIGNEToUpdate);
+                // Désactiver les triggers, update, réactiver
+                _context.Database.ExecuteSqlCommand("DISABLE TRIGGER ALL ON dbo.F_DOCLIGNE");
+                try
+                {
+                    _f_DOCLIGNERepository.Update(f_DOCLIGNEToUpdate);
+                }
+                finally
+                {
+                    // Toujours réactivé, même si l'update échoue
+                    _context.Database.ExecuteSqlCommand("ENABLE TRIGGER ALL ON dbo.F_DOCLIGNE");
+                }
             }
             catch (System.Exception ex)
             {

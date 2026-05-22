@@ -149,7 +149,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
                 using (SqlCommand cmd = new SqlCommand(sql, conn))
                 {
-                    cmd.Parameters.Add("@doPiece", SqlDbType.Char, 13).Value = doPiece.PadRight(13);
+                    cmd.Parameters.Add("@doPiece", SqlDbType.VarChar, 13).Value = doPiece.PadRight(13).Trim();
                     cmd.Parameters.Add("@dotiers", SqlDbType.Char, 13).Value = ct_Num.PadRight(13);
 
                     // DO_Date est DateTime dans Sage 100
@@ -226,7 +226,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 {
                     int dlNo = GetNextIDLNo(conn); // ← unique à chaque ligne
 
-                    cmd.Parameters.Add("@doPiece", SqlDbType.Char, 13).Value = doPiece.PadRight(13);
+                    cmd.Parameters.Add("@doPiece", SqlDbType.VarChar, 13).Value = doPiece.PadRight(13).Trim();
                     cmd.Parameters.Add("@dlqte", SqlDbType.Int, 13).Value = qteACommander;
                     cmd.Parameters.Add("@dlLigne", SqlDbType.Int).Value = dlLigne;
                     cmd.Parameters.Add("@arRef", SqlDbType.Char, 18).Value = (ar_Ref ?? string.Empty).PadRight(18);
