@@ -279,12 +279,6 @@
     <Compile Include="Modules\Principal\DI\2_Documents\frmEditInfos.Designer.cs">
       <DependentUpon>frmEditInfos.cs</DependentUpon>
     </Compile>
-    <Compile Include="Modules\Principal\DI\2_Documents\frmLotSerie.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Modules\Principal\DI\2_Documents\frmLotSerie.Designer.cs">
-      <DependentUpon>frmLotSerie.cs</DependentUpon>
-    </Compile>
     <Compile Include="Modules\Principal\DI\2_Documents\frmQuery.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -332,6 +326,12 @@
     </Compile>
     <Compile Include="Modules\Principal\DI\2_Documents\frm_nonLivre.Designer.cs">
       <DependentUpon>frm_nonLivre.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Principal\DI\2_Documents\frm_qte_livre.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Modules\Principal\DI\2_Documents\frm_qte_livre.Designer.cs">
+      <DependentUpon>frm_qte_livre.cs</DependentUpon>
     </Compile>
     <Compile Include="Modules\Principal\DI\2_Documents\frm_saisieQuantite.cs">
       <SubType>Form</SubType>
@@ -734,9 +734,6 @@
     <EmbeddedResource Include="Modules\Principal\DI\2_Documents\frmEditInfos.resx">
       <DependentUpon>frmEditInfos.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Modules\Principal\DI\2_Documents\frmLotSerie.resx">
-      <DependentUpon>frmLotSerie.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Modules\Principal\DI\2_Documents\frmQuery.resx">
       <DependentUpon>frmQuery.cs</DependentUpon>
     </EmbeddedResource>
@@ -763,6 +760,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Modules\Principal\DI\2_Documents\frm_nonLivre.resx">
       <DependentUpon>frm_nonLivre.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\Principal\DI\2_Documents\frm_qte_livre.resx">
+      <DependentUpon>frm_qte_livre.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Modules\Principal\DI\2_Documents\frm_saisieQuantite.resx">
       <DependentUpon>frm_saisieQuantite.cs</DependentUpon>

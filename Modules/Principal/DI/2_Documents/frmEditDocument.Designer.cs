@@ -216,6 +216,84 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             this.layoutControlItem33 = new DevExpress.XtraLayout.LayoutControlItem();
             this.emptySpaceItem5 = new DevExpress.XtraLayout.EmptySpaceItem();
             this.layoutControlItem34 = new DevExpress.XtraLayout.LayoutControlItem();
+            this.xtraTabPage5 = new DevExpress.XtraTab.XtraTabPage();
+            this.simpleButton6 = new DevExpress.XtraEditors.SimpleButton();
+            this.groupControl9 = new DevExpress.XtraEditors.GroupControl();
+            this.bindingNavigator6 = new System.Windows.Forms.BindingNavigator(this.components);
+            this.toolStripLabel5 = new System.Windows.Forms.ToolStripLabel();
+            this.toolStripButton30 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton31 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator13 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripTextBox5 = new System.Windows.Forms.ToolStripTextBox();
+            this.toolStripSeparator14 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripButton32 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton33 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator15 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripButton34 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton35 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton36 = new System.Windows.Forms.ToolStripButton();
+            this.layoutControl11 = new DevExpress.XtraLayout.LayoutControl();
+            this.txt_autre_affreter = new DevExpress.XtraEditors.TextEdit();
+            this.cmbaffreter = new DevExpress.XtraEditors.ComboBoxEdit();
+            this.layoutControlGroup12 = new DevExpress.XtraLayout.LayoutControlGroup();
+            this.layoutControlItem53 = new DevExpress.XtraLayout.LayoutControlItem();
+            this.layoutControlItem49 = new DevExpress.XtraLayout.LayoutControlItem();
+            this.groupControl8 = new DevExpress.XtraEditors.GroupControl();
+            this.bindingNavigator5 = new System.Windows.Forms.BindingNavigator(this.components);
+            this.toolStripLabel4 = new System.Windows.Forms.ToolStripLabel();
+            this.toolStripButton23 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton24 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripTextBox4 = new System.Windows.Forms.ToolStripTextBox();
+            this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripButton25 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton26 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator12 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripButton27 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton28 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton29 = new System.Windows.Forms.ToolStripButton();
+            this.layoutControl10 = new DevExpress.XtraLayout.LayoutControl();
+            this.txt_obs = new DevExpress.XtraEditors.MemoEdit();
+            this.layoutControlGroup11 = new DevExpress.XtraLayout.LayoutControlGroup();
+            this.layoutControlItem51 = new DevExpress.XtraLayout.LayoutControlItem();
+            this.groupControl7 = new DevExpress.XtraEditors.GroupControl();
+            this.bindingNavigator4 = new System.Windows.Forms.BindingNavigator(this.components);
+            this.toolStripLabel3 = new System.Windows.Forms.ToolStripLabel();
+            this.toolStripButton16 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton17 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripTextBox3 = new System.Windows.Forms.ToolStripTextBox();
+            this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripButton18 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton19 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripButton20 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton21 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton22 = new System.Windows.Forms.ToolStripButton();
+            this.layoutControl9 = new DevExpress.XtraLayout.LayoutControl();
+            this.cmbtransitaire = new DevExpress.XtraEditors.ComboBoxEdit();
+            this.txt_autre_transitaire = new DevExpress.XtraEditors.TextEdit();
+            this.layoutControlGroup10 = new DevExpress.XtraLayout.LayoutControlGroup();
+            this.layoutControlItem54 = new DevExpress.XtraLayout.LayoutControlItem();
+            this.layoutControlItem50 = new DevExpress.XtraLayout.LayoutControlItem();
+            this.groupControl6 = new DevExpress.XtraEditors.GroupControl();
+            this.bindingNavigator3 = new System.Windows.Forms.BindingNavigator(this.components);
+            this.toolStripLabel2 = new System.Windows.Forms.ToolStripLabel();
+            this.toolStripButton9 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton10 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripTextBox2 = new System.Windows.Forms.ToolStripTextBox();
+            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripButton11 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton12 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripButton13 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton14 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton15 = new System.Windows.Forms.ToolStripButton();
+            this.layoutControl8 = new DevExpress.XtraLayout.LayoutControl();
+            this.cmbcompagnie = new DevExpress.XtraEditors.ComboBoxEdit();
+            this.layoutControlGroup9 = new DevExpress.XtraLayout.LayoutControlGroup();
+            this.layoutControlItem48 = new DevExpress.XtraLayout.LayoutControlItem();
             this.Root = new DevExpress.XtraLayout.LayoutControlGroup();
             this.layoutControlItem6 = new DevExpress.XtraLayout.LayoutControlItem();
             this.fDEVISEBindingSource = new System.Windows.Forms.BindingSource(this.components);
@@ -232,6 +310,8 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             this.xtraOpenFileDialog1 = new DevExpress.XtraEditors.XtraOpenFileDialog(this.components);
             this.xtraOpenFileDialog2 = new DevExpress.XtraEditors.XtraOpenFileDialog(this.components);
             this.f_DEVISETableAdapter = new arbioApp.ARBIOCHEMDataSetTableAdapters.F_DEVISETableAdapter();
+            this.layoutControlItem47 = new DevExpress.XtraLayout.LayoutControlItem();
+            this.behaviorManager1 = new DevExpress.Utils.Behaviors.BehaviorManager(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.layoutControl1)).BeginInit();
             this.layoutControl1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.xtraTabControl1)).BeginInit();
@@ -366,6 +446,47 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem33)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.emptySpaceItem5)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem34)).BeginInit();
+            this.xtraTabPage5.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.groupControl9)).BeginInit();
+            this.groupControl9.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.bindingNavigator6)).BeginInit();
+            this.bindingNavigator6.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControl11)).BeginInit();
+            this.layoutControl11.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.txt_autre_affreter.Properties)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.cmbaffreter.Properties)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlGroup12)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem53)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem49)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.groupControl8)).BeginInit();
+            this.groupControl8.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.bindingNavigator5)).BeginInit();
+            this.bindingNavigator5.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControl10)).BeginInit();
+            this.layoutControl10.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.txt_obs.Properties)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlGroup11)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem51)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.groupControl7)).BeginInit();
+            this.groupControl7.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.bindingNavigator4)).BeginInit();
+            this.bindingNavigator4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControl9)).BeginInit();
+            this.layoutControl9.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.cmbtransitaire.Properties)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txt_autre_transitaire.Properties)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlGroup10)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem54)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem50)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.groupControl6)).BeginInit();
+            this.groupControl6.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.bindingNavigator3)).BeginInit();
+            this.bindingNavigator3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControl8)).BeginInit();
+            this.layoutControl8.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.cmbcompagnie.Properties)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlGroup9)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem48)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Root)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem6)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.fDEVISEBindingSource)).BeginInit();
@@ -377,6 +498,8 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             this.layoutControl3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlGroup4)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem47)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.behaviorManager1)).BeginInit();
             this.SuspendLayout();
             // 
             // layoutControl1
@@ -404,7 +527,8 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             this.xtraTabPage1,
             this.xtraTabPage2,
             this.xtraTabPage4,
-            this.xtraTabPage3});
+            this.xtraTabPage3,
+            this.xtraTabPage5});
             this.xtraTabControl1.Selected += new DevExpress.XtraTab.TabPageEventHandler(this.xtraTabControl1_Selected);
             // 
             // xtraTabPage1
@@ -860,7 +984,8 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             "40FT",
             "20FT",
             "groupage maritime ",
-            "groupage aérien"});
+            "groupage aérien",
+            "Express"});
             this.cmb_type.Properties.TextEditStyle = DevExpress.XtraEditors.Controls.TextEditStyles.DisableTextEditor;
             this.cmb_type.Size = new System.Drawing.Size(206, 22);
             this.cmb_type.TabIndex = 0;
@@ -1391,7 +1516,6 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             this.simpleButton2.TabIndex = 19;
             this.simpleButton2.Text = "Rafraichir les données";
             this.simpleButton2.Visible = false;
-            this.simpleButton2.Click += new System.EventHandler(this.simpleButton2_Click);
             // 
             // txtCours
             // 
@@ -2348,6 +2472,828 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             this.layoutControlItem34.TextSize = new System.Drawing.Size(0, 0);
             this.layoutControlItem34.TextVisible = false;
             // 
+            // xtraTabPage5
+            // 
+            this.xtraTabPage5.Controls.Add(this.simpleButton6);
+            this.xtraTabPage5.Controls.Add(this.groupControl9);
+            this.xtraTabPage5.Controls.Add(this.groupControl8);
+            this.xtraTabPage5.Controls.Add(this.groupControl7);
+            this.xtraTabPage5.Controls.Add(this.groupControl6);
+            this.xtraTabPage5.Name = "xtraTabPage5";
+            this.xtraTabPage5.Size = new System.Drawing.Size(1348, 870);
+            this.xtraTabPage5.Text = "Compagnie maritime et Transitaire et Observation";
+            // 
+            // simpleButton6
+            // 
+            this.simpleButton6.Location = new System.Drawing.Point(809, 318);
+            this.simpleButton6.Name = "simpleButton6";
+            this.simpleButton6.Size = new System.Drawing.Size(94, 29);
+            this.simpleButton6.TabIndex = 12;
+            this.simpleButton6.Text = "Enregistrer";
+            this.simpleButton6.Click += new System.EventHandler(this.simpleButton6_Click);
+            // 
+            // groupControl9
+            // 
+            this.groupControl9.Controls.Add(this.bindingNavigator6);
+            this.groupControl9.Controls.Add(this.layoutControl11);
+            this.groupControl9.Location = new System.Drawing.Point(619, 14);
+            this.groupControl9.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
+            this.groupControl9.Name = "groupControl9";
+            this.groupControl9.Size = new System.Drawing.Size(284, 105);
+            this.groupControl9.TabIndex = 11;
+            this.groupControl9.Text = "AFFRETER";
+            // 
+            // bindingNavigator6
+            // 
+            this.bindingNavigator6.AddNewItem = null;
+            this.bindingNavigator6.AutoSize = false;
+            this.bindingNavigator6.CountItem = this.toolStripLabel5;
+            this.bindingNavigator6.DeleteItem = null;
+            this.bindingNavigator6.Dock = System.Windows.Forms.DockStyle.None;
+            this.bindingNavigator6.Enabled = false;
+            this.bindingNavigator6.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.bindingNavigator6.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripButton30,
+            this.toolStripButton31,
+            this.toolStripSeparator13,
+            this.toolStripTextBox5,
+            this.toolStripLabel5,
+            this.toolStripSeparator14,
+            this.toolStripButton32,
+            this.toolStripButton33,
+            this.toolStripSeparator15,
+            this.toolStripButton34,
+            this.toolStripButton35,
+            this.toolStripButton36});
+            this.bindingNavigator6.Location = new System.Drawing.Point(1288, 62);
+            this.bindingNavigator6.MoveFirstItem = this.toolStripButton30;
+            this.bindingNavigator6.MoveLastItem = this.toolStripButton33;
+            this.bindingNavigator6.MoveNextItem = this.toolStripButton32;
+            this.bindingNavigator6.MovePreviousItem = this.toolStripButton31;
+            this.bindingNavigator6.Name = "bindingNavigator6";
+            this.bindingNavigator6.PositionItem = this.toolStripTextBox5;
+            this.bindingNavigator6.Size = new System.Drawing.Size(10, 37);
+            this.bindingNavigator6.TabIndex = 10;
+            this.bindingNavigator6.Text = "bindingNavigator6";
+            this.bindingNavigator6.Visible = false;
+            // 
+            // toolStripLabel5
+            // 
+            this.toolStripLabel5.Name = "toolStripLabel5";
+            this.toolStripLabel5.Size = new System.Drawing.Size(48, 20);
+            this.toolStripLabel5.Text = "de {0}";
+            this.toolStripLabel5.ToolTipText = "Nombre total d\'éléments";
+            // 
+            // toolStripButton30
+            // 
+            this.toolStripButton30.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton30.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton30.Image")));
+            this.toolStripButton30.Name = "toolStripButton30";
+            this.toolStripButton30.RightToLeftAutoMirrorImage = true;
+            this.toolStripButton30.Size = new System.Drawing.Size(29, 24);
+            this.toolStripButton30.Text = "Placer en premier";
+            // 
+            // toolStripButton31
+            // 
+            this.toolStripButton31.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton31.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton31.Image")));
+            this.toolStripButton31.Name = "toolStripButton31";
+            this.toolStripButton31.RightToLeftAutoMirrorImage = true;
+            this.toolStripButton31.Size = new System.Drawing.Size(29, 24);
+            this.toolStripButton31.Text = "Déplacer vers le haut";
+            // 
+            // toolStripSeparator13
+            // 
+            this.toolStripSeparator13.Name = "toolStripSeparator13";
+            this.toolStripSeparator13.Size = new System.Drawing.Size(6, 37);
+            // 
+            // toolStripTextBox5
+            // 
+            this.toolStripTextBox5.AccessibleName = "Position";
+            this.toolStripTextBox5.AutoSize = false;
+            this.toolStripTextBox5.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.toolStripTextBox5.Name = "toolStripTextBox5";
+            this.toolStripTextBox5.Size = new System.Drawing.Size(50, 27);
+            this.toolStripTextBox5.Text = "0";
+            this.toolStripTextBox5.ToolTipText = "Position actuelle";
+            // 
+            // toolStripSeparator14
+            // 
+            this.toolStripSeparator14.Name = "toolStripSeparator14";
+            this.toolStripSeparator14.Size = new System.Drawing.Size(6, 37);
+            // 
+            // toolStripButton32
+            // 
+            this.toolStripButton32.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton32.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton32.Image")));
+            this.toolStripButton32.Name = "toolStripButton32";
+            this.toolStripButton32.RightToLeftAutoMirrorImage = true;
+            this.toolStripButton32.Size = new System.Drawing.Size(29, 24);
+            this.toolStripButton32.Text = "Déplacer vers le bas";
+            // 
+            // toolStripButton33
+            // 
+            this.toolStripButton33.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton33.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton33.Image")));
+            this.toolStripButton33.Name = "toolStripButton33";
+            this.toolStripButton33.RightToLeftAutoMirrorImage = true;
+            this.toolStripButton33.Size = new System.Drawing.Size(29, 24);
+            this.toolStripButton33.Text = "Placer en dernier";
+            // 
+            // toolStripSeparator15
+            // 
+            this.toolStripSeparator15.Name = "toolStripSeparator15";
+            this.toolStripSeparator15.Size = new System.Drawing.Size(6, 37);
+            // 
+            // toolStripButton34
+            // 
+            this.toolStripButton34.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton34.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton34.Image")));
+            this.toolStripButton34.Name = "toolStripButton34";
+            this.toolStripButton34.RightToLeftAutoMirrorImage = true;
+            this.toolStripButton34.Size = new System.Drawing.Size(29, 24);
+            this.toolStripButton34.Text = "Ajouter nouveau";
+            // 
+            // toolStripButton35
+            // 
+            this.toolStripButton35.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton35.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton35.Image")));
+            this.toolStripButton35.Name = "toolStripButton35";
+            this.toolStripButton35.RightToLeftAutoMirrorImage = true;
+            this.toolStripButton35.Size = new System.Drawing.Size(29, 24);
+            this.toolStripButton35.Text = "Supprimer";
+            // 
+            // toolStripButton36
+            // 
+            this.toolStripButton36.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton36.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton36.Image")));
+            this.toolStripButton36.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton36.Name = "toolStripButton36";
+            this.toolStripButton36.Size = new System.Drawing.Size(29, 24);
+            this.toolStripButton36.Text = "toolStripButton1";
+            // 
+            // layoutControl11
+            // 
+            this.layoutControl11.Controls.Add(this.txt_autre_affreter);
+            this.layoutControl11.Controls.Add(this.cmbaffreter);
+            this.layoutControl11.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.layoutControl11.Location = new System.Drawing.Point(2, 28);
+            this.layoutControl11.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
+            this.layoutControl11.Name = "layoutControl11";
+            this.layoutControl11.OptionsCustomizationForm.DesignTimeCustomizationFormPositionAndSize = new System.Drawing.Rectangle(779, 520, 812, 500);
+            this.layoutControl11.Root = this.layoutControlGroup12;
+            this.layoutControl11.Size = new System.Drawing.Size(280, 75);
+            this.layoutControl11.TabIndex = 0;
+            this.layoutControl11.Text = "layoutControl11";
+            // 
+            // txt_autre_affreter
+            // 
+            this.txt_autre_affreter.Location = new System.Drawing.Point(68, 38);
+            this.txt_autre_affreter.Name = "txt_autre_affreter";
+            this.txt_autre_affreter.Properties.ReadOnly = true;
+            this.txt_autre_affreter.Size = new System.Drawing.Size(200, 22);
+            this.txt_autre_affreter.StyleController = this.layoutControl11;
+            this.txt_autre_affreter.TabIndex = 4;
+            // 
+            // cmbaffreter
+            // 
+            this.cmbaffreter.Location = new System.Drawing.Point(68, 12);
+            this.cmbaffreter.Name = "cmbaffreter";
+            this.cmbaffreter.Properties.Appearance.Font = new System.Drawing.Font("Verdana", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cmbaffreter.Properties.Appearance.Options.UseFont = true;
+            this.cmbaffreter.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.cmbaffreter.Properties.Items.AddRange(new object[] {
+            "SIFA",
+            "PEVA",
+            "AGL",
+            "Autres à préciser"});
+            this.cmbaffreter.Properties.TextEditStyle = DevExpress.XtraEditors.Controls.TextEditStyles.DisableTextEditor;
+            this.cmbaffreter.Size = new System.Drawing.Size(200, 22);
+            this.cmbaffreter.StyleController = this.layoutControl11;
+            this.cmbaffreter.TabIndex = 5;
+            this.cmbaffreter.SelectedIndexChanged += new System.EventHandler(this.cmbaffreter_SelectedIndexChanged);
+            // 
+            // layoutControlGroup12
+            // 
+            this.layoutControlGroup12.EnableIndentsWithoutBorders = DevExpress.Utils.DefaultBoolean.True;
+            this.layoutControlGroup12.GroupBordersVisible = false;
+            this.layoutControlGroup12.Items.AddRange(new DevExpress.XtraLayout.BaseLayoutItem[] {
+            this.layoutControlItem53,
+            this.layoutControlItem49});
+            this.layoutControlGroup12.Name = "Root";
+            this.layoutControlGroup12.Size = new System.Drawing.Size(280, 75);
+            this.layoutControlGroup12.TextVisible = false;
+            // 
+            // layoutControlItem53
+            // 
+            this.layoutControlItem53.Control = this.txt_autre_affreter;
+            this.layoutControlItem53.ControlAlignment = System.Drawing.ContentAlignment.TopLeft;
+            this.layoutControlItem53.CustomizationFormText = " ";
+            this.layoutControlItem53.Location = new System.Drawing.Point(0, 26);
+            this.layoutControlItem53.Name = "layoutControlItem47";
+            this.layoutControlItem53.Size = new System.Drawing.Size(260, 29);
+            this.layoutControlItem53.Text = "Autres";
+            this.layoutControlItem53.TextSize = new System.Drawing.Size(44, 16);
+            // 
+            // layoutControlItem49
+            // 
+            this.layoutControlItem49.Control = this.cmbaffreter;
+            this.layoutControlItem49.ControlAlignment = System.Drawing.ContentAlignment.TopLeft;
+            this.layoutControlItem49.CustomizationFormText = "Transitaire";
+            this.layoutControlItem49.Location = new System.Drawing.Point(0, 0);
+            this.layoutControlItem49.Name = "layoutControlItem49";
+            this.layoutControlItem49.Size = new System.Drawing.Size(260, 26);
+            this.layoutControlItem49.Text = "Affreter";
+            this.layoutControlItem49.TextSize = new System.Drawing.Size(44, 16);
+            // 
+            // groupControl8
+            // 
+            this.groupControl8.Controls.Add(this.bindingNavigator5);
+            this.groupControl8.Controls.Add(this.layoutControl10);
+            this.groupControl8.Location = new System.Drawing.Point(13, 123);
+            this.groupControl8.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
+            this.groupControl8.Name = "groupControl8";
+            this.groupControl8.Size = new System.Drawing.Size(890, 190);
+            this.groupControl8.TabIndex = 8;
+            this.groupControl8.Text = "OBSERVATION";
+            // 
+            // bindingNavigator5
+            // 
+            this.bindingNavigator5.AddNewItem = null;
+            this.bindingNavigator5.AutoSize = false;
+            this.bindingNavigator5.CountItem = this.toolStripLabel4;
+            this.bindingNavigator5.DeleteItem = null;
+            this.bindingNavigator5.Dock = System.Windows.Forms.DockStyle.None;
+            this.bindingNavigator5.Enabled = false;
+            this.bindingNavigator5.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.bindingNavigator5.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripButton23,
+            this.toolStripButton24,
+            this.toolStripSeparator10,
+            this.toolStripTextBox4,
+            this.toolStripLabel4,
+            this.toolStripSeparator11,
+            this.toolStripButton25,
+            this.toolStripButton26,
+            this.toolStripSeparator12,
+            this.toolStripButton27,
+            this.toolStripButton28,
+            this.toolStripButton29});
+            this.bindingNavigator5.Location = new System.Drawing.Point(1288, 62);
+            this.bindingNavigator5.MoveFirstItem = this.toolStripButton23;
+            this.bindingNavigator5.MoveLastItem = this.toolStripButton26;
+            this.bindingNavigator5.MoveNextItem = this.toolStripButton25;
+            this.bindingNavigator5.MovePreviousItem = this.toolStripButton24;
+            this.bindingNavigator5.Name = "bindingNavigator5";
+            this.bindingNavigator5.PositionItem = this.toolStripTextBox4;
+            this.bindingNavigator5.Size = new System.Drawing.Size(10, 37);
+            this.bindingNavigator5.TabIndex = 10;
+            this.bindingNavigator5.Text = "bindingNavigator5";
+            this.bindingNavigator5.Visible = false;
+            // 
+            // toolStripLabel4
+            // 
+            this.toolStripLabel4.Name = "toolStripLabel4";
+            this.toolStripLabel4.Size = new System.Drawing.Size(48, 20);
+            this.toolStripLabel4.Text = "de {0}";
+            this.toolStripLabel4.ToolTipText = "Nombre total d\'éléments";
+            // 
+            // toolStripButton23
+            // 
+            this.toolStripButton23.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton23.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton23.Image")));
+            this.toolStripButton23.Name = "toolStripButton23";
+            this.toolStripButton23.RightToLeftAutoMirrorImage = true;
+            this.toolStripButton23.Size = new System.Drawing.Size(29, 24);
+            this.toolStripButton23.Text = "Placer en premier";
+            // 
+            // toolStripButton24
+            // 
+            this.toolStripButton24.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton24.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton24.Image")));
+            this.toolStripButton24.Name = "toolStripButton24";
+            this.toolStripButton24.RightToLeftAutoMirrorImage = true;
+            this.toolStripButton24.Size = new System.Drawing.Size(29, 24);
+            this.toolStripButton24.Text = "Déplacer vers le haut";
+            // 
+            // toolStripSeparator10
+            // 
+            this.toolStripSeparator10.Name = "toolStripSeparator10";
+            this.toolStripSeparator10.Size = new System.Drawing.Size(6, 37);
+            // 
+            // toolStripTextBox4
+            // 
+            this.toolStripTextBox4.AccessibleName = "Position";
+            this.toolStripTextBox4.AutoSize = false;
+            this.toolStripTextBox4.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.toolStripTextBox4.Name = "toolStripTextBox4";
+            this.toolStripTextBox4.Size = new System.Drawing.Size(50, 27);
+            this.toolStripTextBox4.Text = "0";
+            this.toolStripTextBox4.ToolTipText = "Position actuelle";
+            // 
+            // toolStripSeparator11
+            // 
+            this.toolStripSeparator11.Name = "toolStripSeparator11";
+            this.toolStripSeparator11.Size = new System.Drawing.Size(6, 37);
+            // 
+            // toolStripButton25
+            // 
+            this.toolStripButton25.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton25.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton25.Image")));
+            this.toolStripButton25.Name = "toolStripButton25";
+            this.toolStripButton25.RightToLeftAutoMirrorImage = true;
+            this.toolStripButton25.Size = new System.Drawing.Size(29, 24);
+            this.toolStripButton25.Text = "Déplacer vers le bas";
+            // 
+            // toolStripButton26
+            // 
+            this.toolStripButton26.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton26.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton26.Image")));
+            this.toolStripButton26.Name = "toolStripButton26";
+            this.toolStripButton26.RightToLeftAutoMirrorImage = true;
+            this.toolStripButton26.Size = new System.Drawing.Size(29, 24);
+            this.toolStripButton26.Text = "Placer en dernier";
+            // 
+            // toolStripSeparator12
+            // 
+            this.toolStripSeparator12.Name = "toolStripSeparator12";
+            this.toolStripSeparator12.Size = new System.Drawing.Size(6, 37);
+            // 
+            // toolStripButton27
+            // 
+            this.toolStripButton27.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton27.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton27.Image")));
+            this.toolStripButton27.Name = "toolStripButton27";
+            this.toolStripButton27.RightToLeftAutoMirrorImage = true;
+            this.toolStripButton27.Size = new System.Drawing.Size(29, 24);
+            this.toolStripButton27.Text = "Ajouter nouveau";
+            // 
+            // toolStripButton28
+            // 
+            this.toolStripButton28.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton28.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton28.Image")));
+            this.toolStripButton28.Name = "toolStripButton28";
+            this.toolStripButton28.RightToLeftAutoMirrorImage = true;
+            this.toolStripButton28.Size = new System.Drawing.Size(29, 24);
+            this.toolStripButton28.Text = "Supprimer";
+            // 
+            // toolStripButton29
+            // 
+            this.toolStripButton29.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton29.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton29.Image")));
+            this.toolStripButton29.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton29.Name = "toolStripButton29";
+            this.toolStripButton29.Size = new System.Drawing.Size(29, 24);
+            this.toolStripButton29.Text = "toolStripButton1";
+            // 
+            // layoutControl10
+            // 
+            this.layoutControl10.Controls.Add(this.txt_obs);
+            this.layoutControl10.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.layoutControl10.Location = new System.Drawing.Point(2, 28);
+            this.layoutControl10.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
+            this.layoutControl10.Name = "layoutControl10";
+            this.layoutControl10.OptionsCustomizationForm.DesignTimeCustomizationFormPositionAndSize = new System.Drawing.Rectangle(779, 520, 812, 500);
+            this.layoutControl10.Root = this.layoutControlGroup11;
+            this.layoutControl10.Size = new System.Drawing.Size(886, 160);
+            this.layoutControl10.TabIndex = 0;
+            this.layoutControl10.Text = "layoutControl10";
+            // 
+            // txt_obs
+            // 
+            this.txt_obs.Location = new System.Drawing.Point(28, 12);
+            this.txt_obs.MenuManager = this.ribbonControl1;
+            this.txt_obs.Name = "txt_obs";
+            this.txt_obs.Size = new System.Drawing.Size(846, 136);
+            this.txt_obs.StyleController = this.layoutControl10;
+            this.txt_obs.TabIndex = 4;
+            // 
+            // layoutControlGroup11
+            // 
+            this.layoutControlGroup11.EnableIndentsWithoutBorders = DevExpress.Utils.DefaultBoolean.True;
+            this.layoutControlGroup11.GroupBordersVisible = false;
+            this.layoutControlGroup11.Items.AddRange(new DevExpress.XtraLayout.BaseLayoutItem[] {
+            this.layoutControlItem51});
+            this.layoutControlGroup11.Name = "Root";
+            this.layoutControlGroup11.Size = new System.Drawing.Size(886, 160);
+            this.layoutControlGroup11.TextVisible = false;
+            // 
+            // layoutControlItem51
+            // 
+            this.layoutControlItem51.Control = this.txt_obs;
+            this.layoutControlItem51.Location = new System.Drawing.Point(0, 0);
+            this.layoutControlItem51.Name = "layoutControlItem51";
+            this.layoutControlItem51.Size = new System.Drawing.Size(866, 140);
+            this.layoutControlItem51.Text = " ";
+            this.layoutControlItem51.TextSize = new System.Drawing.Size(4, 16);
+            // 
+            // groupControl7
+            // 
+            this.groupControl7.Controls.Add(this.bindingNavigator4);
+            this.groupControl7.Controls.Add(this.layoutControl9);
+            this.groupControl7.Location = new System.Drawing.Point(318, 14);
+            this.groupControl7.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
+            this.groupControl7.Name = "groupControl7";
+            this.groupControl7.Size = new System.Drawing.Size(284, 105);
+            this.groupControl7.TabIndex = 7;
+            this.groupControl7.Text = "TRANSITAIRE";
+            // 
+            // bindingNavigator4
+            // 
+            this.bindingNavigator4.AddNewItem = null;
+            this.bindingNavigator4.AutoSize = false;
+            this.bindingNavigator4.CountItem = this.toolStripLabel3;
+            this.bindingNavigator4.DeleteItem = null;
+            this.bindingNavigator4.Dock = System.Windows.Forms.DockStyle.None;
+            this.bindingNavigator4.Enabled = false;
+            this.bindingNavigator4.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.bindingNavigator4.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripButton16,
+            this.toolStripButton17,
+            this.toolStripSeparator7,
+            this.toolStripTextBox3,
+            this.toolStripLabel3,
+            this.toolStripSeparator8,
+            this.toolStripButton18,
+            this.toolStripButton19,
+            this.toolStripSeparator9,
+            this.toolStripButton20,
+            this.toolStripButton21,
+            this.toolStripButton22});
+            this.bindingNavigator4.Location = new System.Drawing.Point(1288, 62);
+            this.bindingNavigator4.MoveFirstItem = this.toolStripButton16;
+            this.bindingNavigator4.MoveLastItem = this.toolStripButton19;
+            this.bindingNavigator4.MoveNextItem = this.toolStripButton18;
+            this.bindingNavigator4.MovePreviousItem = this.toolStripButton17;
+            this.bindingNavigator4.Name = "bindingNavigator4";
+            this.bindingNavigator4.PositionItem = this.toolStripTextBox3;
+            this.bindingNavigator4.Size = new System.Drawing.Size(10, 37);
+            this.bindingNavigator4.TabIndex = 10;
+            this.bindingNavigator4.Text = "bindingNavigator4";
+            this.bindingNavigator4.Visible = false;
+            // 
+            // toolStripLabel3
+            // 
+            this.toolStripLabel3.Name = "toolStripLabel3";
+            this.toolStripLabel3.Size = new System.Drawing.Size(48, 20);
+            this.toolStripLabel3.Text = "de {0}";
+            this.toolStripLabel3.ToolTipText = "Nombre total d\'éléments";
+            // 
+            // toolStripButton16
+            // 
+            this.toolStripButton16.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton16.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton16.Image")));
+            this.toolStripButton16.Name = "toolStripButton16";
+            this.toolStripButton16.RightToLeftAutoMirrorImage = true;
+            this.toolStripButton16.Size = new System.Drawing.Size(29, 24);
+            this.toolStripButton16.Text = "Placer en premier";
+            // 
+            // toolStripButton17
+            // 
+            this.toolStripButton17.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton17.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton17.Image")));
+            this.toolStripButton17.Name = "toolStripButton17";
+            this.toolStripButton17.RightToLeftAutoMirrorImage = true;
+            this.toolStripButton17.Size = new System.Drawing.Size(29, 24);
+            this.toolStripButton17.Text = "Déplacer vers le haut";
+            // 
+            // toolStripSeparator7
+            // 
+            this.toolStripSeparator7.Name = "toolStripSeparator7";
+            this.toolStripSeparator7.Size = new System.Drawing.Size(6, 37);
+            // 
+            // toolStripTextBox3
+            // 
+            this.toolStripTextBox3.AccessibleName = "Position";
+            this.toolStripTextBox3.AutoSize = false;
+            this.toolStripTextBox3.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.toolStripTextBox3.Name = "toolStripTextBox3";
+            this.toolStripTextBox3.Size = new System.Drawing.Size(50, 27);
+            this.toolStripTextBox3.Text = "0";
+            this.toolStripTextBox3.ToolTipText = "Position actuelle";
+            // 
+            // toolStripSeparator8
+            // 
+            this.toolStripSeparator8.Name = "toolStripSeparator8";
+            this.toolStripSeparator8.Size = new System.Drawing.Size(6, 37);
+            // 
+            // toolStripButton18
+            // 
+            this.toolStripButton18.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton18.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton18.Image")));
+            this.toolStripButton18.Name = "toolStripButton18";
+            this.toolStripButton18.RightToLeftAutoMirrorImage = true;
+            this.toolStripButton18.Size = new System.Drawing.Size(29, 24);
+            this.toolStripButton18.Text = "Déplacer vers le bas";
+            // 
+            // toolStripButton19
+            // 
+            this.toolStripButton19.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton19.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton19.Image")));
+            this.toolStripButton19.Name = "toolStripButton19";
+            this.toolStripButton19.RightToLeftAutoMirrorImage = true;
+            this.toolStripButton19.Size = new System.Drawing.Size(29, 24);
+            this.toolStripButton19.Text = "Placer en dernier";
+            // 
+            // toolStripSeparator9
+            // 
+            this.toolStripSeparator9.Name = "toolStripSeparator9";
+            this.toolStripSeparator9.Size = new System.Drawing.Size(6, 37);
+            // 
+            // toolStripButton20
+            // 
+            this.toolStripButton20.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton20.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton20.Image")));
+            this.toolStripButton20.Name = "toolStripButton20";
+            this.toolStripButton20.RightToLeftAutoMirrorImage = true;
+            this.toolStripButton20.Size = new System.Drawing.Size(29, 24);
+            this.toolStripButton20.Text = "Ajouter nouveau";
+            // 
+            // toolStripButton21
+            // 
+            this.toolStripButton21.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton21.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton21.Image")));
+            this.toolStripButton21.Name = "toolStripButton21";
+            this.toolStripButton21.RightToLeftAutoMirrorImage = true;
+            this.toolStripButton21.Size = new System.Drawing.Size(29, 24);
+            this.toolStripButton21.Text = "Supprimer";
+            // 
+            // toolStripButton22
+            // 
+            this.toolStripButton22.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton22.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton22.Image")));
+            this.toolStripButton22.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton22.Name = "toolStripButton22";
+            this.toolStripButton22.Size = new System.Drawing.Size(29, 24);
+            this.toolStripButton22.Text = "toolStripButton1";
+            // 
+            // layoutControl9
+            // 
+            this.layoutControl9.Controls.Add(this.cmbtransitaire);
+            this.layoutControl9.Controls.Add(this.txt_autre_transitaire);
+            this.layoutControl9.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.layoutControl9.Location = new System.Drawing.Point(2, 28);
+            this.layoutControl9.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
+            this.layoutControl9.Name = "layoutControl9";
+            this.layoutControl9.OptionsCustomizationForm.DesignTimeCustomizationFormPositionAndSize = new System.Drawing.Rectangle(779, 520, 812, 500);
+            this.layoutControl9.Root = this.layoutControlGroup10;
+            this.layoutControl9.Size = new System.Drawing.Size(280, 75);
+            this.layoutControl9.TabIndex = 0;
+            this.layoutControl9.Text = "layoutControl9";
+            // 
+            // cmbtransitaire
+            // 
+            this.cmbtransitaire.Location = new System.Drawing.Point(86, 12);
+            this.cmbtransitaire.MenuManager = this.ribbonControl1;
+            this.cmbtransitaire.Name = "cmbtransitaire";
+            this.cmbtransitaire.Properties.Appearance.Font = new System.Drawing.Font("Verdana", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cmbtransitaire.Properties.Appearance.Options.UseFont = true;
+            this.cmbtransitaire.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.cmbtransitaire.Properties.Items.AddRange(new object[] {
+            "AGL",
+            "DGF",
+            "DHL Express",
+            "Autres à préciser"});
+            this.cmbtransitaire.Properties.TextEditStyle = DevExpress.XtraEditors.Controls.TextEditStyles.DisableTextEditor;
+            this.cmbtransitaire.Size = new System.Drawing.Size(182, 22);
+            this.cmbtransitaire.StyleController = this.layoutControl9;
+            this.cmbtransitaire.TabIndex = 5;
+            this.cmbtransitaire.SelectedIndexChanged += new System.EventHandler(this.cmbtransitaire_SelectedIndexChanged);
+            // 
+            // txt_autre_transitaire
+            // 
+            this.txt_autre_transitaire.Location = new System.Drawing.Point(86, 38);
+            this.txt_autre_transitaire.Name = "txt_autre_transitaire";
+            this.txt_autre_transitaire.Properties.ReadOnly = true;
+            this.txt_autre_transitaire.Size = new System.Drawing.Size(182, 22);
+            this.txt_autre_transitaire.StyleController = this.layoutControl9;
+            this.txt_autre_transitaire.TabIndex = 4;
+            // 
+            // layoutControlGroup10
+            // 
+            this.layoutControlGroup10.EnableIndentsWithoutBorders = DevExpress.Utils.DefaultBoolean.True;
+            this.layoutControlGroup10.GroupBordersVisible = false;
+            this.layoutControlGroup10.Items.AddRange(new DevExpress.XtraLayout.BaseLayoutItem[] {
+            this.layoutControlItem54,
+            this.layoutControlItem50});
+            this.layoutControlGroup10.Name = "Root";
+            this.layoutControlGroup10.Size = new System.Drawing.Size(280, 75);
+            this.layoutControlGroup10.TextVisible = false;
+            // 
+            // layoutControlItem54
+            // 
+            this.layoutControlItem54.Control = this.cmbtransitaire;
+            this.layoutControlItem54.Location = new System.Drawing.Point(0, 0);
+            this.layoutControlItem54.Name = "layoutControlItem54";
+            this.layoutControlItem54.Size = new System.Drawing.Size(260, 26);
+            this.layoutControlItem54.Text = "Transitaire";
+            this.layoutControlItem54.TextSize = new System.Drawing.Size(62, 16);
+            // 
+            // layoutControlItem50
+            // 
+            this.layoutControlItem50.Control = this.txt_autre_transitaire;
+            this.layoutControlItem50.ControlAlignment = System.Drawing.ContentAlignment.TopLeft;
+            this.layoutControlItem50.CustomizationFormText = " ";
+            this.layoutControlItem50.Location = new System.Drawing.Point(0, 26);
+            this.layoutControlItem50.Name = "layoutControlItem50";
+            this.layoutControlItem50.Size = new System.Drawing.Size(260, 29);
+            this.layoutControlItem50.Text = "Autres";
+            this.layoutControlItem50.TextSize = new System.Drawing.Size(62, 16);
+            // 
+            // groupControl6
+            // 
+            this.groupControl6.Controls.Add(this.bindingNavigator3);
+            this.groupControl6.Controls.Add(this.layoutControl8);
+            this.groupControl6.Location = new System.Drawing.Point(15, 14);
+            this.groupControl6.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
+            this.groupControl6.Name = "groupControl6";
+            this.groupControl6.Size = new System.Drawing.Size(284, 105);
+            this.groupControl6.TabIndex = 6;
+            this.groupControl6.Text = "COMPAGNIE MARITIME";
+            // 
+            // bindingNavigator3
+            // 
+            this.bindingNavigator3.AddNewItem = null;
+            this.bindingNavigator3.AutoSize = false;
+            this.bindingNavigator3.CountItem = this.toolStripLabel2;
+            this.bindingNavigator3.DeleteItem = null;
+            this.bindingNavigator3.Dock = System.Windows.Forms.DockStyle.None;
+            this.bindingNavigator3.Enabled = false;
+            this.bindingNavigator3.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.bindingNavigator3.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripButton9,
+            this.toolStripButton10,
+            this.toolStripSeparator4,
+            this.toolStripTextBox2,
+            this.toolStripLabel2,
+            this.toolStripSeparator5,
+            this.toolStripButton11,
+            this.toolStripButton12,
+            this.toolStripSeparator6,
+            this.toolStripButton13,
+            this.toolStripButton14,
+            this.toolStripButton15});
+            this.bindingNavigator3.Location = new System.Drawing.Point(1288, 62);
+            this.bindingNavigator3.MoveFirstItem = this.toolStripButton9;
+            this.bindingNavigator3.MoveLastItem = this.toolStripButton12;
+            this.bindingNavigator3.MoveNextItem = this.toolStripButton11;
+            this.bindingNavigator3.MovePreviousItem = this.toolStripButton10;
+            this.bindingNavigator3.Name = "bindingNavigator3";
+            this.bindingNavigator3.PositionItem = this.toolStripTextBox2;
+            this.bindingNavigator3.Size = new System.Drawing.Size(10, 37);
+            this.bindingNavigator3.TabIndex = 10;
+            this.bindingNavigator3.Text = "bindingNavigator3";
+            this.bindingNavigator3.Visible = false;
+            // 
+            // toolStripLabel2
+            // 
+            this.toolStripLabel2.Name = "toolStripLabel2";
+            this.toolStripLabel2.Size = new System.Drawing.Size(48, 20);
+            this.toolStripLabel2.Text = "de {0}";
+            this.toolStripLabel2.ToolTipText = "Nombre total d\'éléments";
+            // 
+            // toolStripButton9
+            // 
+            this.toolStripButton9.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton9.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton9.Image")));
+            this.toolStripButton9.Name = "toolStripButton9";
+            this.toolStripButton9.RightToLeftAutoMirrorImage = true;
+            this.toolStripButton9.Size = new System.Drawing.Size(29, 24);
+            this.toolStripButton9.Text = "Placer en premier";
+            // 
+            // toolStripButton10
+            // 
+            this.toolStripButton10.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton10.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton10.Image")));
+            this.toolStripButton10.Name = "toolStripButton10";
+            this.toolStripButton10.RightToLeftAutoMirrorImage = true;
+            this.toolStripButton10.Size = new System.Drawing.Size(29, 24);
+            this.toolStripButton10.Text = "Déplacer vers le haut";
+            // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(6, 37);
+            // 
+            // toolStripTextBox2
+            // 
+            this.toolStripTextBox2.AccessibleName = "Position";
+            this.toolStripTextBox2.AutoSize = false;
+            this.toolStripTextBox2.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.toolStripTextBox2.Name = "toolStripTextBox2";
+            this.toolStripTextBox2.Size = new System.Drawing.Size(50, 27);
+            this.toolStripTextBox2.Text = "0";
+            this.toolStripTextBox2.ToolTipText = "Position actuelle";
+            // 
+            // toolStripSeparator5
+            // 
+            this.toolStripSeparator5.Name = "toolStripSeparator5";
+            this.toolStripSeparator5.Size = new System.Drawing.Size(6, 37);
+            // 
+            // toolStripButton11
+            // 
+            this.toolStripButton11.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton11.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton11.Image")));
+            this.toolStripButton11.Name = "toolStripButton11";
+            this.toolStripButton11.RightToLeftAutoMirrorImage = true;
+            this.toolStripButton11.Size = new System.Drawing.Size(29, 24);
+            this.toolStripButton11.Text = "Déplacer vers le bas";
+            // 
+            // toolStripButton12
+            // 
+            this.toolStripButton12.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton12.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton12.Image")));
+            this.toolStripButton12.Name = "toolStripButton12";
+            this.toolStripButton12.RightToLeftAutoMirrorImage = true;
+            this.toolStripButton12.Size = new System.Drawing.Size(29, 24);
+            this.toolStripButton12.Text = "Placer en dernier";
+            // 
+            // toolStripSeparator6
+            // 
+            this.toolStripSeparator6.Name = "toolStripSeparator6";
+            this.toolStripSeparator6.Size = new System.Drawing.Size(6, 37);
+            // 
+            // toolStripButton13
+            // 
+            this.toolStripButton13.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton13.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton13.Image")));
+            this.toolStripButton13.Name = "toolStripButton13";
+            this.toolStripButton13.RightToLeftAutoMirrorImage = true;
+            this.toolStripButton13.Size = new System.Drawing.Size(29, 24);
+            this.toolStripButton13.Text = "Ajouter nouveau";
+            // 
+            // toolStripButton14
+            // 
+            this.toolStripButton14.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton14.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton14.Image")));
+            this.toolStripButton14.Name = "toolStripButton14";
+            this.toolStripButton14.RightToLeftAutoMirrorImage = true;
+            this.toolStripButton14.Size = new System.Drawing.Size(29, 24);
+            this.toolStripButton14.Text = "Supprimer";
+            // 
+            // toolStripButton15
+            // 
+            this.toolStripButton15.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton15.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton15.Image")));
+            this.toolStripButton15.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton15.Name = "toolStripButton15";
+            this.toolStripButton15.Size = new System.Drawing.Size(29, 24);
+            this.toolStripButton15.Text = "toolStripButton1";
+            // 
+            // layoutControl8
+            // 
+            this.layoutControl8.Controls.Add(this.cmbcompagnie);
+            this.layoutControl8.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.layoutControl8.Location = new System.Drawing.Point(2, 28);
+            this.layoutControl8.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
+            this.layoutControl8.Name = "layoutControl8";
+            this.layoutControl8.OptionsCustomizationForm.DesignTimeCustomizationFormPositionAndSize = new System.Drawing.Rectangle(779, 520, 812, 500);
+            this.layoutControl8.Root = this.layoutControlGroup9;
+            this.layoutControl8.Size = new System.Drawing.Size(280, 75);
+            this.layoutControl8.TabIndex = 0;
+            this.layoutControl8.Text = "layoutControl8";
+            // 
+            // cmbcompagnie
+            // 
+            this.cmbcompagnie.Location = new System.Drawing.Point(143, 12);
+            this.cmbcompagnie.MenuManager = this.ribbonControl1;
+            this.cmbcompagnie.Name = "cmbcompagnie";
+            this.cmbcompagnie.Properties.Appearance.Font = new System.Drawing.Font("Verdana", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cmbcompagnie.Properties.Appearance.Options.UseFont = true;
+            this.cmbcompagnie.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.cmbcompagnie.Properties.Items.AddRange(new object[] {
+            "CMA",
+            "CGM",
+            "MSC",
+            "MAERSK",
+            "PIL"});
+            this.cmbcompagnie.Properties.TextEditStyle = DevExpress.XtraEditors.Controls.TextEditStyles.DisableTextEditor;
+            this.cmbcompagnie.Size = new System.Drawing.Size(125, 22);
+            this.cmbcompagnie.StyleController = this.layoutControl8;
+            this.cmbcompagnie.TabIndex = 4;
+            // 
+            // layoutControlGroup9
+            // 
+            this.layoutControlGroup9.EnableIndentsWithoutBorders = DevExpress.Utils.DefaultBoolean.True;
+            this.layoutControlGroup9.GroupBordersVisible = false;
+            this.layoutControlGroup9.Items.AddRange(new DevExpress.XtraLayout.BaseLayoutItem[] {
+            this.layoutControlItem48});
+            this.layoutControlGroup9.Name = "Root";
+            this.layoutControlGroup9.Size = new System.Drawing.Size(280, 75);
+            this.layoutControlGroup9.TextVisible = false;
+            // 
+            // layoutControlItem48
+            // 
+            this.layoutControlItem48.Control = this.cmbcompagnie;
+            this.layoutControlItem48.Location = new System.Drawing.Point(0, 0);
+            this.layoutControlItem48.Name = "layoutControlItem48";
+            this.layoutControlItem48.Size = new System.Drawing.Size(260, 55);
+            this.layoutControlItem48.Text = "Compagnie maritime";
+            this.layoutControlItem48.TextSize = new System.Drawing.Size(119, 16);
+            // 
             // Root
             // 
             this.Root.EnableIndentsWithoutBorders = DevExpress.Utils.DefaultBoolean.True;
@@ -2483,6 +3429,17 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             // f_DEVISETableAdapter
             // 
             this.f_DEVISETableAdapter.ClearBeforeFill = true;
+            // 
+            // layoutControlItem47
+            // 
+            this.layoutControlItem47.Control = this.txt_autre_affreter;
+            this.layoutControlItem47.ControlAlignment = System.Drawing.ContentAlignment.TopLeft;
+            this.layoutControlItem47.CustomizationFormText = " ";
+            this.layoutControlItem47.Location = new System.Drawing.Point(0, 26);
+            this.layoutControlItem47.Name = "layoutControlItem47";
+            this.layoutControlItem47.Size = new System.Drawing.Size(260, 29);
+            this.layoutControlItem47.Text = "Autres";
+            this.layoutControlItem47.TextSize = new System.Drawing.Size(62, 16);
             // 
             // frmEditDocument
             // 
@@ -2638,6 +3595,51 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem33)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.emptySpaceItem5)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem34)).EndInit();
+            this.xtraTabPage5.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.groupControl9)).EndInit();
+            this.groupControl9.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.bindingNavigator6)).EndInit();
+            this.bindingNavigator6.ResumeLayout(false);
+            this.bindingNavigator6.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControl11)).EndInit();
+            this.layoutControl11.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.txt_autre_affreter.Properties)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.cmbaffreter.Properties)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlGroup12)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem53)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem49)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.groupControl8)).EndInit();
+            this.groupControl8.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.bindingNavigator5)).EndInit();
+            this.bindingNavigator5.ResumeLayout(false);
+            this.bindingNavigator5.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControl10)).EndInit();
+            this.layoutControl10.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.txt_obs.Properties)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlGroup11)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem51)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.groupControl7)).EndInit();
+            this.groupControl7.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.bindingNavigator4)).EndInit();
+            this.bindingNavigator4.ResumeLayout(false);
+            this.bindingNavigator4.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControl9)).EndInit();
+            this.layoutControl9.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.cmbtransitaire.Properties)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txt_autre_transitaire.Properties)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlGroup10)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem54)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem50)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.groupControl6)).EndInit();
+            this.groupControl6.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.bindingNavigator3)).EndInit();
+            this.bindingNavigator3.ResumeLayout(false);
+            this.bindingNavigator3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControl8)).EndInit();
+            this.layoutControl8.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.cmbcompagnie.Properties)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlGroup9)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem48)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.Root)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem6)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.fDEVISEBindingSource)).EndInit();
@@ -2649,6 +3651,8 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             this.layoutControl3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlGroup4)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem47)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.behaviorManager1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -2856,5 +3860,85 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         private ARBIOCHEMDataSet aRBIOCHEMDataSet;
         private BindingSource fDEVISEBindingSource;
         private ARBIOCHEMDataSetTableAdapters.F_DEVISETableAdapter f_DEVISETableAdapter;
+        private DevExpress.XtraTab.XtraTabPage xtraTabPage5;
+        private DevExpress.XtraEditors.GroupControl groupControl8;
+        private BindingNavigator bindingNavigator5;
+        private ToolStripLabel toolStripLabel4;
+        private ToolStripButton toolStripButton23;
+        private ToolStripButton toolStripButton24;
+        private ToolStripSeparator toolStripSeparator10;
+        private ToolStripTextBox toolStripTextBox4;
+        private ToolStripSeparator toolStripSeparator11;
+        private ToolStripButton toolStripButton25;
+        private ToolStripButton toolStripButton26;
+        private ToolStripSeparator toolStripSeparator12;
+        private ToolStripButton toolStripButton27;
+        private ToolStripButton toolStripButton28;
+        private ToolStripButton toolStripButton29;
+        private DevExpress.XtraLayout.LayoutControl layoutControl10;
+        private DevExpress.XtraLayout.LayoutControlGroup layoutControlGroup11;
+        private DevExpress.XtraEditors.GroupControl groupControl7;
+        private BindingNavigator bindingNavigator4;
+        private ToolStripLabel toolStripLabel3;
+        private ToolStripButton toolStripButton16;
+        private ToolStripButton toolStripButton17;
+        private ToolStripSeparator toolStripSeparator7;
+        private ToolStripTextBox toolStripTextBox3;
+        private ToolStripSeparator toolStripSeparator8;
+        private ToolStripButton toolStripButton18;
+        private ToolStripButton toolStripButton19;
+        private ToolStripSeparator toolStripSeparator9;
+        private ToolStripButton toolStripButton20;
+        private ToolStripButton toolStripButton21;
+        private ToolStripButton toolStripButton22;
+        private DevExpress.XtraLayout.LayoutControl layoutControl9;
+        private DevExpress.XtraLayout.LayoutControlGroup layoutControlGroup10;
+        private DevExpress.XtraEditors.GroupControl groupControl6;
+        private BindingNavigator bindingNavigator3;
+        private ToolStripLabel toolStripLabel2;
+        private ToolStripButton toolStripButton9;
+        private ToolStripButton toolStripButton10;
+        private ToolStripSeparator toolStripSeparator4;
+        private ToolStripTextBox toolStripTextBox2;
+        private ToolStripSeparator toolStripSeparator5;
+        private ToolStripButton toolStripButton11;
+        private ToolStripButton toolStripButton12;
+        private ToolStripSeparator toolStripSeparator6;
+        private ToolStripButton toolStripButton13;
+        private ToolStripButton toolStripButton14;
+        private ToolStripButton toolStripButton15;
+        private DevExpress.XtraLayout.LayoutControl layoutControl8;
+        private DevExpress.XtraLayout.LayoutControlGroup layoutControlGroup9;
+        private DevExpress.XtraEditors.ComboBoxEdit cmbcompagnie;
+        private DevExpress.XtraLayout.LayoutControlItem layoutControlItem48;
+        private DevExpress.XtraEditors.GroupControl groupControl9;
+        private BindingNavigator bindingNavigator6;
+        private ToolStripLabel toolStripLabel5;
+        private ToolStripButton toolStripButton30;
+        private ToolStripButton toolStripButton31;
+        private ToolStripSeparator toolStripSeparator13;
+        private ToolStripTextBox toolStripTextBox5;
+        private ToolStripSeparator toolStripSeparator14;
+        private ToolStripButton toolStripButton32;
+        private ToolStripButton toolStripButton33;
+        private ToolStripSeparator toolStripSeparator15;
+        private ToolStripButton toolStripButton34;
+        private ToolStripButton toolStripButton35;
+        private ToolStripButton toolStripButton36;
+        private DevExpress.XtraLayout.LayoutControl layoutControl11;
+        private DevExpress.XtraLayout.LayoutControlGroup layoutControlGroup12;
+        private DevExpress.XtraEditors.ComboBoxEdit cmbtransitaire;
+        private DevExpress.XtraLayout.LayoutControlItem layoutControlItem54;
+        private DevExpress.XtraEditors.TextEdit txt_autre_affreter;
+        private DevExpress.XtraEditors.ComboBoxEdit cmbaffreter;
+        private DevExpress.XtraLayout.LayoutControlItem layoutControlItem53;
+        private DevExpress.XtraLayout.LayoutControlItem layoutControlItem49;
+        private DevExpress.XtraLayout.LayoutControlItem layoutControlItem47;
+        private DevExpress.XtraEditors.TextEdit txt_autre_transitaire;
+        private DevExpress.XtraLayout.LayoutControlItem layoutControlItem50;
+        private DevExpress.Utils.Behaviors.BehaviorManager behaviorManager1;
+        private DevExpress.XtraEditors.MemoEdit txt_obs;
+        private DevExpress.XtraLayout.LayoutControlItem layoutControlItem51;
+        private DevExpress.XtraEditors.SimpleButton simpleButton6;
     }
 }

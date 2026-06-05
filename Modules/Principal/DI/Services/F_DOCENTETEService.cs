@@ -464,8 +464,14 @@ namespace arbioApp.Services
         //}
         public F_DOCENTETE GetDocByPiece(string doPiece, List<F_DOCENTETE> listeDocs)
         {
+            if (listeDocs == null)
+                throw new ArgumentNullException(nameof(listeDocs));
+
+            if (string.IsNullOrWhiteSpace(doPiece))
+                throw new ArgumentNullException(nameof(doPiece), "doPiece cannot be null or empty.");
+
             return listeDocs
-                .FirstOrDefault(doc => doc.DO_Piece == doPiece);
+                .FirstOrDefault(doc => doc.DO_Piece.Contains(doPiece));
         }
 
 

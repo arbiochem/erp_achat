@@ -143,18 +143,17 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
                 string sql = @"
                     INSERT INTO F_DOCENTETE
-                        (DO_Domaine,DO_Type, DO_Piece, DO_Date,DO_Tiers,DO_Devise)
+                        (DO_Domaine,DO_Type, DO_Piece, DO_Date,DO_Tiers)
                     VALUES
-                        (1,10, @doPiece, @doDate,@dotiers,@dodevise)";
+                        (1,10, @doPiece, @doDate,@dotiers)";
 
                 using (SqlCommand cmd = new SqlCommand(sql, conn))
                 {
-                    cmd.Parameters.Add("@doPiece", SqlDbType.Char, 13).Value = doPiece.PadRight(13);
+                    cmd.Parameters.Add("@doPiece", SqlDbType.VarChar, 13).Value = doPiece.PadRight(13).Trim();
                     cmd.Parameters.Add("@dotiers", SqlDbType.Char, 13).Value = ct_Num.PadRight(13);
 
                     // DO_Date est DateTime dans Sage 100
                     cmd.Parameters.Add("@doDate", SqlDbType.DateTime).Value = DateTime.Today;
-                    cmd.Parameters.Add("@dodevise", SqlDbType.Int).Value = devise;
 
                     cmd.ExecuteNonQuery();
                 }
@@ -226,7 +225,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 {
                     int dlNo = GetNextIDLNo(conn); // ← unique à chaque ligne
 
-                    cmd.Parameters.Add("@doPiece", SqlDbType.Char, 13).Value = doPiece.PadRight(13);
+                    cmd.Parameters.Add("@doPiece", SqlDbType.VarChar, 13).Value = doPiece.PadRight(13).Trim();
                     cmd.Parameters.Add("@dlqte", SqlDbType.Int, 13).Value = qteACommander;
                     cmd.Parameters.Add("@dlLigne", SqlDbType.Int).Value = dlLigne;
                     cmd.Parameters.Add("@arRef", SqlDbType.Char, 18).Value = (ar_Ref ?? string.Empty).PadRight(18);
@@ -257,7 +256,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             }
         }
 
-        int devise;
+        string devise;
         public void ChargerDonneesDepuisBDD()
         {
             string connectionString1 = "Server=26.53.123.231;Database=ARBIOCHEM;User Id=Dev;Password=1234;";
@@ -1055,7 +1054,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                 int qte = int.Parse(frmQte.txtQte.Text);
                                 decimal pu = decimal.Parse(frmQte.txtKg.Text);
                                 cours = decimal.Parse(frmQte.txtcoursdevise.Text);
-                                devise = frmQte._devise;
+                                devise = frmQte.cmbDevise.Text.ToString();
                                 decimal montant = qte * pu * cours;
                                 montant_total += montant;
 
@@ -1077,7 +1076,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                             new SqlCommand($"DISABLE TRIGGER {t} ON F_DOCLIGNE", connection).ExecuteNonQuery();
 
                                         string sqlUpdate = @"UPDATE F_DOCENTETE 
-                                        SET DO_Taxe1=0, DO_Expedit=0, DO_DateLivr=@dtt,DO_Devise=@devise,
+                                        SET DO_Taxe1=0, DO_Expedit=0,DO_Devise=@devise,
                                             DE_No=@deno, CO_No=@cono, DO_Imprim=0, DO_Statut=0,
                                             DO_Cours=@doCours, DO_TotalHTNet=@montant,
                                             DO_TotalHT=@montant, DO_TotalTTC=@montant,
@@ -1091,9 +1090,8 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                             cmd.Parameters.Add("@montant", SqlDbType.Decimal).Value = montant_total;
                                             cmd.Parameters.Add("@deno", SqlDbType.Int).Value = depot;
                                             cmd.Parameters.Add("@cono", SqlDbType.Int).Value = cono;
-                                            cmd.Parameters.Add("@dtt", SqlDbType.DateTime).Value = dts;
                                             cmd.Parameters.Add("@dtc", SqlDbType.DateTime).Value = dtc;
-                                            cmd.Parameters.Add("@devise", SqlDbType.Int).Value = devise;
+                                            cmd.Parameters.Add("@devise", SqlDbType.Int).Value = recuperer_devise(devise);
                                             cmd.ExecuteNonQuery();
                                         }
 
@@ -1147,6 +1145,20 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             searchPanel.BringToFront();
 
             layoutView.RefreshData();
+        }
+
+        private int recuperer_devise(String cond)
+        {
+            AppDbContext context = new AppDbContext();
+            short d_val = 0;
+
+            var test = context.P_DEVISE.Where(p => p.D_Intitule.Contains(cond)).FirstOrDefault();
+
+            if(test != null)
+            {
+                d_val = (short)test.cbIndice;
+            }
+            return d_val;
         }
     }
 }

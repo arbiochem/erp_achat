@@ -548,9 +548,6 @@ namespace arbioApp.Repositories.ModelsRepository
         }
 
 
-
-
-
 		public void UpdateProprietesF_DOCENTETE(F_DOCENTETE f_DOCENTETEToUpdate)
 		{
 			try {

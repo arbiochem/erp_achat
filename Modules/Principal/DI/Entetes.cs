@@ -1,122 +1,361 @@
 ﻿using arbioApp.Models;
 using arbioApp.Modules.Principal.DI._2_Documents;
 using arbioApp.Modules.Principal.DI.Models;
-using DevExpress.CodeParser;
 using DevExpress.XtraEditors;
 using DevExpress.XtraEditors.Repository;
 using DevExpress.XtraGrid;
+using DevExpress.XtraGrid.Columns;
 using DevExpress.XtraGrid.Views.Grid;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
 using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+
 
 namespace arbioApp.Modules.Principal.DI
 {
     public class Entetes
     {
         public static int rownum = 0;
-        private static SqlConnection connection;
         private static DataTable dataTable;
-        private static DataTable dataTableFrns;
-        //private static string dbname = ucDocuments.dbNamePrincipale;
 
         private static string DbPrincipale => ucDocuments.dbNamePrincipale;
         private static string ServerIpPrincipale => ucDocuments.serverIpPrincipale;
 
+        private static string connectionString =>
+            $"Server={ServerIpPrincipale};Database={DbPrincipale};" +
+            $"User ID=Dev;Password=1234;TrustServerCertificate=True;Connection Timeout=240;";
 
-        private static string connectionString = $"Server={ServerIpPrincipale};Database={DbPrincipale};" +
-                                                 $"User ID=Dev;Password=1234;TrustServerCertificate=True;" +
-                                                 $"Connection Timeout=240;";
+        private static string connectionStrings =>
+            $"Server={ServerIpPrincipale};Database=TRANSIT;" +
+            $"User ID=Dev;Password=1234;TrustServerCertificate=True;Connection Timeout=120;";
 
-        private static string connectionStrings = $"Server={ServerIpPrincipale};" +
-                                $"Database=TRANSIT;User ID=Dev;Password=1234;" +
-                                $"TrustServerCertificate=True;Connection Timeout=120;";
-        private static SqlDataAdapter dataAdapter;
-
+        // ════════════════════════════════════════════════════════════════
+        //  AfficherEntetes  (grille simple, inchangée)
+        // ════════════════════════════════════════════════════════════════
         public static void AfficherEntetes(GridControl gc, int achattype, BindingSource bs)
         {
             try
             {
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 {
-
-                    string query = "";
-                    /*if(achattype != 200)
+                    string query = "SELECT * FROM dbo.ACHAT_ENTETE ORDER BY DO_Date DESC";
+                    try
                     {
-                        query =  $"SELECT * FROM dbo.ACHAT_ENTETE WHERE DO_Type = @dotype ORDER BY DO_Date DESC";
-                    }
-                    else
-                    {*/
-                        query = $"SELECT * FROM dbo.ACHAT_ENTETE ORDER BY DO_Date DESC";
-                    //}
-                        try
+                        using (SqlCommand cmd = new SqlCommand(query, connection))
                         {
-                            using (SqlCommand cmd = new SqlCommand(query, connection))
+                            if (connection.State != ConnectionState.Open)
+                                connection.Open();
+
+                            using (SqlDataAdapter localAdapter = new SqlDataAdapter(cmd))
                             {
-                                // cmd.Parameters.AddWithValue("@dotype", achattype);
+                                dataTable = new DataTable();
+                                localAdapter.Fill(dataTable);
+                                rownum = dataTable.Rows.Count;
 
-                                if (connection.State != ConnectionState.Open)
-                                    connection.Open();
-
-                                using (SqlDataAdapter localAdapter = new SqlDataAdapter(cmd))
+                                if (rownum == 0)
                                 {
-                                    dataTable = new DataTable();
-                                    localAdapter.Fill(dataTable);
-
-                                    rownum = dataTable.Rows.Count;
-
-                                    if (rownum == 0)
-                                    {
-                                        bs.DataSource = null;
-                                        gc.DataSource = null;
-                                    }
-                                    else
-                                    {
-                                        bs.DataSource = dataTable;
-                                        gc.DataSource = bs;
-                                    }
+                                    bs.DataSource = null;
+                                    gc.DataSource = null;
+                                }
+                                else
+                                {
+                                    bs.DataSource = dataTable;
+                                    gc.DataSource = bs;
                                 }
                             }
                         }
-                        catch (SqlException ex)
-                        {
-                            MessageBox.Show("Erreur SQL : " + ex.Message);
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show("Erreur : " + ex.Message);
-                        }
+                    }
+                    catch (SqlException ex) { MessageBox.Show("Erreur SQL : " + ex.Message); }
+                    catch (Exception ex) { MessageBox.Show("Erreur : " + ex.Message); }
                 }
-
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 MethodBase m = MethodBase.GetCurrentMethod();
-                MessageBox.Show($"Une erreur est survenue : {ex.Message}, {m}", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        public static void AfficherEntetes_achat(GridControl gc, GridControl gc1, GridControl gc2, GridControl gc3, int achattype, BindingSource bs)
+        // ════════════════════════════════════════════════════════════════
+        //  AfficherEntetes_achat  (avec Master-Detail sur gc2 et gc3)
+        // ════════════════════════════════════════════════════════════════
+        public static void AfficherEntetes_achat(
+            GridControl gc, GridControl gc1, GridControl gc2, GridControl gc3,
+            int achattype, BindingSource bs)
         {
             try
             {
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 {
-                    // Vérifier si DO_Cloture existe dans la table
-                    string query = @"SELECT DO_Piece,CT_Intitule, DO_TotalTTC,
-                            CASE WHEN COL_LENGTH('dbo.ACHAT_ENTETE', 'DO_Cloture') IS NOT NULL 
-                                 THEN CAST(DO_Cloture AS INT) 
-                                 ELSE 0 
-                            END AS DO_Cloture,CO_No,DE_No,DO_TIERS,DO_Statut,DO_Expedit,DO_Coord01,DO_Ref,DO_DateLivr,DO_Date,DO_DateExpedition,A_TYPE,DO_CodeTaxe1,DO_Taxe1,DO_Type,DO_Imprim,DO_Reliquat
-                            FROM dbo.ACHAT_ENTETE ORDER BY DO_Piece ASC";
+                    string query = $@"
+                    WITH LignesGroupees AS (
+                        SELECT
+                            Do_Piece,
+                            AR_Ref,
+                            DL_Design,
+                            SUM(DL_Qte) AS Total_Qte,
+                            SUM(ISNULL(TRY_CAST(QteLivre AS DECIMAL(18,2)), 0)) AS QteLivre,
+                            MAX(DL_Qte) AS DL_Qte,
+                            SUM(DL_PrixRU) AS Total_PrixRU,
+                            SUM(DL_MontantTTC) AS Total_MontantTTC
+                        FROM dbo.F_DOCLIGNE
+                        GROUP BY Do_Piece, AR_Ref, DL_Design
+                    ),
+                    LignesAvecProduit AS (
+                        SELECT 
+                            ent.DO_Piece AS DO_Piece_Entete,
+                            lg.AR_Ref,
+                            lg.DL_Design,
+                            lg.QteLivre,
+                            lg.DL_Qte,
+                            lg.Total_PrixRU,
+                            lg.Total_MontantTTC
+                        FROM dbo.ACHAT_ENTETE ent
+                        INNER JOIN LignesGroupees lg
+                            ON REPLACE(REPLACE(lg.Do_Piece, '_', ''),'AFA','ABR') = ent.DO_Piece
+                            OR lg.Do_Piece = ent.PRODUIT
+                    )
+                    SELECT
+                        ent.DO_Piece,
+                        ent.CT_Intitule,
+                        lp.AR_Ref,
+                        lp.DL_Design,
+
+                        CASE 
+                            WHEN lp.DL_Qte <> lp.QteLivre THEN FORMAT(lp.DL_Qte + lp.QteLivre, 'N2')
+                            ELSE FORMAT(lp.DL_Qte, 'N2')
+                        END AS DL_Qte,
+
+                        FORMAT(lp.QteLivre, 'N2') AS DL_QteLivre,
+
+                        CASE 
+                            WHEN lp.DL_Qte = lp.QteLivre THEN FORMAT(lp.DL_Qte - lp.QteLivre, 'N2')
+                            ELSE FORMAT(lp.DL_Qte, 'N2')
+                        END AS DL_QteRestant,
+
+                        CAST(FORMAT(lp.Total_PrixRU, 'N2') AS VARCHAR(50)) + ' ' + ent.D_Intitule AS DL_PrixRU,
+
+                        CAST(FORMAT(lp.Total_MontantTTC / NULLIF(ent.DO_Cours, 0), 'N2') AS VARCHAR(50)) + ' ' + ent.D_Intitule AS TotalTTC,
+
+                        ISNULL(CAST(ent.DO_Cloture AS INT), 0) AS DO_Cloture,
+
+                        ent.CO_No,
+                        ent.DE_No,
+                        ent.DO_TIERS,
+                        ent.DO_Statut,
+                        ent.DO_Expedit,
+                        ent.DO_Coord01,
+                        ent.DO_Ref,
+                        ent.DO_DateLivr,
+                        ent.DO_Date,
+                        ent.DO_DateExpedition,
+                        ent.A_TYPE,
+                        ent.DO_CodeTaxe1,
+                        ent.DO_Taxe1,
+                        ent.DO_Type,
+                        ent.DO_Imprim,
+                        ent.DO_Reliquat
+
+                    FROM dbo.ACHAT_ENTETE ent
+                    INNER JOIN LignesAvecProduit lp 
+                        ON REPLACE(lp.DO_Piece_Entete, '_', '') = ent.DO_Piece
+
+                    ORDER BY ent.DO_Piece ASC";
+
+                    try
+                    {
+                        using (SqlCommand cmd = new SqlCommand(query, connection))
+                        {
+                            if (connection.State != ConnectionState.Open)
+                                connection.Open();
+
+                            using (SqlDataAdapter localAdapter = new SqlDataAdapter(cmd))
+                            {
+                                // ── 1. Charger les données brutes ─────────────────────
+                                dataTable = new DataTable();
+                                localAdapter.Fill(dataTable);
+                                rownum = dataTable.Rows.Count;
+
+                                // ── 2. Créer les DataSets ─────────────────────────────
+                                DataTable dtAPA = dataTable.Clone();
+                                DataTable dtAutre = dataTable.Clone();
+
+                                // DataSet Master-Detail pour gc2 → ABR non clôturés (avec bouton Clôturer)
+                                DataSet dsLivre = CreateMasterDetailDataSet(
+                                                        "EnteteLivre", "LignesLivre",
+                                                        withAction: true,
+                                                        isClotureView: false);
+
+                                // DataSet Master-Detail pour gc3 → ABR clôturés (avec prix de revient)
+                                DataSet dsCloture = CreateMasterDetailDataSet(
+                                                        "EnteteLivre", "LignesLivre",
+                                                        withAction: false,
+                                                        isClotureView: true);
+
+                                // ── 3. Répartir les lignes ────────────────────────────
+                                foreach (DataRow row in dataTable.Rows)
+                                {
+                                    string doPiece = row["DO_Piece"]?.ToString() ?? "";
+                                    int doCloture = row["DO_Cloture"] == DBNull.Value
+                                                        ? 0
+                                                        : Convert.ToInt32(row["DO_Cloture"]);
+
+                                    if (doPiece.Contains("APA") || doPiece.Contains("ABC"))
+                                    {
+                                        dtAPA.ImportRow(row);
+                                    }
+                                    else if (doPiece.Contains("AFA"))
+                                    {
+                                        dtAutre.ImportRow(row);
+                                    }
+                                    else if (doPiece.Contains("ABR"))
+                                    {
+                                        if (doCloture == 0)
+                                            AddRowToDataSet(dsLivre, "EnteteLivre", "LignesLivre",
+                                                            row, action: "Clôturer",
+                                                            isClotureView: false);
+                                        else
+                                            AddRowToDataSet(dsCloture, "EnteteLivre", "LignesLivre",
+                                                            row, action: null,
+                                                            isClotureView: true);
+                                    }
+                                }
+
+                                // ── 4. Colonnes cachées pour grilles simples ──────────
+                                string[] colsCachees = {
+                                    "DO_Cloture","CO_No","DE_No","DO_TIERS","DO_Statut",
+                                    "DO_Expedit","DO_Coord01","DO_Ref","DO_DateLivr",
+                                    "DO_Date","DO_DateExpedition","A_TYPE","DO_CodeTaxe1",
+                                    "DO_Taxe1","DO_Type","DO_Imprim","DO_Reliquat",
+                                    "AR_Ref","DL_Design","DL_Qte","DL_QteLivre","DL_QteRestant","DL_PrixRU"
+                                };
+
+                                foreach (DataTable dt in new[] { dtAPA, dtAutre })
+                                {
+                                    foreach (string col in colsCachees)
+                                        if (dt.Columns.Contains(col))
+                                            dt.Columns[col].ColumnMapping = MappingType.Hidden;
+
+                                    if (dt.Columns.Contains("DO_Piece"))
+                                        dt.Columns["DO_Piece"].Caption = "Numéro pièce";
+                                    if (dt.Columns.Contains("CT_Intitule"))
+                                        dt.Columns["CT_Intitule"].Caption = "Fournisseur";
+                                    if (dt.Columns.Contains("TotalTTC"))
+                                        dt.Columns["TotalTTC"].Caption = "Montant TTC";
+                                    if (dt.Columns.Contains("DL_PrixRU"))
+                                        dt.Columns["DL_PrixRU"].Caption = "Prix unitaire";
+                                }
+
+                                // ── 5. Binding des GridControls ───────────────────────
+
+                                // gc → APA/BC  (grille simple)
+                                BindingSource bsAPA = new BindingSource { DataSource = dtAPA };
+                                gc.DataSource = bsAPA;
+
+                                // gc1 → AFA  (grille simple)
+                                BindingSource bsAFA = new BindingSource { DataSource = dtAutre };
+                                gc1.DataSource = bsAFA;
+
+                                // gc2 → ABR non clôturés  (Master-Detail avec bouton Clôturer)
+                                BindMasterDetailGrid(
+                                    gc2, dsLivre,
+                                    "EnteteLivre", "LignesLivre",
+                                    "EnteteLivreToLignesLivre",
+                                    isLivre: true,
+                                    isClotureView: false);
+
+                                // gc3 → ABR clôturés  (Master-Detail avec prix de revient)
+                                BindMasterDetailGrid(
+                                    gc3, dsCloture,
+                                    "EnteteLivre", "LignesLivre",
+                                    "EnteteLivreToLignesLivre",
+                                    isLivre: false,
+                                    isClotureView: true);
+
+                                // ── 6. BindingSource global ───────────────────────────
+                                bs.RaiseListChangedEvents = false;
+                                bs.DataSource = dataTable ?? new DataTable();
+                                if (rownum > 0)
+                                    bs.DataSource = dataTable;
+                                bs.RaiseListChangedEvents = true;
+                            }
+                        }
+                    }
+                    catch (SqlException ex) { MessageBox.Show("Erreur SQL : " + ex.Message); }
+                    catch (Exception ex) { MessageBox.Show("Erreur : " + ex.Message); }
+                }
+
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    string query = $@"
+                        WITH LignesGroupees AS (
+                            SELECT
+                                DO_Piece,
+                                MIN(ISNULL(TRY_CAST(QteLivre AS DECIMAL(18,2)), 0)) AS QteLivre,
+                                MIN(DL_Qte)                                  AS Total_Qte,
+                                MIN(AR_Ref)                                  AS AR_Ref,
+                                MIN(DL_Design)                               AS DL_Design,
+                                SUM(DL_PrixRU)                               AS Total_PrixRU,
+                                SUM(DL_MontantTTC)                           AS Total_MontantTTC
+                            FROM dbo.F_DOCLIGNE
+                            GROUP BY Do_Piece
+                        ),
+                        LignesAvecProduit AS (
+                            SELECT 
+                                ent.DO_Piece                                 AS DO_Piece_Entete,
+                                MIN(lg.QteLivre)                             AS QteLivre,
+                                MIN(lg.Total_Qte)                            AS Total_Qte,
+                                MIN(lg.AR_Ref)                               AS AR_Ref,
+                                MIN(lg.DL_Design)                            AS DL_Design,
+                                SUM(lg.Total_PrixRU)                         AS Total_PrixRU,
+                                SUM(lg.Total_MontantTTC)                     AS Total_MontantTTC
+                            FROM dbo.ACHAT_ENTETE ent
+                            INNER JOIN LignesGroupees lg 
+                                ON lg.Do_Piece = ent.DO_Piece
+                                OR lg.Do_Piece = ent.PRODUIT
+                            GROUP BY ent.DO_Piece
+                        )
+                        SELECT
+                            CASE 
+                                WHEN lp.QteLivre > 0 THEN REPLACE(ent.DO_Piece, 'ABR', 'AFA')
+                                ELSE ent.DO_Piece
+                            END                                              AS DO_Piece,
+                            ent.CT_Intitule,
+                            lp.AR_Ref,
+                            lp.DL_Design,
+                            lp.QteLivre,
+                            lp.Total_Qte,
+                            CAST(FORMAT(lp.Total_PrixRU, 'N2') AS VARCHAR(50))
+                                + ' ' + ent.D_Intitule                       AS DL_PrixRU,
+                            CAST(FORMAT(lp.Total_MontantTTC / NULLIF(ent.DO_Cours, 0), 'N2') AS VARCHAR(50))
+                                + ' ' + ent.D_Intitule                       AS TotalTTC,
+                            ISNULL(CAST(ent.DO_Cloture AS INT), 0)           AS DO_Cloture,
+                            ent.CO_No,
+                            ent.DE_No,
+                            ent.DO_TIERS,
+                            ent.DO_Statut,
+                            ent.DO_Expedit,
+                            ent.DO_Coord01,
+                            ent.DO_Ref,
+                            ent.DO_DateLivr,
+                            ent.DO_Date,
+                            ent.DO_DateExpedition,
+                            ent.A_TYPE,
+                            ent.DO_CodeTaxe1,
+                            ent.DO_Taxe1,
+                            ent.DO_Type,
+                            ent.DO_Imprim,
+                            ent.DO_Reliquat
+                        FROM dbo.ACHAT_ENTETE AS ent
+                        INNER JOIN LignesAvecProduit AS lp ON lp.DO_Piece_Entete = ent.DO_Piece
+                        WHERE lp.QteLivre != lp.Total_Qte
+                        ORDER BY ent.DO_Piece ASC
+                    ";
+
                     try
                     {
                         using (SqlCommand cmd = new SqlCommand(query, connection))
@@ -132,88 +371,567 @@ namespace arbioApp.Modules.Principal.DI
 
                                 DataTable dtAPA = dataTable.Clone();
                                 DataTable dtAutre = dataTable.Clone();
-                                DataTable dtLivre = dataTable.Clone();
-                                DataTable dtCloture = dataTable.Clone();
 
                                 foreach (DataRow row in dataTable.Rows)
                                 {
                                     string doPiece = row["DO_Piece"]?.ToString() ?? "";
-                                    int doCloture = row["DO_Cloture"] == DBNull.Value ? 0 : Convert.ToInt32(row["DO_Cloture"]);
+                                    int doCloture = row["DO_Cloture"] == DBNull.Value
+                                                        ? 0
+                                                        : Convert.ToInt32(row["DO_Cloture"]);
 
-                                    if (doPiece.Contains("APA"))
+                                    if (doPiece.Contains("APA") || doPiece.Contains("ABC"))
                                         dtAPA.ImportRow(row);
                                     else if (doPiece.Contains("AFA"))
                                         dtAutre.ImportRow(row);
-                                    else if (doPiece.Contains("ABR"))
-                                    {
-                                        if (doCloture == 0)
-                                            dtLivre.ImportRow(row);
-                                        else
-                                            dtCloture.ImportRow(row);
-                                    }
-                                }
-                                string[] val = { "DO_Cloture", "CO_No", "DE_No", "DO_TIERS","DO_Statut", "DO_Expedit","DO_Coord01","DO_Ref", "DO_DateLivr","DO_Date", "DO_DateExpedition", "A_TYPE", "DO_CodeTaxe1", "DO_Taxe1", "DO_Type", "DO_Imprim", "DO_Reliquat"};
-
-                                foreach (DataTable dt in new[] { dtAPA, dtAutre, dtLivre, dtCloture })
-                                {
-                                    foreach (string valeur in val)
-                                    {
-                                        if (dt.Columns.Contains(valeur))
-                                            dt.Columns[valeur].ColumnMapping = MappingType.Hidden;
-                                    }
                                 }
 
-                                foreach (DataTable dt in new[] { dtAPA, dtAutre, dtLivre, dtCloture })
+                                string[] colsCachees = {
+                                    "DO_Cloture","CO_No","DE_No","DO_TIERS","DO_Statut",
+                                    "DO_Expedit","DO_Coord01","DO_Ref","DO_DateLivr",
+                                    "DO_Date","DO_DateExpedition","A_TYPE","DO_CodeTaxe1",
+                                    "DO_Taxe1","DO_Type","DO_Imprim","DO_Reliquat",
+                                    "AR_Ref","DL_Design","DL_Qte","DL_QteLivre","DL_QteRestant","QteLivre","Total_Qte","DL_PrixRU"
+                                };
+
+                                foreach (DataTable dt in new[] { dtAPA, dtAutre })
                                 {
+                                    foreach (string col in colsCachees)
+                                        if (dt.Columns.Contains(col))
+                                            dt.Columns[col].ColumnMapping = MappingType.Hidden;
+
                                     if (dt.Columns.Contains("DO_Piece"))
                                         dt.Columns["DO_Piece"].Caption = "Numéro pièce";
-                                    if (dt.Columns.Contains("DO_TotalTTC"))
-                                        dt.Columns["DO_TotalTTC"].Caption = "Montant TTC";
                                     if (dt.Columns.Contains("CT_Intitule"))
                                         dt.Columns["CT_Intitule"].Caption = "Fournisseur";
+                                    if (dt.Columns.Contains("TotalTTC"))
+                                        dt.Columns["TotalTTC"].Caption = "Montant TTC";
+                                    if (dt.Columns.Contains("DL_PrixRU"))
+                                        dt.Columns["DL_PrixRU"].Caption = "Prix unitaire";
                                 }
 
-                                // gc → APA
-                                BindingSource bsAPA = new BindingSource();
-                                bsAPA.DataSource = dtAPA;
-                                gc.DataSource = bsAPA;  // toujours affecté, même vide
+                                BindingSource bsAPA = new BindingSource { DataSource = dtAPA };
+                                gc.DataSource = bsAPA;
 
-                                // gc1 → AFA
-                                BindingSource bsAFA = new BindingSource();
-                                bsAFA.DataSource = dtAutre;
+                                BindingSource bsAFA = new BindingSource { DataSource = dtAutre };
                                 gc1.DataSource = bsAFA;
-
-                                // gc2 → ABR non clôturé
-                                BindingSource bsLivre = new BindingSource();
-                                bsLivre.DataSource = dtLivre;
-                                gc2.DataSource = bsLivre;
-
-                                // gc3 → ABR clôturé
-                                BindingSource bsCloture = new BindingSource();
-                                bsCloture.DataSource = dtCloture;
-                                gc3.DataSource = bsCloture;
-
-                                // Mettre à jour le bs original avec toutes les données
-                                bs.DataSource = rownum > 0 ? (object)dataTable : null;
                             }
                         }
                     }
-                    catch (SqlException ex) { MessageBox.Show("Erreur SQL : " + ex.Message); }
-                    catch (Exception ex) { MessageBox.Show("Erreur : " + ex.Message); }
+                    catch (Exception ex) { }
                 }
             }
             catch (Exception ex)
             {
                 MethodBase m = MethodBase.GetCurrentMethod();
-                MessageBox.Show($"Une erreur est survenue : {ex.Message}, {m}", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
+        // ════════════════════════════════════════════════════════════════
+        //  HELPER : crée un DataSet avec deux tables liées
+        //  isClotureView = true  → détail affiche DL_PrixRU
+        //  isClotureView = false → détail affiche DL_QteLivre + DL_QteRestant
+        // ════════════════════════════════════════════════════════════════
+        private static DataSet CreateMasterDetailDataSet(
+            string headerTableName,
+            string detailTableName,
+            bool withAction = false,
+            bool isClotureView = false)
+        {
+            DataSet ds = new DataSet();
+
+            // ── Table ENTÊTE ──────────────────────────────────────────
+            DataTable dtHeader = new DataTable(headerTableName);
+            dtHeader.Columns.Add("DO_Piece", typeof(string));
+            dtHeader.Columns.Add("CT_Intitule", typeof(string));
+            dtHeader.Columns.Add("DL_PrixRU", typeof(string));
+            dtHeader.Columns.Add("TotalTTC", typeof(string));
+            if (withAction)
+                dtHeader.Columns.Add("Action", typeof(string));
+
+            // ── Table DÉTAIL ──────────────────────────────────────────
+            DataTable dtDetail = new DataTable(detailTableName);
+            dtDetail.Columns.Add("DO_Piece", typeof(string)); // clé de jointure
+            dtDetail.Columns.Add("AR_Ref", typeof(string));
+            dtDetail.Columns.Add("DL_Design", typeof(string));
+            dtDetail.Columns.Add("DL_Qte", typeof(string));
+
+            if (isClotureView)
+            {
+                // Vue clôturée : prix de revient à la place des qtés livrées
+                dtDetail.Columns.Add("DL_PrixRU", typeof(string));
+            }
+            else
+            {
+                // Vue normale : quantités livrées et restantes
+                dtDetail.Columns.Add("DL_QteLivre", typeof(string));
+                dtDetail.Columns.Add("DL_QteRestant", typeof(string));
+            }
+
+            ds.Tables.Add(dtHeader);
+            ds.Tables.Add(dtDetail);
+
+            // ── Relation Master → Detail ──────────────────────────────
+            string relationName = headerTableName + "To" + detailTableName;
+            ds.Relations.Add(
+                relationName,
+                dtHeader.Columns["DO_Piece"],
+                dtDetail.Columns["DO_Piece"]);
+
+            return ds;
+        }
+
+        // ════════════════════════════════════════════════════════════════
+        //  HELPER : ajoute une ligne dans le DataSet (entête + détail)
+        //  isClotureView = true  → alimente DL_PrixRU
+        //  isClotureView = false → alimente DL_QteLivre + DL_QteRestant
+        // ════════════════════════════════════════════════════════════════
+        private static void AddRowToDataSet(
+            DataSet ds,
+            string headerTableName,
+            string detailTableName,
+            DataRow sourceRow,
+            string action = null,
+            bool isClotureView = false)
+        {
+            string doPiece = sourceRow["DO_Piece"]?.ToString() ?? "";
+
+            DataTable dtHeader = ds.Tables[headerTableName];
+            DataTable dtDetail = ds.Tables[detailTableName];
+
+            // Entête : une seule ligne par DO_Piece
+            bool headerExists = dtHeader.AsEnumerable()
+                                        .Any(r => r["DO_Piece"].ToString() == doPiece);
+            if (!headerExists)
+            {
+                DataRow headerRow = dtHeader.NewRow();
+                headerRow["DO_Piece"] = doPiece;
+                headerRow["CT_Intitule"] = sourceRow["CT_Intitule"];
+                headerRow["DL_PrixRU"] = sourceRow["DL_PrixRU"];
+                headerRow["TotalTTC"] = sourceRow["TotalTTC"];
+
+                if (action != null && dtHeader.Columns.Contains("Action"))
+                    headerRow["Action"] = action;
+
+                dtHeader.Rows.Add(headerRow);
+            }
+
+            // Détail : une ligne par article
+            DataRow detailRow = dtDetail.NewRow();
+            detailRow["DO_Piece"] = doPiece;
+            detailRow["AR_Ref"] = sourceRow["AR_Ref"];
+            detailRow["DL_Design"] = sourceRow["DL_Design"];
+            detailRow["DL_Qte"] = sourceRow["DL_Qte"];
+
+            if (isClotureView)
+            {
+                detailRow["DL_PrixRU"] = sourceRow.Table.Columns.Contains("DL_PrixRU")
+                    ? sourceRow["DL_PrixRU"]
+                    : DBNull.Value;
+            }
+            else
+            {
+                detailRow["DL_QteLivre"] = sourceRow["DL_QteLivre"];
+                detailRow["DL_QteRestant"] = sourceRow["DL_QteRestant"];
+            }
+
+            dtDetail.Rows.Add(detailRow);
+        }
+
+        // ════════════════════════════════════════════════════════════════
+        //  HELPER : binding Master-Detail sur un GridControl
+        //  isLivre      = true  → bouton Ouvrir/Clôturer + colonnes qtés
+        //  isClotureView = true → pas de bouton, affiche prix de revient
+        // ════════════════════════════════════════════════════════════════
+        private static void BindMasterDetailGrid(
+            GridControl gc,
+            DataSet ds,
+            string headerTableName,
+            string detailTableName,
+            string relationName,
+            bool isLivre,
+            bool isClotureView = false)
+        {
+            try
+            {
+                // ── RESET GRID ────────────────────────────────────────
+                gc.DataSource = null;
+                gc.LevelTree.Nodes.Clear();
+                gc.RepositoryItems.Clear();
+
+                // ── DATASET ───────────────────────────────────────────
+                gc.DataSource = ds;
+                gc.DataMember = headerTableName;
+
+                // ── MASTER VIEW ───────────────────────────────────────
+                GridView masterView = new GridView(gc);
+                gc.MainView = masterView;
+                gc.ViewCollection.Add(masterView);
+                masterView.PopulateColumns(ds.Tables[headerTableName]);
+
+                masterView.OptionsBehavior.Editable = true;
+                masterView.OptionsDetail.EnableMasterViewMode = true;
+                masterView.OptionsDetail.ShowDetailTabs = false;
+                masterView.OptionsDetail.SmartDetailExpand = false;
+                masterView.OptionsView.ShowGroupPanel = false;
+                masterView.OptionsView.ShowIndicator = false;
+                masterView.OptionsView.EnableAppearanceEvenRow = true;
+                masterView.OptionsView.ColumnAutoWidth = false;
+                masterView.RowHeight = 28;
+
+                // =========================
+                // DO_PIECE
+                // =========================
+                if (masterView.Columns["DO_Piece"] != null)
+                {
+                    masterView.Columns["DO_Piece"].Caption = "Numéro pièce";
+                    masterView.Columns["DO_Piece"].Width = 140;
+                }
+
+                // =========================
+                // CT_INTITULE
+                // =========================
+                if (masterView.Columns["CT_Intitule"] != null)
+                {
+                    masterView.Columns["CT_Intitule"].Caption = "Fournisseur";
+                    masterView.Columns["CT_Intitule"].Width = 250;
+                }
+
+                // =========================
+                // DL_PRIXRU
+                // =========================
+                if (masterView.Columns["DL_PrixRU"] != null)
+                {
+                    masterView.Columns["DL_PrixRU"].Caption = "Prix unitaire";
+                    masterView.Columns["DL_PrixRU"].Width = 120;
+
+                    // Caché pour les non-clôturés (colonne Action présente)
+                    if (isLivre && masterView.Columns["Action"] != null)
+                        masterView.Columns["DL_PrixRU"].Visible = false;
+                }
+
+                // =========================
+                // TOTAL TTC
+                // =========================
+                if (masterView.Columns["TotalTTC"] != null)
+                {
+                    masterView.Columns["TotalTTC"].Caption = "Montant TTC";
+                    masterView.Columns["TotalTTC"].Width = 140;
+
+                    if (isLivre)
+                        masterView.Columns["TotalTTC"].Visible = false;
+                }
+
+                // =========================
+                // ACTION (UNIQUEMENT NON CLÔTURÉ)
+                // =========================
+                if (isLivre && masterView.Columns["Action"] != null)
+                {
+                    RepositoryItemButtonEdit btnAction = new RepositoryItemButtonEdit();
+                    btnAction.TextEditStyle = DevExpress.XtraEditors.Controls.TextEditStyles.HideTextEditor;
+                    btnAction.AutoHeight = false;
+                    btnAction.Buttons.Clear();
+
+                    // 🔵 OUVRIR
+                    btnAction.Buttons.Add(new DevExpress.XtraEditors.Controls.EditorButton()
+                    {
+                        Kind = DevExpress.XtraEditors.Controls.ButtonPredefines.Glyph,
+                        Caption = "Ouvrir",
+                        Appearance =
+                        {
+                            BackColor = Color.FromArgb(192, 57, 43),
+                            ForeColor = Color.Green,
+                            Font      = new Font("Segoe UI", 8.5f, FontStyle.Bold),
+                            Options   = { UseBackColor = true, UseForeColor = true, UseFont = true }
+                        }
+                    });
+
+                    // 🔴 CLOTURER
+                    btnAction.Buttons.Add(new DevExpress.XtraEditors.Controls.EditorButton()
+                    {
+                        Kind = DevExpress.XtraEditors.Controls.ButtonPredefines.Glyph,
+                        Caption = "Clôturer",
+                        Appearance =
+                        {
+                            BackColor = Color.FromArgb(192, 57, 43),
+                            ForeColor = Color.Red,
+                            Font      = new Font("Segoe UI", 8.5f, FontStyle.Bold),
+                            Options   = { UseBackColor = true, UseForeColor = true, UseFont = true }
+                        }
+                    });
+
+                    gc.RepositoryItems.Add(btnAction);
+
+                    GridColumn colAction = masterView.Columns["Action"];
+                    colAction.ColumnEdit = btnAction;
+                    colAction.Caption = "Actions";
+                    colAction.AppearanceHeader.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+                    colAction.AppearanceHeader.Options.UseTextOptions = true;
+                    colAction.Width = 120;
+                    colAction.Fixed = DevExpress.XtraGrid.Columns.FixedStyle.Right;
+                    colAction.OptionsColumn.AllowEdit = true;
+                    colAction.OptionsColumn.ReadOnly = false;
+                    colAction.OptionsColumn.AllowFocus = true;
+                    colAction.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+                    colAction.AppearanceCell.BackColor = Color.FromArgb(52, 152, 219);
+                    colAction.AppearanceCell.ForeColor = Color.Black;
+                    colAction.AppearanceCell.Font = new Font("Segoe UI", 8.5f, FontStyle.Bold);
+                    colAction.AppearanceCell.Options.UseBackColor = true;
+                    colAction.AppearanceCell.Options.UseForeColor = true;
+                    colAction.AppearanceCell.Options.UseFont = true;
+
+                    // CLICK BUTTON
+                    btnAction.ButtonClick += (s, e) =>
+                    {
+                        try
+                        {
+                            var view = masterView;
+                            int rowHandle = view.FocusedRowHandle;
+                            if (rowHandle < 0) return;
+
+                            string doPiece = view.GetRowCellValue(rowHandle, "DO_Piece")?.ToString();
+                            if (string.IsNullOrEmpty(doPiece)) return;
+
+                            // 🔵 OUVRIR
+                            if (e.Button.Index == 0)
+                            {
+                                ucDocuments.Instance.OuvrirPiece(view, rowHandle);
+                            }
+
+                            // 🔴 CLOTURER
+                            else if (e.Button.Index == 1)
+                            {
+                                bool tester1(string cond)
+                                {
+                                    bool b_test = false;
+
+                                    using (SqlConnection cn = new SqlConnection(connectionString))
+                                    {
+                                        cn.Open();
+
+                                        string sql = @"
+                                        SELECT TOP 1 DL_Qte, QteLivre
+                                        FROM F_DOCLIGNE
+                                        WHERE DO_Piece LIKE '%' + @DO_Piece + '%'
+                                        AND DL_Qte <> QteLivre";
+
+                                        using (SqlCommand cmd = new SqlCommand(sql, cn))
+                                        {
+                                            cmd.Parameters.AddWithValue("@DO_Piece", cond);
+
+                                            using (SqlDataReader reader = cmd.ExecuteReader())
+                                            {
+                                                while (reader.Read())
+                                                {
+                                                    var dlQteValue = reader["DL_Qte"];
+                                                    var qteLivreValue = reader["QteLivre"];
+
+                                                    Console.WriteLine($"DL_Qte={dlQteValue} | QteLivre={qteLivreValue}");
+
+                                                    if (dlQteValue != qteLivreValue)
+                                                    {
+                                                        b_test = true;
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    return b_test;
+                                }
+
+                                if (tester1(doPiece))
+                                {
+                                    MessageBox.Show(
+                                        $"Vous ne pouvez pas clôturer ce document, il y a encore des quantités non livrées!!!!",
+                                        "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
+                                else
+                                {
+                                    DialogResult result = XtraMessageBox.Show(
+                                        $"Clôturer le document {doPiece} ?",
+                                        "Confirmation",
+                                        MessageBoxButtons.YesNo,
+                                        MessageBoxIcon.Question);
+
+                                    if (result == DialogResult.Yes)
+                                    {
+                                        AppDbContext _context = new AppDbContext();
+                                        var doc = _context.F_DOCENTETE
+                                            .FirstOrDefault(d => d.DO_Piece == doPiece);
+
+                                        if (doc == null)
+                                        {
+                                            MessageBox.Show($"Document introuvable : {doPiece}");
+                                            return;
+                                        }
+
+                                        doc.DO_Cloture = 1;
+                                        _context.SaveChanges();
+
+                                        using (SqlConnection conn = new SqlConnection(connectionString))
+                                        {
+                                            conn.Open();
+
+                                            string queryss = @"
+                                                BEGIN TRY
+                                                    DISABLE TRIGGER ALL ON dbo.F_DOCLIGNE;
+
+                                                    UPDATE dbo.F_DOCLIGNE
+                                                    SET DO_Piece = @DocPieces,DO_Type=18
+                                                    WHERE DO_Piece = @DocPiece
+                                                      AND DL_Qte = QteLivre;
+
+                                                    ENABLE TRIGGER ALL ON dbo.F_DOCLIGNE;
+                                                END TRY
+                                                BEGIN CATCH
+                                                    ENABLE TRIGGER ALL ON dbo.F_DOCLIGNE;
+                                                    THROW;
+                                                END CATCH
+                                            ";
+
+                                            using (SqlCommand cmds1 = new SqlCommand(queryss, conn))
+                                            {
+                                                cmds1.Parameters.AddWithValue("@DocPiece", doPiece.Replace("ABR", "AFA")+"_");
+                                                cmds1.Parameters.AddWithValue("@DocPieces", doPiece);
+
+                                                cmds1.ExecuteNonQuery();
+                                            }
+                                        }
+
+                                        ucDocuments.Instance.RafraichirDonnees();
+                                    }
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            XtraMessageBox.Show(ex.Message);
+                        }
+                    };
+                }
+
+                // ── DETAIL VIEW ───────────────────────────────────────
+                GridView detailView = new GridView(gc);
+                gc.ViewCollection.Add(detailView);
+
+                GridLevelNode levelNode = new GridLevelNode
+                {
+                    RelationName = relationName,
+                    LevelTemplate = detailView
+                };
+                gc.LevelTree.Nodes.Add(levelNode);
+
+                detailView.PopulateColumns(ds.Tables[detailTableName]);
+                detailView.OptionsBehavior.Editable = false;
+                detailView.OptionsView.ShowGroupPanel = false;
+                detailView.OptionsView.ShowIndicator = false;
+                detailView.OptionsView.ColumnAutoWidth = false;
+
+                detailView.Appearance.HeaderPanel.ForeColor = Color.Magenta;
+                detailView.Appearance.HeaderPanel.Font = new Font("Segoe UI", 7f, FontStyle.Bold);
+                detailView.Appearance.HeaderPanel.Options.UseBackColor = true;
+                detailView.Appearance.HeaderPanel.Options.UseForeColor = true;
+                detailView.Appearance.HeaderPanel.Options.UseFont = true;
+                detailView.Appearance.Row.Font = new Font("Segoe UI", 7f, FontStyle.Regular);
+                detailView.RowHeight = 24;
+
+                // Cacher la clé de jointure
+                if (detailView.Columns["DO_Piece"] != null)
+                    detailView.Columns["DO_Piece"].Visible = false;
+
+                // ── Colonnes communes ─────────────────────────────────
+                EnsureDetailColumn(detailView, "AR_Ref", "Référence", 0, 140);
+                EnsureDetailColumn(detailView, "DL_Design", "Désignation", 1, 320);
+                EnsureDetailColumn(detailView, "DL_Qte", "Qté commandée", 2, 100);
+
+                if (detailView.Columns["DL_Qte"] != null)
+                {
+                    detailView.Columns["DL_Qte"].AppearanceCell
+                              .TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
+                    detailView.Columns["DL_Qte"].DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
+                    detailView.Columns["DL_Qte"].DisplayFormat.FormatString = "N2";
+                }
+
+                // ── Colonnes spécifiques selon la vue ─────────────────
+                if (isClotureView)
+                {
+                    // Vue clôturée : afficher le prix de revient
+                    EnsureDetailColumn(detailView, "DL_PrixRU", "Prix de revient", 3, 160);
+
+                    if (detailView.Columns["DL_PrixRU"] != null)
+                    {
+                        var col = detailView.Columns["DL_PrixRU"];
+                        col.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
+                        col.AppearanceCell.Font = new Font("Segoe UI", 7.5f, FontStyle.Bold);
+                        col.AppearanceCell.ForeColor = Color.FromArgb(39, 174, 96);
+                        col.AppearanceCell.Options.UseForeColor = true;
+                        col.AppearanceCell.Options.UseFont = true;
+                        col.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
+                        col.DisplayFormat.FormatString = "N2";
+                    }
+                }
+                else
+                {
+                    // Vue normale : quantités livrées et restantes
+                    EnsureDetailColumn(detailView, "DL_QteLivre", "Qté Livrée", 3, 100);
+                    EnsureDetailColumn(detailView, "DL_QteRestant", "Reste à livrer", 4, 100);
+
+                    if (detailView.Columns["DL_QteLivre"] != null)
+                    {
+                        detailView.Columns["DL_QteLivre"].AppearanceCell
+                                  .TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
+                        detailView.Columns["DL_QteLivre"].DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
+                        detailView.Columns["DL_QteLivre"].DisplayFormat.FormatString = "N2";
+                    }
+
+                    if (detailView.Columns["DL_QteRestant"] != null)
+                    {
+                        detailView.Columns["DL_QteRestant"].AppearanceCell
+                                  .TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
+                        detailView.Columns["DL_QteRestant"].DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
+                        detailView.Columns["DL_QteRestant"].DisplayFormat.FormatString = "N2";
+                    }
+                }
+
+                detailView.RowStyle += (sender, e) =>
+                {
+                    e.Appearance.ForeColor = Color.FromArgb(44, 62, 80);
+                    e.HighPriority = true;
+                };
+            }
+            catch (Exception ex)
+            {
+                XtraMessageBox.Show(ex.Message, "Erreur");
+            }
+        }
+
+        // ════════════════════════════════════════════════════════════════
+        //  HELPER : s'assurer qu'une colonne détail existe et est configurée
+        // ════════════════════════════════════════════════════════════════
+        private static void EnsureDetailColumn(
+            GridView view,
+            string fieldName,
+            string caption,
+            int visibleIndex,
+            int width)
+        {
+            GridColumn col = view.Columns[fieldName]
+                          ?? view.Columns.AddField(fieldName);
+
+            col.Caption = caption;
+            col.VisibleIndex = visibleIndex;
+            col.Width = width;
+            col.OptionsColumn.ReadOnly = true;
+        }
+
+        // ════════════════════════════════════════════════════════════════
+        //  GetAllDepots
+        // ════════════════════════════════════════════════════════════════
         public static List<F_DEPOT> GetAllDepots()
         {
             List<F_DEPOT> depots = new List<F_DEPOT>();
             string query = "SELECT DE_No, DE_Intitule FROM F_DEPOT";
-
 
             using (SqlConnection conn = new SqlConnection(connectionStrings))
             {
@@ -221,34 +939,31 @@ namespace arbioApp.Modules.Principal.DI
                 {
                     conn.Open();
                     using (SqlCommand cmd = new SqlCommand(query, conn))
+                    using (SqlDataReader reader = cmd.ExecuteReader())
                     {
-                        using (SqlDataReader reader = cmd.ExecuteReader())
-                        {
-                            while (reader.Read())
+                        while (reader.Read())
+                            depots.Add(new F_DEPOT
                             {
-                                depots.Add(new F_DEPOT
-                                {
-                                    DE_No = (int)reader["DE_No"],
-                                    DE_Intitule = reader["DE_Intitule"].ToString()
-                                });
-                            }
-                        }
+                                DE_No = (int)reader["DE_No"],
+                                DE_Intitule = reader["DE_Intitule"].ToString()
+                            });
                     }
                 }
-                catch (System.Exception ex)
+                catch (Exception ex)
                 {
                     MethodBase m = MethodBase.GetCurrentMethod();
-                    MessageBox.Show($"Une erreur est survenue : {ex.Message}, {m}", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
-
             return depots;
         }
+
+        // ════════════════════════════════════════════════════════════════
+        //  GetAllUnites
+        // ════════════════════════════════════════════════════════════════
         public static List<P_UNITE> GetAllUnites()
         {
-            List<P_UNITE> depots = new List<P_UNITE>();
+            List<P_UNITE> unites = new List<P_UNITE>();
             string query = "SELECT cbIndice, U_Intitule FROM P_UNITE WHERE U_Intitule <> ''";
-
 
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
@@ -256,30 +971,27 @@ namespace arbioApp.Modules.Principal.DI
                 {
                     conn.Open();
                     using (SqlCommand cmd = new SqlCommand(query, conn))
+                    using (SqlDataReader reader = cmd.ExecuteReader())
                     {
-                        using (SqlDataReader reader = cmd.ExecuteReader())
-                        {
-                            while (reader.Read())
+                        while (reader.Read())
+                            unites.Add(new P_UNITE
                             {
-                                depots.Add(new P_UNITE
-                                {
-                                    cbIndice = (short)reader["cbIndice"],
-                                    U_Intitule = reader["U_Intitule"].ToString()
-                                });
-                            }
-                        }
+                                cbIndice = (short)reader["cbIndice"],
+                                U_Intitule = reader["U_Intitule"].ToString()
+                            });
                     }
                 }
-                catch (System.Exception ex)
+                catch (Exception ex)
                 {
                     MethodBase m = MethodBase.GetCurrentMethod();
-                    MessageBox.Show($"Une erreur est survenue : {ex.Message}, {m}", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
-
-            return depots;
+            return unites;
         }
 
+        // ════════════════════════════════════════════════════════════════
+        //  GetAllDevise
+        // ════════════════════════════════════════════════════════════════
         public static List<P_DEVISE> GetAllDevise()
         {
             List<P_DEVISE> devises = new List<P_DEVISE>();
@@ -291,119 +1003,106 @@ namespace arbioApp.Modules.Principal.DI
                 {
                     conn.Open();
                     using (SqlCommand cmd = new SqlCommand(query, conn))
+                    using (SqlDataReader reader = cmd.ExecuteReader())
                     {
-                        using (SqlDataReader reader = cmd.ExecuteReader())
-                        {
-                            while (reader.Read())
+                        while (reader.Read())
+                            devises.Add(new P_DEVISE
                             {
-                                devises.Add(new P_DEVISE
-                                {
-                                    cbMarq = reader["cbMarq"] != DBNull.Value ? Convert.ToInt32(reader["cbMarq"]) : 0,
-                                    D_Intitule = reader["D_Intitule"]?.ToString() ?? ""
-                                });
-                            }
-                        }
+                                cbMarq = reader["cbMarq"] != DBNull.Value
+                                                 ? Convert.ToInt32(reader["cbMarq"]) : 0,
+                                D_Intitule = reader["D_Intitule"]?.ToString() ?? ""
+                            });
                     }
                 }
-                catch (System.Exception ex)
+                catch (Exception ex)
                 {
                     MethodBase m = MethodBase.GetCurrentMethod();
-                    MessageBox.Show($"Une erreur est survenue : {ex.Message}, {m}", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
-
             return devises;
         }
 
+        // ════════════════════════════════════════════════════════════════
+        //  GetAllExpedition
+        // ════════════════════════════════════════════════════════════════
         public static List<P_EXPEDITION> GetAllExpedition()
         {
             List<P_EXPEDITION> expeditions = new List<P_EXPEDITION>();
             string query = "SELECT cbMarq, E_Intitule FROM P_EXPEDITION WHERE E_Intitule <> ''";
 
-
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 try
                 {
                     conn.Open();
                     using (SqlCommand cmd = new SqlCommand(query, conn))
+                    using (SqlDataReader reader = cmd.ExecuteReader())
                     {
-                        using (SqlDataReader reader = cmd.ExecuteReader())
-                        {
-                            while (reader.Read())
+                        while (reader.Read())
+                            expeditions.Add(new P_EXPEDITION
                             {
-                                expeditions.Add(new P_EXPEDITION
-                                {
-                                    cbMarq = reader["cbMarq"] != DBNull.Value ? Convert.ToInt32(reader["cbMarq"]) : 0,
-                                    E_Intitule = reader["E_Intitule"].ToString()
-                                });
-                            }
-                        }
+                                cbMarq = reader["cbMarq"] != DBNull.Value
+                                                 ? Convert.ToInt32(reader["cbMarq"]) : 0,
+                                E_Intitule = reader["E_Intitule"].ToString()
+                            });
                     }
                 }
-                catch (System.Exception ex)
+                catch (Exception ex)
                 {
                     MethodBase m = MethodBase.GetCurrentMethod();
-                    MessageBox.Show($"Une erreur est survenue : {ex.Message}, {m}", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
-
             return expeditions;
         }
-        public static void FiltrerFournisseurs(GridControl gc, bool actif, bool sommeil, BindingSource bsFrns)
+
+        // ════════════════════════════════════════════════════════════════
+        //  FiltrerFournisseurs
+        // ════════════════════════════════════════════════════════════════
+        public static void FiltrerFournisseurs(
+            GridControl gc, bool actif, bool sommeil, BindingSource bsFrns)
         {
             try
             {
-                DataTable dataTableFrns = new DataTable();
-
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 {
-                    string query = "";
-                    SqlCommand cmd = new SqlCommand();
-                    cmd.Connection = connection;
+                    string query;
 
                     if (actif && !sommeil)
-                    {
-                        // Actif uniquement (CT_Sommeil = 0)
-                        query = $"SELECT * FROM dbo.F_COMPTET WHERE CT_Sommeil = 0 AND CT_Type = 1 ORDER BY CT_Num";
-                    }
+                        query = "SELECT * FROM dbo.F_COMPTET WHERE CT_Sommeil = 0 AND CT_Type = 1 ORDER BY CT_Num";
                     else if (!actif && sommeil)
-                    {
-                        // En sommeil uniquement (CT_Sommeil = 1)
-                        query = $"SELECT * FROM dbo.F_COMPTET WHERE CT_Sommeil = 1 AND CT_Type = 1 ORDER BY CT_Num";
-                    }
+                        query = "SELECT * FROM dbo.F_COMPTET WHERE CT_Sommeil = 1 AND CT_Type = 1 ORDER BY CT_Num";
                     else if (actif && sommeil)
-                    {
-                        // Les deux cochés, donc sans filtre
-                        query = $"SELECT * FROM dbo.F_COMPTET WHERE CT_Type = 1 ORDER BY CT_Num";
-                    }
+                        query = "SELECT * FROM dbo.F_COMPTET WHERE CT_Type = 1 ORDER BY CT_Num";
                     else
                     {
-                        // Aucun coché => vider la grille
                         gc.DataSource = null;
                         return;
                     }
 
-                    cmd.CommandText = query;
-                    SqlDataAdapter adapter = new SqlDataAdapter(cmd);
-                    connection.Open();
-                    adapter.Fill(dataTableFrns);
-                    rownum = dataTableFrns.Rows.Count;
-                    bsFrns.DataSource = dataTableFrns;
-                    gc.DataSource = bsFrns;
-
+                    using (SqlCommand cmd = new SqlCommand(query, connection))
+                    {
+                        connection.Open();
+                        DataTable dt = new DataTable();
+                        new SqlDataAdapter(cmd).Fill(dt);
+                        rownum = dt.Rows.Count;
+                        bsFrns.DataSource = dt;
+                        gc.DataSource = bsFrns;
+                    }
                 }
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 MethodBase m = MethodBase.GetCurrentMethod();
-                MessageBox.Show($"Une erreur est survenue : {ex.Message}, {m}", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        // ════════════════════════════════════════════════════════════════
+        //  GetAllCompteG
+        // ════════════════════════════════════════════════════════════════
         public static List<F_COMPTEG> GetAllCompteG()
         {
             List<F_COMPTEG> comptetG = new List<F_COMPTEG>();
-            string query = "SELECT distinct CG_Num, CG_Intitule FROM F_COMPTEG WHERE CG_Tiers = 1 AND CG_Sommeil = 0";
+            string query = "SELECT DISTINCT CG_Num, CG_Intitule FROM F_COMPTEG WHERE CG_Tiers = 1 AND CG_Sommeil = 0";
 
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
@@ -411,27 +1110,21 @@ namespace arbioApp.Modules.Principal.DI
                 {
                     conn.Open();
                     using (SqlCommand cmd = new SqlCommand(query, conn))
+                    using (SqlDataReader reader = cmd.ExecuteReader())
                     {
-                        using (SqlDataReader reader = cmd.ExecuteReader())
-                        {
-                            while (reader.Read())
+                        while (reader.Read())
+                            comptetG.Add(new F_COMPTEG
                             {
-                                comptetG.Add(new F_COMPTEG
-                                {
-                                    CG_Num = reader["CG_Num"].ToString(),
-                                    CG_Intitule = reader["CG_Intitule"].ToString()
-                                });
-                            }
-                        }
+                                CG_Num = reader["CG_Num"].ToString(),
+                                CG_Intitule = reader["CG_Intitule"].ToString()
+                            });
                     }
                 }
-                catch (System.Exception ex)
+                catch (Exception ex)
                 {
                     MethodBase m = MethodBase.GetCurrentMethod();
-                    MessageBox.Show($"Une erreur est survenue : {ex.Message}, {m}", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
-
             return comptetG;
         }
     }

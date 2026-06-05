@@ -1,36 +1,38 @@
-﻿using DevExpress.XtraEditors;
+﻿using arbioApp.Models;
+using arbioApp.Modules.Principal.DI._2_Documents;
+using arbioApp.Modules.Principal.DI.Models;
+using arbioApp.Repositories.ModelsRepository;
+using DevExpress.ChartRangeControlClient.Core;
+using DevExpress.Charts.Native;
+using DevExpress.DashboardCommon.Viewer;
+using DevExpress.Utils;
+using DevExpress.Xpo;
+using DevExpress.XtraBars;
+using DevExpress.XtraCharts.Native;
+using DevExpress.XtraEditors;
+using DevExpress.XtraEditors.Controls;
+using DevExpress.XtraEditors.Repository;
+using DevExpress.XtraExport.Helpers;
+using DevExpress.XtraGrid;
+using DevExpress.XtraGrid.Columns;
+using DevExpress.XtraGrid.Views.Grid;
+using DevExpress.XtraRichEdit.Import.Doc;
+using DevExpress.XtraTreeList;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using arbioApp.Modules.Principal.DI._2_Documents;
-using System.Data.SqlClient;
-using DevExpress.XtraEditors.Repository;
-using DevExpress.XtraGrid.Views.Grid;
-using DevExpress.XtraGrid;
-using DevExpress.Charts.Native;
-using System.Net;
-using DevExpress.XtraEditors.Controls;
-using DevExpress.XtraExport.Helpers;
-using DevExpress.DashboardCommon.Viewer;
-using DevExpress.Utils;
-using DevExpress.XtraGrid.Columns;
-using DevExpress.XtraTreeList;
-using arbioApp.Models;
-using arbioApp.Repositories.ModelsRepository;
-using DevExpress.ChartRangeControlClient.Core;
 using BindingSource = System.Windows.Forms.BindingSource;
-using DevExpress.Xpo;
-using arbioApp.Modules.Principal.DI.Models;
-using DevExpress.XtraBars;
-using System.IO;
-using DevExpress.XtraCharts.Native;
 
 namespace arbioApp.Modules.Principal.DI._2_Documents
 {
@@ -40,8 +42,15 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         private System.Data.DataTable dataTable;
         private SqlDataAdapter dataAdapter;
         private SqlConnection connection;
-        public static string connectionString;
         public static decimal doCours;
+
+        private static string DbPrincipale => ucDocuments.dbNamePrincipale;
+        private static string ServerIpPrincipale => ucDocuments.serverIpPrincipale;
+
+
+        private static string connectionString = $"Server={ServerIpPrincipale};Database={DbPrincipale};" +
+                                             $"User ID=Dev;Password=1234;TrustServerCertificate=True;" +
+                                             $"Connection Timeout=240;";
 
         public static ucDocuments Instance
         {
@@ -62,8 +71,143 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             CreateDatabaseMenu();
             ChargerDonneesDepuisBDD();
 
+            GridView gvDetailLivre = new GridView(gcLivre);
+            gvDetailLivre.Name = "gvDetailLivre";
+
+            // Colonnes détail
+            gvDetailLivre.Columns.AddField("AR_Ref").VisibleIndex = 0;
+            gvDetailLivre.Columns["AR_Ref"].Caption = "Référence";
+
+            gvDetailLivre.Columns.AddField("DL_Design").VisibleIndex = 1;
+            gvDetailLivre.Columns["DL_Design"].Caption = "Désignation";
+
+            gvDetailLivre.Columns.AddField("DL_Qte").VisibleIndex = 2;
+            gvDetailLivre.Columns["DL_Qte"].Caption = "Qté Livrée";
+            gvDetailLivre.Columns["DL_Qte"].DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
+            gvDetailLivre.Columns["DL_Qte"].DisplayFormat.FormatString = "N2";
+
+            // Lier au gcLivre
+            gcLivre.LevelTree.Nodes.Add("detail", gvDetailLivre);
+
+            // Activer le master-detail
+            gvLivre.OptionsDetail.EnableMasterViewMode = true;
+            gvLivre.OptionsDetail.ShowDetailTabs = false;
+
+            // Charger les données au clic sur "+"
+            gvLivre.MasterRowExpanded += (s, e) =>
+            {
+                var masterView = s as GridView;
+                var detailView = masterView.GetDetailView(e.RowHandle, 0) as GridView;
+                if (detailView == null) return;
+
+                string doPiece = masterView.GetRowCellValue(
+                    e.RowHandle, "DO_Piece")?.ToString();
+            };
+
             var dbContext = new AppDbContext();
             _collaborateurRepository = new F_COLLABORATEURRepository(dbContext);
+        }
+
+        bool tester1(string cond)
+        {
+            bool b_test = false;
+
+            using (SqlConnection cn = new SqlConnection(connectionString))
+            {
+                cn.Open();
+
+                string sql = @"
+                SELECT DL_Qte, QteLivre
+                FROM F_DOCLIGNE
+                WHERE DO_Piece = @DO_Piece";
+
+                using (SqlCommand cmd = new SqlCommand(sql, cn))
+                {
+                    cmd.Parameters.AddWithValue("@DO_Piece", cond);
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            decimal dlQte = Convert.ToDecimal(reader["DL_Qte"]);
+                            decimal qteLivre = Convert.ToDecimal(reader["QteLivre"]);
+
+                            if (qteLivre == dlQte)
+                            {
+                                b_test = true;
+                                break; // retirez cette ligne si vous voulez parcourir toutes les lignes
+                            }
+                        }
+                    }
+                }
+            }
+
+            return b_test;
+        }
+        private void GridViewLivre_RowCellClick(object sender, DevExpress.XtraGrid.Views.Grid.RowCellClickEventArgs e)
+        {
+            if (e.Column.FieldName != "Action") return;
+
+            GridView view = sender as GridView;
+            DataRow row = view.GetDataRow(e.RowHandle);
+            if (row == null) return;
+
+            string doPiece = row["DO_Piece"]?.ToString() ?? "";
+
+
+            if (tester1(doPiece))
+            {
+                if (MessageBox.Show(
+                        $"Clôturer le document {doPiece} ?",
+                        "Confirmation",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question) != DialogResult.Yes)
+                    return;
+
+                CloturerDocument(doPiece);
+            }
+            else
+            {
+                MessageBox.Show($"Vous ne pouvez pas clôturer ce document, il y a encore des quantités non livrées!!!!", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void CloturerDocument(string doPiece)
+        {
+            AppDbContext _context = new AppDbContext();
+            var doc = _context.F_DOCENTETE
+                .FirstOrDefault(d => d.DO_Piece == doPiece);
+
+            if (doc == null)
+            {
+                MessageBox.Show($"Document introuvable : {doPiece}");
+                return;
+            }
+
+            doc.DO_Cloture = 1;
+            _context.SaveChanges();
+
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+
+                conn.Open();
+                string queryss = @"
+                            DISABLE TRIGGER ALL ON dbo.F_DOCLIGNE;
+                            UPDATE dbo.F_DOCLIGNE SET
+                                         DO_Piece = @DocPieces
+                            WHERE Do_Piece = @DocPiece AND DL_Qte=QteLivre;
+                            ENABLE TRIGGER ALL ON dbo.F_DOCLIGNE;
+                        ";
+
+                using (SqlCommand cmds1 = new SqlCommand(queryss, conn))
+                {
+                    cmds1.Parameters.AddWithValue("@DocPiece",  doPiece+ '_');
+                    cmds1.Parameters.AddWithValue("@DocPieces", doPiece.Replace("_", ""));
+                    cmds1.ExecuteNonQuery();
+                }
+            }
+
+            ChargerDonneesDepuisBDD();
         }
 
         private void btnNouveauDoc_Click(object sender, EventArgs e)
@@ -103,11 +247,15 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
         public void ChargerDonneesDepuisBDD()
         {
+            if (BindingEntetes == null)
+                BindingEntetes = new BindingSource();
             try
             {
                 Entetes.AfficherEntetes_achat(gcEntetes, gcFactures, gcLivre, gcCloture, DoTypeSelected, BindingEntetes);
                 gvEntete.BestFitColumns();
 
+                // 4. Lier au GridControl
+               
                 GridView[] listgv = { gvEntete, gvLivre, gvFacture, gvCloture };
 
                 foreach (var gv in listgv)
@@ -139,13 +287,54 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
                     gv.RowCellClick -= Gv_RowCellClick;
                     gv.RowCellClick += Gv_RowCellClick;
+
+                    gvLivre.RowCellClick -= Gv_RowCellClick;
+                    gvLivre.RowCellClick += Gv_RowCellClick;
+
+
+                    var colDLQte = gv.Columns["DL_Qte"]; 
+                    if (colDLQte != null)
+                    {
+                        colDLQte.Visible = (gv == gvLivre);
+                        colDLQte.Caption = "Qté livrée";
+                    }
+
+                    var colDLRef = gv.Columns["AR_Ref"];
+                    if (colDLRef != null)
+                    {
+                        colDLRef.Visible = (gv == gvLivre);
+                        colDLRef.Caption = "Référence";
+                    }
+
+                    var colDLDesign = gv.Columns["DL_Design"];
+                    if (colDLDesign != null)
+                    {
+                        colDLDesign.Visible = (gv == gvLivre);
+                        colDLDesign.Caption = "Designation";
+                    }
+
+                    var colDLPrixRU = gv.Columns["DL_PrixRU"];
+                    if (colDLPrixRU != null)
+                    {
+                        colDLPrixRU.Visible = (gv == gvCloture);
+                        colDLPrixRU.Caption = "Prix de revient";
+                    }
+
+
+                    var cols = gvLivre.Columns["TotalTTC"];
+                    if (cols != null)
+                        cols.Visible = false;
+
+                    var colss = gvCloture.Columns["TotalTTC"];
+                    if (colss != null)
+                        colss.Visible = false;
                 }
             }
             catch (System.Exception ex)
             {
                 MethodBase m = MethodBase.GetCurrentMethod();
-                MessageBox.Show($"Une erreur est survenue : {ex.Message}, {m}", "Erreur",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                /*MessageBox.Show($"Une erreur est survenue : {ex.Message}, {m}", "Erreur",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);*/
             }
         }
 
@@ -237,12 +426,23 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             GridView gv = sender as GridView;
             if (gv == null) return;
             if (e.Column == null) return;
-            if (e.Column.FieldName != "DO_Piece") return;
 
-            OuvrirPiece(gv, e.RowHandle);
+            // Pour tous les autres GridView → colonne DO_Piece
+            if (e.Column.FieldName == "DO_Piece")
+            {
+                OuvrirPiece(gv, e.RowHandle);
+                return;
+            }
+
+            // Pour gvLivre → colonne Action (bouton Ouvrir)
+            if (gv == gvLivre && e.Column.FieldName == "Action")
+            {
+                OuvrirPiece(gv, e.RowHandle);
+                return;
+            }
         }
 
-        private void OuvrirPiece(GridView gv, int rowHandle)
+        public void OuvrirPiece(GridView gv, int rowHandle)
         {
             try
             {
@@ -260,72 +460,260 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 // Charger toutes les données depuis la base avec DO_Piece
                 using (var context = new AppDbContext())
                 {
-                    var doc = context.F_DOCENTETE
-                        .FirstOrDefault(d => d.DO_Piece.Trim() == dopiece_selected);
-
-                    if (doc == null)
+                    if (dopiece_selected.StartsWith("AFA"))
                     {
-                        MessageBox.Show("Document introuvable.", "Avertissement",
-                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return;
-                    }
+                        var doc_ = context.F_DOCENTETE
+                            .FirstOrDefault(d => d.DO_Piece.Trim() == dopiece_selected);
 
-                    doTiers = doc.DO_Tiers?.Trim() ?? "";
-                    doRef = doc.DO_Ref?.Trim() ?? "";
-                    doStatut = (int)(doc.DO_Statut ?? 0);
-                    doDate = doc.DO_Date ?? DateTime.Now;
-                    doDateLivrPrev = doc.DO_DateLivr ?? DateTime.Now;
-                    int? CO_No = doc.CO_No ?? 0;
-                    CoNo = CO_No;
-                    doEntete = doc.DO_Coord01?.Trim() ?? "";
-                    deno = (int)(doc.DE_No ?? 0);
-                    doCodeTaxe1 = doc.DO_CodeTaxe1?.Trim() ?? "";
-                    doTaxe1 = (int)(doc.DO_Taxe1 ?? 0);
-                    doExpedit = (int)(doc.DO_Expedit ?? 0);
-                    TypeAchat = doc.DO_Type ?? 0;
-                    doPiece = doc.DO_Piece?.Trim() ?? "";
-                    doImprim = (int)(doc.DO_Imprim ?? 0);
-                    doReliquat = (int)(doc.DO_Reliquat ?? 0);
-                    a_type = gvEntete.GetFocusedRowCellValue("A_TYPE")?.ToString();
-
-                    if (CO_No == 0)
-                    {
-                        MessageBox.Show("Pas de collaborateur pour ceci", "Avertissement",
-                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return;
-                    }
-
-                    doCollaborateur = _collaborateurRepository.GetBy_CO_No(CO_No);
-                    if (doCollaborateur == null)
-                    {
-                        MessageBox.Show("Collaborateur non trouvé.");
-                        return;
-                    }
-
-                    // Déplacer BindingEntetes vers la bonne ligne
-                    if (BindingEntetes.List != null)
-                    {
-                        for (int i = 0; i < BindingEntetes.List.Count; i++)
+                        if (doc_ == null)
                         {
-                            DataRowView row = BindingEntetes.List[i] as DataRowView;
-                            if (row != null &&
-                                row["DO_Piece"]?.ToString()?.Trim() == dopiece_selected)
+                            var doc = context.F_DOCENTETE
+                            .FirstOrDefault(d => d.DO_Piece.Trim() == dopiece_selected.Replace("AFA", "ABR"));
+
+                            if (doc == null)
                             {
-                                BindingEntetes.Position = i;
-                                break;
+                                MessageBox.Show("Document introuvable.", "Avertissement",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                return;
                             }
+
+                            doTiers = doc.DO_Tiers?.Trim() ?? "";
+                            doRef = doc.DO_Ref?.Trim() ?? "";
+                            doStatut = (int)(2);
+                            doDate = doc.DO_Date ?? DateTime.Now;
+                            doDateLivrPrev = doc.DO_DateLivr ?? DateTime.Now;
+                            int? CO_No = doc.CO_No ?? 0;
+                            CoNo = CO_No;
+                            doEntete = doc.DO_Coord01?.Trim() ?? "";
+                            deno = (int)(doc.DE_No ?? 0);
+                            doCodeTaxe1 = doc.DO_CodeTaxe1?.Trim() ?? "";
+                            doTaxe1 = (int)(doc.DO_Taxe1 ?? 0);
+                            doExpedit = (int)(doc.DO_Expedit ?? 0);
+                            TypeAchat = 16;
+                            doPiece = doc.DO_Piece.Replace("ABR","AFA")?.Trim() ?? "";
+                            doImprim = (int)(doc.DO_Imprim ?? 0);
+                            doReliquat = (int)(doc.DO_Reliquat ?? 0);
+
+                            if (doc.DO_Piece.StartsWith("ABC"))
+                            {
+                                a_type = "Bon de commande";
+                            }
+                            else if (doc.DO_Piece.StartsWith("AFA"))
+                            {
+                                a_type = "Facture";
+                            }
+                            else if (doc.DO_Piece.StartsWith("ABR"))
+                            {
+                                a_type = "Bon de livraison";
+                            }
+
+
+                            if (CO_No == 0)
+                            {
+                                MessageBox.Show("Pas de collaborateur pour ceci", "Avertissement",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                return;
+                            }
+
+                            doCollaborateur = _collaborateurRepository.GetBy_CO_No(CO_No);
+                            if (doCollaborateur == null)
+                            {
+                                MessageBox.Show("Collaborateur non trouvé.");
+                                return;
+                            }
+
+                            // Déplacer BindingEntetes vers la bonne ligne
+                            if (BindingEntetes.List != null)
+                            {
+                                for (int i = 0; i < BindingEntetes.List.Count; i++)
+                                {
+                                    DataRowView row = BindingEntetes.List[i] as DataRowView;
+                                    if (row != null &&
+                                        row["DO_Piece"]?.ToString()?.Trim() == dopiece_selected)
+                                    {
+                                        BindingEntetes.Position = i;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            string nodoc = doPiece.Substring(3, 8);
+                            string destinationFolderdoc = $@"\\Srv-arb\documents_achats$\{nodoc}";
+                            if (!Directory.Exists(destinationFolderdoc))
+                                Directory.CreateDirectory(destinationFolderdoc);
+
+                            frmEditDocument editForm = new frmEditDocument(doPiece.Replace("AFA", "ABR"), a_type, this, BindingEntetes);
+                            editForm.ShowDialog();
+
+                            ChargerDonneesDepuisBDD();
+                        }
+                        else
+                        {
+                            var doc = context.F_DOCENTETE
+                            .FirstOrDefault(d => d.DO_Piece.Trim() == dopiece_selected);
+
+                            if (doc == null)
+                            {
+                                MessageBox.Show("Document introuvable.", "Avertissement",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                return;
+                            }
+
+                            doTiers = doc.DO_Tiers?.Trim() ?? "";
+                            doRef = doc.DO_Ref?.Trim() ?? "";
+                            doStatut = (int)(doc.DO_Statut ?? 0);
+                            doDate = doc.DO_Date ?? DateTime.Now;
+                            doDateLivrPrev = doc.DO_DateLivr ?? DateTime.Now;
+                            int? CO_No = doc.CO_No ?? 0;
+                            CoNo = CO_No;
+                            doEntete = doc.DO_Coord01?.Trim() ?? "";
+                            deno = (int)(doc.DE_No ?? 0);
+                            doCodeTaxe1 = doc.DO_CodeTaxe1?.Trim() ?? "";
+                            doTaxe1 = (int)(doc.DO_Taxe1 ?? 0);
+                            doExpedit = (int)(doc.DO_Expedit ?? 0);
+                            TypeAchat = doc.DO_Type ?? 0;
+                            doPiece = doc.DO_Piece?.Trim() ?? "";
+                            doImprim = (int)(doc.DO_Imprim ?? 0);
+                            doReliquat = (int)(doc.DO_Reliquat ?? 0);
+
+                            if (dopiece_selected.StartsWith("AFA"))
+                            {
+                                a_type = "Facture";
+                            }
+                            else if (dopiece_selected.StartsWith("ABR"))
+                            {
+                                a_type = "Bon de livraison";
+                            }
+
+
+                            if (CO_No == 0)
+                            {
+                                MessageBox.Show("Pas de collaborateur pour ceci", "Avertissement",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                return;
+                            }
+
+                            doCollaborateur = _collaborateurRepository.GetBy_CO_No(CO_No);
+                            if (doCollaborateur == null)
+                            {
+                                MessageBox.Show("Collaborateur non trouvé.");
+                                return;
+                            }
+
+                            // Déplacer BindingEntetes vers la bonne ligne
+                            if (BindingEntetes.List != null)
+                            {
+                                for (int i = 0; i < BindingEntetes.List.Count; i++)
+                                {
+                                    DataRowView row = BindingEntetes.List[i] as DataRowView;
+                                    if (row != null &&
+                                        row["DO_Piece"]?.ToString()?.Trim() == dopiece_selected)
+                                    {
+                                        BindingEntetes.Position = i;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            string nodoc = doPiece.Substring(3, 8);
+                            string destinationFolderdoc = $@"\\Srv-arb\documents_achats$\{nodoc}";
+                            if (!Directory.Exists(destinationFolderdoc))
+                                Directory.CreateDirectory(destinationFolderdoc);
+
+                            frmEditDocument editForm = new frmEditDocument(doPiece, a_type, this, BindingEntetes);
+                            editForm.ShowDialog();
+
+                            
+
+                            ChargerDonneesDepuisBDD();
                         }
                     }
+                    else
+                    {
+                        var doc = context.F_DOCENTETE
+                            .FirstOrDefault(d => d.DO_Piece.Trim() == dopiece_selected);
 
-                    string nodoc = doPiece.Substring(3, 8);
-                    string destinationFolderdoc = $@"\\Srv-arb\documents_achats$\{nodoc}";
-                    if (!Directory.Exists(destinationFolderdoc))
-                        Directory.CreateDirectory(destinationFolderdoc);
+                        if (doc == null)
+                        {
+                            MessageBox.Show("Document introuvable.", "Avertissement",
+                                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
 
-                    frmEditDocument editForm = new frmEditDocument(doPiece, a_type, this, BindingEntetes);
-                    editForm.ShowDialog();
+                        doTiers = doc.DO_Tiers?.Trim() ?? "";
+                        doRef = doc.DO_Ref?.Trim() ?? "";
+                        doStatut = (int)(doc.DO_Statut ?? 0);
+                        doDate = doc.DO_Date ?? DateTime.Now;
+                        doDateLivrPrev = doc.DO_DateLivr ?? DateTime.Now;
+                        int? CO_No = doc.CO_No ?? 0;
+                        CoNo = CO_No;
+                        doEntete = doc.DO_Coord01?.Trim() ?? "";
+                        deno = (int)(doc.DE_No ?? 0);
+                        doCodeTaxe1 = doc.DO_CodeTaxe1?.Trim() ?? "";
+                        doTaxe1 = (int)(doc.DO_Taxe1 ?? 0);
+                        doExpedit = (int)(doc.DO_Expedit ?? 0);
+                        TypeAchat = doc.DO_Type ?? 0;
+                        doPiece = doc.DO_Piece?.Trim() ?? "";
+                        doImprim = (int)(doc.DO_Imprim ?? 0);
+                        doReliquat = (int)(doc.DO_Reliquat ?? 0);
 
-                    ChargerDonneesDepuisBDD();
+                        if (doc.DO_Piece.StartsWith("ABC"))
+                        {
+                            a_type = "Bon de commande";
+                        }
+                        else if (doc.DO_Piece.StartsWith("AFA"))
+                        {
+                            a_type = "Facture";
+                        }
+                        else if (doc.DO_Piece.StartsWith("ABR"))
+                        {
+                            a_type = "Bon de livraison";
+                        }
+                        else if (doc.DO_Piece.StartsWith("APA"))
+                        {
+                            a_type = "Projet d'achat";
+                        }
+
+
+                        if (CO_No == 0)
+                        {
+                            MessageBox.Show("Pas de collaborateur pour ceci", "Avertissement",
+                                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+
+                        doCollaborateur = _collaborateurRepository.GetBy_CO_No(CO_No);
+                        if (doCollaborateur == null)
+                        {
+                            MessageBox.Show("Collaborateur non trouvé.");
+                            return;
+                        }
+
+                        // Déplacer BindingEntetes vers la bonne ligne
+                        if (BindingEntetes.List != null)
+                        {
+                            for (int i = 0; i < BindingEntetes.List.Count; i++)
+                            {
+                                DataRowView row = BindingEntetes.List[i] as DataRowView;
+                                if (row != null &&
+                                    row["DO_Piece"]?.ToString()?.Trim() == dopiece_selected)
+                                {
+                                    BindingEntetes.Position = i;
+                                    break;
+                                }
+                            }
+                        }
+
+                        string nodoc = doPiece.Substring(3, 8);
+                        string destinationFolderdoc = $@"\\Srv-arb\documents_achats$\{nodoc}";
+                        if (!Directory.Exists(destinationFolderdoc))
+                            Directory.CreateDirectory(destinationFolderdoc);
+
+                        frmEditDocument editForm = new frmEditDocument(doPiece, a_type, this, BindingEntetes);
+                        editForm.ShowDialog();
+
+                        ChargerDonneesDepuisBDD();
+                    }
                 }
             }
             catch (Exception ex)
@@ -449,6 +837,34 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             frm_generer frmGen = new frm_generer();
             frmGen.ShowDialog();
             ChargerDonneesDepuisBDD();
+        }
+
+        private void gcLivre_Load(object sender, EventArgs e)
+        {
+            // 1. Configurer le master
+            
+        }
+
+        private DataTable ChargerDetailLivre(string doPiece)
+        {
+            string query = @"
+                SELECT 
+                    AR_Ref,
+                    DL_Design      AS Designation,
+                    DL_Qte         AS DL_Qte
+                FROM dbo.F_DOCLIGNE
+                WHERE DO_Piece = @doPiece
+                ORDER BY DL_Ligne ASC";
+
+            DataTable dt = new DataTable();
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            using (SqlCommand cmd = new SqlCommand(query, conn))
+            {
+                cmd.Parameters.AddWithValue("@doPiece", doPiece);
+                conn.Open();
+                new SqlDataAdapter(cmd).Fill(dt);
+            }
+            return dt;
         }
     }
 }

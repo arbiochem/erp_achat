@@ -24,8 +24,9 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 case "Facture":
                     radioGroup1.Properties.Items[0].Enabled = false;
                     radioGroup1.Properties.Items[1].Enabled = false;
-                    radioGroup1.Properties.Items[2].Enabled = true;
+                    radioGroup1.Properties.Items[2].Enabled = false;
                     //radioGroup1.Properties.Items[2].Enabled = false;
+                    radioGroup1.SelectedIndex = 2;
                     break;
 
                 case "Bon de livraison":
@@ -35,6 +36,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
                 case "Bon de commande":
                     radioGroup1.Properties.Items[0].Enabled = false;
+                    radioGroup1.SelectedIndex = 1;
                     break;
 
                 case "Bon de réception":
@@ -54,5 +56,9 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             this.Close();
         }
 
+        private void frmTransform_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }
