@@ -252,9 +252,6 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                 txtcoursdevise.Text = cours.ToString();
                                 cmbcollaborateur.EditValue = coNo == 0 ? null : (object)coNo;
                                 cmbdepot.EditValue = deno == 0 ? null : (object)deno;
-                                datelivrprev.EditValue = reader["DO_DateLivr"] != DBNull.Value
-                                 ? Convert.ToDateTime(reader["DO_DateLivr"])
-                                 : (object)null;
                                 datecommande.EditValue = reader["DO_DateExpedition"] != DBNull.Value
                                  ? Convert.ToDateTime(reader["DO_DateExpedition"])
                                  : (object)null;
@@ -264,7 +261,6 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                 txtcoursdevise.Text = "0";
                                 cmbcollaborateur.EditValue = null;
                                 cmbdepot.EditValue = null;
-                                datelivrprev.EditValue = null;
                                 datecommande.EditValue = null;
                             }
                         }
@@ -458,11 +454,6 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             {
                 deno = Convert.ToInt32(cmbdepot.EditValue);
             }
-        }
-
-        private void datelivrprev_EditValueChanged(object sender, EventArgs e)
-        {
-            dt = Convert.ToDateTime(datelivrprev.EditValue.ToString());
         }
 
         private bool _isValidating = false;

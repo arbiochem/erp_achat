@@ -264,7 +264,7 @@ namespace arbioApp
             catch (Exception ex)
             {
                 MethodBase m = MethodBase.GetCurrentMethod();
-                MessageBox.Show($"Une erreur est survenue :{m}  : {ex.Message}", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                //MessageBox.Show($"Une erreur est survenue :{m}  : {ex.Message}", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
             {

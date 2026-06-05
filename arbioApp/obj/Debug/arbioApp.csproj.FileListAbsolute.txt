@@ -347,7 +347,6 @@ D:\Arbiochem\Travail\ERP\arbioApp\obj\Debug\arbioApp.Modules.Principal.DI._2_Doc
 D:\Arbiochem\Travail\ERP\arbioApp\obj\Debug\arbioApp.Modules.Principal.DI._2_Documents.frmEditArticles.resources
 D:\Arbiochem\Travail\ERP\arbioApp\obj\Debug\arbioApp.Modules.Principal.DI._2_Documents.frmEditFrns.resources
 D:\Arbiochem\Travail\ERP\arbioApp\obj\Debug\arbioApp.Modules.Principal.DI._2_Documents.frmEditInfos.resources
-D:\Arbiochem\Travail\ERP\arbioApp\obj\Debug\arbioApp.Modules.Principal.DI._2_Documents.frmLotSerie.resources
 D:\Arbiochem\Travail\ERP\arbioApp\obj\Debug\arbioApp.Modules.Principal.DI._2_Documents.frmQuery.resources
 D:\Arbiochem\Travail\ERP\arbioApp\obj\Debug\arbioApp.Modules.Principal.DI._2_Documents.frmReglementFrns.resources
 D:\Arbiochem\Travail\ERP\arbioApp\obj\Debug\arbioApp.Modules.Principal.DI._2_Documents.frmSites.resources

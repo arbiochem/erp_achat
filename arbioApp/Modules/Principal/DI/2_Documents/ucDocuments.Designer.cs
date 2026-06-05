@@ -30,6 +30,7 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ucDocuments));
+            DevExpress.XtraGrid.GridLevelNode gridLevelNode1 = new DevExpress.XtraGrid.GridLevelNode();
             this.imageCollection1 = new DevExpress.Utils.ImageCollection(this.components);
             this.barManager1 = new DevExpress.XtraBars.BarManager(this.components);
             this.bar2 = new DevExpress.XtraBars.Bar();
@@ -451,6 +452,9 @@
             // 
             // gcLivre
             // 
+            gridLevelNode1.RelationName = "gvLivresDetails";
+            this.gcLivre.LevelTree.Nodes.AddRange(new DevExpress.XtraGrid.GridLevelNode[] {
+            gridLevelNode1});
             this.gcLivre.Location = new System.Drawing.Point(695, 34);
             this.gcLivre.MainView = this.gvLivre;
             this.gcLivre.Name = "gcLivre";
@@ -465,6 +469,7 @@
             this.cardView8,
             this.gridView10,
             this.gridView11});
+            this.gcLivre.Load += new System.EventHandler(this.gcLivre_Load);
             // 
             // gvLivre
             // 
@@ -472,7 +477,6 @@
             this.gvLivre.Name = "gvLivre";
             this.gvLivre.OptionsBehavior.Editable = false;
             this.gvLivre.OptionsView.ShowGroupPanel = false;
-            gvLivre.RowCellClick += GridViewLivre_RowCellClick;
             // 
             // repositoryItemPictureEdit4
             // 

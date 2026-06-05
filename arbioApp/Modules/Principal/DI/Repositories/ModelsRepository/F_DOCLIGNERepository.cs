@@ -422,12 +422,10 @@ namespace arbioApp.Modules.Principal.DI.Repositories.ModelsRepository
 
 
 
-        public void Update(F_DOCLIGNE f_DOCLIGNE)
+        public void Update(F_DOCLIGNE f_DOCLIGNES)
         {
             try
             {
-                F_DOCLIGNE _f_DOCLIGNEToUpdate = _context.F_DOCLIGNE.Where(dl => dl.AR_Ref == f_DOCLIGNE.AR_Ref && dl.DL_No == f_DOCLIGNE.DL_No).FirstOrDefault();
-
                 string queryUpdateF_DOCLIGNE = @"
                 DISABLE TRIGGER ALL ON dbo.F_DOCLIGNE;
 
@@ -458,40 +456,43 @@ namespace arbioApp.Modules.Principal.DI.Repositories.ModelsRepository
                     DL_DatePieceFourniss = @DL_DatePieceFourniss,
                     cbCreationUser = @cbCreationUser
                    
-                WHERE DL_No = @DL_No;
+                WHERE DO_Piece = @DO_Pieces and DL_No=@DL_No;
 
                 ENABLE TRIGGER ALL ON dbo.F_DOCLIGNE;
             ";
 
                 using (var context = new AppDbContext())
                 {
+                    F_DOCLIGNE _f_DOCLIGNEToUpdate = context.F_DOCLIGNE.AsNoTracking().Where(dl => dl.AR_Ref == f_DOCLIGNES.AR_Ref && dl.DL_No == f_DOCLIGNES.DL_No).FirstOrDefault();
+
                     context.Database.ExecuteSqlCommand(
                         queryUpdateF_DOCLIGNE,
-                        new SqlParameter("@DO_Type", f_DOCLIGNE.DO_Type),
-                        new SqlParameter("@DO_Piece", f_DOCLIGNE.DO_Piece),
-                        new SqlParameter("@AR_Ref", f_DOCLIGNE.AR_Ref),
-                        new SqlParameter("@DL_Design", f_DOCLIGNE.DL_Design),
-                        new SqlParameter("@CT_Num", f_DOCLIGNE.CT_Num),
-                        new SqlParameter("@DL_PrixUnitaire", f_DOCLIGNE.DL_PrixUnitaire),
-                        new SqlParameter("@DL_QteBL", f_DOCLIGNE.DL_QteBL),
-                        new SqlParameter("@DL_QteBC", f_DOCLIGNE.DL_QteBC),
-                        new SqlParameter("@DL_QtePL", f_DOCLIGNE.DL_QtePL),
-                        new SqlParameter("@DL_QteDE", f_DOCLIGNE.DL_QteDE),
-                        new SqlParameter("@DL_Taxe1", f_DOCLIGNE.DL_Taxe1),
-                        new SqlParameter("@DL_Qte", f_DOCLIGNE.DL_Qte),
-                        new SqlParameter("@EU_Qte", f_DOCLIGNE.EU_Qte),
-                        new SqlParameter("@DL_Remise01REM_Valeur", f_DOCLIGNE.DL_Remise01REM_Valeur),
-                        new SqlParameter("@DL_PoidsNet", f_DOCLIGNE.DL_PoidsNet),
-                        new SqlParameter("@DL_PoidsBrut", f_DOCLIGNE.DL_PoidsBrut),
-                        new SqlParameter("@DL_PrixRU", f_DOCLIGNE.DL_PrixRU),
-                        new SqlParameter("@DL_MontantHT", f_DOCLIGNE.DL_MontantHT),
-                        new SqlParameter("@DL_MontantTTC", f_DOCLIGNE.DL_MontantTTC),                        
-                        new SqlParameter("@Retenu", f_DOCLIGNE.Retenu),
-                        new SqlParameter("@DL_MontantRegle", f_DOCLIGNE.DL_MontantRegle ?? 0),
-                        new SqlParameter("@DL_PieceFourniss", f_DOCLIGNE.DL_PieceFourniss ?? ""),
-                        new SqlParameter("@DL_DatePieceFourniss", f_DOCLIGNE.DL_DatePieceFourniss ?? DateTime.Now),
+                        new SqlParameter("@DO_Type", f_DOCLIGNES.DO_Type),
+                        new SqlParameter("@DO_Piece", f_DOCLIGNES.DO_Piece),
+                        new SqlParameter("@DO_Pieces", _f_DOCLIGNEToUpdate.DO_Piece),
+                        new SqlParameter("@AR_Ref", f_DOCLIGNES.AR_Ref),
+                        new SqlParameter("@DL_Design", f_DOCLIGNES.DL_Design),
+                        new SqlParameter("@CT_Num", f_DOCLIGNES.CT_Num),
+                        new SqlParameter("@DL_PrixUnitaire", f_DOCLIGNES.DL_PrixUnitaire),
+                        new SqlParameter("@DL_QteBL", (object)_f_DOCLIGNEToUpdate.DL_QteBL ?? DBNull.Value),
+                        new SqlParameter("@DL_QteBC", (object)_f_DOCLIGNEToUpdate.DL_QteBC ?? DBNull.Value),
+                        new SqlParameter("@DL_QtePL", (object)_f_DOCLIGNEToUpdate.DL_QtePL ?? DBNull.Value),
+                        new SqlParameter("@DL_QteDE", (object)_f_DOCLIGNEToUpdate.DL_QteDE ?? DBNull.Value),
+                        new SqlParameter("@DL_Taxe1", f_DOCLIGNES.DL_Taxe1),
+                        new SqlParameter("@DL_Qte", _f_DOCLIGNEToUpdate.DL_Qte),
+                        new SqlParameter("@EU_Qte", (object)_f_DOCLIGNEToUpdate.EU_Qte ?? DBNull.Value),
+                        new SqlParameter("@DL_Remise01REM_Valeur", f_DOCLIGNES.DL_Remise01REM_Valeur),
+                        new SqlParameter("@DL_PoidsNet", f_DOCLIGNES.DL_PoidsNet),
+                        new SqlParameter("@DL_PoidsBrut", f_DOCLIGNES.DL_PoidsBrut),
+                        new SqlParameter("@DL_PrixRU", f_DOCLIGNES.DL_PrixRU),
+                        new SqlParameter("@DL_MontantHT", f_DOCLIGNES.DL_MontantHT),
+                        new SqlParameter("@DL_MontantTTC", f_DOCLIGNES.DL_MontantTTC),                        
+                        new SqlParameter("@Retenu", f_DOCLIGNES.Retenu),
+                        new SqlParameter("@DL_MontantRegle", f_DOCLIGNES.DL_MontantRegle ?? 0),
+                        new SqlParameter("@DL_PieceFourniss", f_DOCLIGNES.DL_PieceFourniss ?? ""),
+                        new SqlParameter("@DL_DatePieceFourniss", f_DOCLIGNES.DL_DatePieceFourniss ?? DateTime.Now),
                         new SqlParameter("@cbCreationUser", FrmMdiParent._id_user),
-                        new SqlParameter("@DL_No", f_DOCLIGNE.DL_No)
+                        new SqlParameter("@DL_No", f_DOCLIGNES.DL_No)
                     );
                 }
             }
