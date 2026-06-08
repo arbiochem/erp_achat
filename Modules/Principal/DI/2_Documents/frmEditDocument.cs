@@ -3442,7 +3442,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                         .Value = dopiecetxt.Text.Trim();
 
                     cmd.Parameters.Add("@do_pieces", SqlDbType.VarChar, 20)
-                        .Value = dopiecetxt.Text.Trim();
+                        .Value = newDocPieceNo;
 
                     int nbLignes = cmd.ExecuteNonQuery();
 

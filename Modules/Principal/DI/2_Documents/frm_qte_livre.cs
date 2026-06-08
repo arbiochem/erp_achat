@@ -116,22 +116,22 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                             else
                             {
                                 query = @"
-                            UPDATE dbo.F_DOCLIGNE SET 
-                                DL_Qte   =CAST(ISNULL(TRY_CAST(DL_Qte AS DECIMAL(18,2)), 0) + @qtelivre AS VARCHAR),
-                                DL_QteBC =CAST(ISNULL(TRY_CAST(DL_QteBC AS DECIMAL(18,2)), 0) + @qtelivre AS VARCHAR),
-                                DL_QteBL = CAST(ISNULL(TRY_CAST(DL_QteBL AS DECIMAL(18,2)), 0) + @qtelivre AS VARCHAR)
-                                EU_Qte   = CAST(ISNULL(TRY_CAST(EU_Qte AS DECIMAL(18,2)), 0) + @qtelivre AS VARCHAR)
-                                DL_QtePL = CAST(ISNULL(TRY_CAST(DL_QtePL AS DECIMAL(18,2)), 0) + @qtelivre AS VARCHAR)
-                                DL_QteDE = CAST(ISNULL(TRY_CAST(DL_QteDE AS DECIMAL(18,2)), 0) + @qtelivre AS VARCHAR)
-                                QteLivre = CAST(ISNULL(TRY_CAST(QteLivre AS DECIMAL(18,2)), 0) + @qtelivre AS VARCHAR)
-                            WHERE DO_Piece = @DoPiece AND AR_Ref = @arref";
+                                UPDATE dbo.F_DOCLIGNE SET 
+                                    DL_Qte   = CAST(ISNULL(TRY_CAST(@qte AS DECIMAL(18,2)), 0) AS DECIMAL(18,2)),
+                                    DL_QteBC = CAST(ISNULL(TRY_CAST(@qte AS DECIMAL(18,2)), 0) AS DECIMAL(18,2)),
+                                    DL_QteBL = CAST(ISNULL(TRY_CAST(@qte AS DECIMAL(18,2)), 0) AS DECIMAL(18,2)),
+                                    EU_Qte   = CAST(ISNULL(TRY_CAST(@qte AS DECIMAL(18,2)), 0) AS DECIMAL(18,2)),
+                                    DL_QtePL = CAST(ISNULL(TRY_CAST(@qte AS DECIMAL(18,2)), 0) AS DECIMAL(18,2)),
+                                    DL_QteDE = CAST(ISNULL(TRY_CAST(@qte AS DECIMAL(18,2)), 0) AS DECIMAL(18,2)),
+                                    QteLivre += @qtelivre 
+                                WHERE DO_Piece = @DoPiece AND AR_Ref = @arref";
 
                             }
                             conn.Open();
                             using (SqlCommand cmd = new SqlCommand(query, conn))
                             {
                                 cmd.Parameters.AddWithValue("@DoPiece", doPieceOriginal);
-                                cmd.Parameters.AddWithValue("@arref", txtRef.Text);
+                                cmd.Parameters.AddWithValue("@arref", txtRef.Text.Trim());
                                 cmd.Parameters.AddWithValue("@qte", qtt);
                                 cmd.Parameters.AddWithValue("@qtelivre", Convert.ToDecimal(txtQteLivrer.Text));
 

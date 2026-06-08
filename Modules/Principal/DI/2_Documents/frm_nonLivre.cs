@@ -17,5 +17,10 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         {
             InitializeComponent();
         }
+
+        private void simpleButton1_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
