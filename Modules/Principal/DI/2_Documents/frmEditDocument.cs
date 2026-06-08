@@ -460,7 +460,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             txtDoRef.Text = ucDocuments.doRef;
             //txtCours.Text = ucDocuments.doCours.ToString();
             txtCours.Properties.Mask.MaskType = DevExpress.XtraEditors.Mask.MaskType.Numeric;
-            txtCours.Properties.Mask.EditMask = "n2";
+            txtCours.Properties.Mask.EditMask = "N2";
             txtCours.Properties.Mask.UseMaskAsDisplayFormat = true;
             //datelivrprev.Text = ucDocuments.doDateLivrPrev.ToString("dd/MM/yyyy"); ;
             //txtDoRef.Text = ucDocuments.doRef;
@@ -868,7 +868,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 var col = gvLigneEdit.Columns[fieldName];
                 if (col == null) return;
                 col.SummaryItem.SummaryType = DevExpress.Data.SummaryItemType.Sum;
-                col.SummaryItem.DisplayFormat = "{0:n2}";
+                col.SummaryItem.DisplayFormat = "{0:N2}";
             }
 
             // Colonnes avec summary
@@ -1308,7 +1308,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             RepositoryItemSpinEdit spin = new RepositoryItemSpinEdit();
             spin.IsFloatValue = true;
             spin.Mask.MaskType = DevExpress.XtraEditors.Mask.MaskType.Numeric;
-            spin.Mask.EditMask = "n2";
+            spin.Mask.EditMask = "N2";
             spin.Mask.UseMaskAsDisplayFormat = true;
 
             // IMPORTANT : Gérer l'événement EditValueChanged du SpinEdit
@@ -1814,19 +1814,8 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
                     //decimal montantHT = Convert.ToDecimal(gvLigneEdit.GetRowCellValue(row, "DL_MontantHT"));
                     object montantHTvalue = gvLigneEdit.GetRowCellValue(row, "DL_MontantHT");
-                    decimal montantHT = 0;
-                    if (montantHT == 0)
-                    {
-                        if (new[] { "XW", "FOB" }.Contains(cmbIncoterm.Text))
-                        {
-                            montantHT = (qte * puNet * cours) + (frais + fret);
-                        }
-                        else
-                        {
-                            montantHT = (qte * puNet * cours) + frais;
-                        }
-                        gvLigneEdit.SetRowCellValue(row, "DL_MontantHT", montantHT);
-                    }
+                    decimal montantHT = (qte * puNet * cours) + frais;
+                    gvLigneEdit.SetRowCellValue(row, "DL_MontantHT", montantHT);
                     //decimal montantTTC = Convert.ToDecimal(gvLigneEdit.GetRowCellValue(row, "DL_MontantTTC"));
                     object montantTTCvalue = gvLigneEdit.GetRowCellValue(row, "DL_MontantTTC");
                     decimal montantTTC = 0;
@@ -2999,6 +2988,15 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             {
                 MessageBox.Show("La saisie du cours de devise est obligatoire!!!!", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
+            void SummaryColonne(string fieldName)
+            {
+                var col = gvLigneEdit.Columns[fieldName];
+                if (col == null) return;
+                col.SummaryItem.SummaryType = DevExpress.Data.SummaryItemType.Sum;
+                col.SummaryItem.DisplayFormat = "{0:N2}";
+            }
+            SummaryColonne("DL_MontantHT");
         }
         private void LoadCodeTaxe()
         {
@@ -3761,6 +3759,18 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                     }
                                     catch (Exception er) { }
                                 }
+                                else if (e.Column.FieldName == "MontantTotalendevise")
+                                {
+                                    try
+                                    {
+                                        decimal montant = Convert.ToDecimal(gvLigneEdit.GetListSourceRowCellValue(e.ListSourceRowIndex, "DL_MontantHT"));
+                                        decimal devise = Convert.ToDecimal(txtCours.Text);
+
+                                        decimal tot_endevise = montant/ devise;
+                                        e.Value = tot_endevise.ToString("N2");
+                                    }
+                                    catch (Exception er) { }
+                                }
                             }
                         };
                     }
@@ -4189,7 +4199,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                     RepositoryItemSpinEdit spin = new RepositoryItemSpinEdit();
                     spin.IsFloatValue = true;
                     spin.Mask.MaskType = DevExpress.XtraEditors.Mask.MaskType.Numeric;
-                    spin.Mask.EditMask = "n2";
+                    spin.Mask.EditMask = "N2";
                     spin.Mask.UseMaskAsDisplayFormat = true;
 
                     // IMPORTANT : Gérer l'événement EditValueChanged du SpinEdit
@@ -4340,7 +4350,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                         };
 
                                         col1.SummaryItem.SummaryType = DevExpress.Data.SummaryItemType.Sum;
-                                        col1.SummaryItem.DisplayFormat = "{0:n2}";
+                                        col1.SummaryItem.DisplayFormat = "{0:N2}";
                                         gvLigneEdit.Appearance.FooterPanel.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
 
                                     }
@@ -4403,6 +4413,25 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                    .FirstOrDefault() ?? "";
 
                 ExecuteStockAlert();
+
+                void SummaryColonne(string fieldName)
+                {
+                    var col = gvLigneEdit.Columns[fieldName];
+                    if (col == null) return;
+                    col.SummaryItem.SummaryType = DevExpress.Data.SummaryItemType.Sum;
+
+                    if (fieldName != "MontantTotalendevise")
+                    {
+                        col.SummaryItem.DisplayFormat = "{0:N2}";
+                    }
+                    else
+                    {
+                        col.SummaryItem.DisplayFormat = "{0:N2} " + lkDevise.Text;
+                    }
+                }
+
+
+                SummaryColonne("DL_MontantHT");
             }catch(Exception ex) { }
         }
 
@@ -5324,7 +5353,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                             col_htdevises.DisplayFormat.FormatType =
                                 DevExpress.Utils.FormatType.Numeric;
 
-                            col_htdevises.DisplayFormat.FormatString = "n2";
+                            col_htdevises.DisplayFormat.FormatString = "N2";
 
                             col_htdevises.OptionsColumn.AllowEdit = false;
                             col_htdevises.OptionsColumn.ReadOnly = true;
@@ -6485,7 +6514,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                     col_htdevises.DisplayFormat.FormatType =
                         DevExpress.Utils.FormatType.Numeric;
 
-                    col_htdevises.DisplayFormat.FormatString = "n2";
+                    col_htdevises.DisplayFormat.FormatString = "N2";
 
                     col_htdevises.OptionsColumn.AllowEdit = false;
                     col_htdevises.OptionsColumn.ReadOnly = true;
@@ -6520,7 +6549,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
 
                 col_htdevise.SummaryItem.SummaryType = DevExpress.Data.SummaryItemType.Sum;
-                col_htdevise.SummaryItem.DisplayFormat = "{0:n2} " + devise;
+                col_htdevise.SummaryItem.DisplayFormat = "{0:N2} " + devise;
                 gvLigneEdit.Appearance.FooterPanel.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
                 // Déclenchement du handler si nécessaire
                 var args = new DevExpress.XtraGrid.Views.Base.CellValueChangedEventArgs(
@@ -6584,7 +6613,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                         col_htdevises.DisplayFormat.FormatType =
                             DevExpress.Utils.FormatType.Numeric;
 
-                        col_htdevises.DisplayFormat.FormatString = "n2";
+                        col_htdevises.DisplayFormat.FormatString = "N2";
 
                         col_htdevises.OptionsColumn.AllowEdit = false;
                         col_htdevises.OptionsColumn.ReadOnly = true;
@@ -6626,11 +6655,11 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
                         if (fieldName != "MontantTotalendevise")
                         {
-                            col.SummaryItem.DisplayFormat = "{0:n2}";
+                            col.SummaryItem.DisplayFormat = "{0:N2}";
                         }
                         else
                         {
-                            col.SummaryItem.DisplayFormat = "{0:n2} "+lkDevise.Text;
+                            col.SummaryItem.DisplayFormat = "{0:N2} "+lkDevise.Text;
                         }
                     }
 
@@ -6641,7 +6670,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
                 // Regénère le résumé sans appeler l’event manuellement
                 gvLigneEdit.UpdateSummary();
-            }
+                gvLigneEdit.RefreshData();            }
             catch (Exception ed) { }
         }
 
