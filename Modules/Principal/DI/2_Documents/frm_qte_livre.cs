@@ -282,9 +282,9 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                             cmd.Parameters.AddWithValue("@AR_Ref", txtRef.Text);
                             cmd.Parameters.AddWithValue("@LS_NoSerie", txtLot.Text);
                             cmd.Parameters.Add("@Qte", qte);
-                            cmd.Parameters.AddWithValue("@Peremption", Convert.ToDateTime(dtperemption.Text));
+                            cmd.Parameters.AddWithValue("@Peremption", Convert.ToDateTime(dtperemption.Text).Date);
                             cmd.Parameters.AddWithValue("@DE_No", recuperer_depot(txtdepot1.Text));
-                            cmd.Parameters.AddWithValue("@lsfabrication", Convert.ToDateTime(DateTime.Now));
+                            cmd.Parameters.AddWithValue("@lsfabrication", Convert.ToDateTime(DateTime.Now).Date);
                             cmd.Parameters.AddWithValue("@user", cbUserCreation.Text);
                             cmd.Parameters.AddWithValue("@lscomplement", txtRef.Text);
                             cmd.Parameters.AddWithValue("@dlnoin", DL_NoIn);

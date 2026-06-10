@@ -3525,8 +3525,64 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         }
         private void lkCodeTaxe_EditValueChanged(object sender, EventArgs e)
         {
+            void SummaryColonne(string fieldName)
+            {
+                var col = gvLigneEdit.Columns[fieldName];
+                if (col == null) return;
+                col.SummaryItem.SummaryType = DevExpress.Data.SummaryItemType.Sum;
+                if (fieldName != "MontantTotalendevise")
+                    col.SummaryItem.DisplayFormat = "{0:N2}";
+                else
+                    col.SummaryItem.DisplayFormat = "{0:N2} " + lkDevise.Text;
+            }
+
+            SummaryColonne("DL_MontantHT");
+            if (lkDevise.Text == "MGA")
+            {
+                gvLigneEdit.BeginUpdate();
+                try
+                {
+                    for (int i = 0; i < gvLigneEdit.RowCount; i++)
+                    {
+                        object val = gvLigneEdit.GetRowCellValue(i, "DL_MontantHT");
+                        if (val != null && val != DBNull.Value)
+                        {
+                            decimal montant = Convert.ToDecimal(val);
+                            // Force MontantTotalendevise = MontantHT (pas de multiplication)
+                            gvLigneEdit.SetRowCellValue(i, "MontantTotalendevise", montant);
+                        }
+                    }
+                }
+                finally
+                {
+                    gvLigneEdit.EndUpdate();
+                }
+
+                gvLigneEdit.UpdateSummary();
+                gvLigneEdit.RefreshData();
+                SummaryColonne("MontantTotalendevise");
+            }
+            else
+            {
+                // Recalculer MontantTotalendevise = valeur * cours pour chaque ligne
+                foreach (DataRowView drv in gvLigneEdit.DataSource as System.Windows.Forms.BindingSource ?? new System.Windows.Forms.BindingSource())
+                {
+                    if (drv.Row.Table.Columns.Contains("MontantTotalendevise"))
+                    {
+                        decimal montant = Convert.ToDecimal(drv["DL_MontantHT"]);
+                        decimal cours = decimal.TryParse(txtCours.Text, out decimal c) ? c : 1;
+                        drv["MontantTotalendevise"] = montant / cours;
+
+                        gvLigneEdit.UpdateSummary();
+                        gvLigneEdit.RefreshData();
+
+                    }
+                }
+            }
+
             gvLigneEdit.UpdateSummary();
             gvLigneEdit.RefreshData();
+            SummaryColonne("MontantTotalendevise");
         }
 
         public class DeviseDto
@@ -3763,10 +3819,23 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                 {
                                     try
                                     {
-                                        decimal montant = Convert.ToDecimal(gvLigneEdit.GetListSourceRowCellValue(e.ListSourceRowIndex, "DL_MontantHT"));
-                                        decimal devise = Convert.ToDecimal(txtCours.Text);
+                                        decimal montant = Convert.ToDecimal(
+                                            gvLigneEdit.GetListSourceRowCellValue(e.ListSourceRowIndex, "DL_MontantHT"));
+                                        decimal cours = decimal.TryParse(txtCours.Text, out decimal c) ? c : 1;
 
-                                        decimal tot_endevise = montant/ devise;
+                                        decimal tot_endevise;
+
+                                        if (lkDevise.Text == "MGA")
+                                        {
+                                            // MontantHT est déjà en MGA, pas besoin de diviser
+                                            tot_endevise = montant;
+                                        }
+                                        else
+                                        {
+                                            // Devise étrangère : MontantHT / cours = valeur en devise
+                                            tot_endevise = cours != 0 ? montant / cours : montant;
+                                        }
+
                                         e.Value = tot_endevise.ToString("N2");
                                     }
                                     catch (Exception er) { }
