@@ -38,6 +38,7 @@ using DevExpress.XtraGrid.Columns;
 using DevExpress.XtraGrid.Views.Base;
 using DevExpress.XtraGrid.Views.Grid;
 using DevExpress.XtraPrinting;
+using DevExpress.XtraReports.Design.GroupSort;
 using DevExpress.XtraReports.UI;
 using DevExpress.XtraRichEdit.Import.Doc;
 using DevExpress.XtraSplashScreen;
@@ -138,6 +139,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         public frmEditDocument(string DoPiece, string typeDocument, ucDocuments parent, System.Windows.Forms.BindingSource source)
         {
             InitializeComponent();
+            
             CustomLayout();
             _context = new AppDbContext();
             _listeDocs = _context.F_DOCENTETE
@@ -216,6 +218,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             gvLigneEdit.RefreshData();
 
             ExecuteStockAlert();
+
         }
 
 
@@ -226,7 +229,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             {
                 _prefix = "APA";
                 InitializeComponent();
-
+                dataGridView2.CellContentClick += dataGridView2_CellClick;
                 _context = new AppDbContext();
                 _listeDocs = _context.F_DOCENTETE.ToList();
 
@@ -460,7 +463,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             txtDoRef.Text = ucDocuments.doRef;
             //txtCours.Text = ucDocuments.doCours.ToString();
             txtCours.Properties.Mask.MaskType = DevExpress.XtraEditors.Mask.MaskType.Numeric;
-            txtCours.Properties.Mask.EditMask = "n2";
+            txtCours.Properties.Mask.EditMask = "N2";
             txtCours.Properties.Mask.UseMaskAsDisplayFormat = true;
             //datelivrprev.Text = ucDocuments.doDateLivrPrev.ToString("dd/MM/yyyy"); ;
             //txtDoRef.Text = ucDocuments.doRef;
@@ -868,7 +871,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 var col = gvLigneEdit.Columns[fieldName];
                 if (col == null) return;
                 col.SummaryItem.SummaryType = DevExpress.Data.SummaryItemType.Sum;
-                col.SummaryItem.DisplayFormat = "{0:n2}";
+                col.SummaryItem.DisplayFormat = "{0:N2}";
             }
 
             // Colonnes avec summary
@@ -1308,7 +1311,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             RepositoryItemSpinEdit spin = new RepositoryItemSpinEdit();
             spin.IsFloatValue = true;
             spin.Mask.MaskType = DevExpress.XtraEditors.Mask.MaskType.Numeric;
-            spin.Mask.EditMask = "n2";
+            spin.Mask.EditMask = "N2";
             spin.Mask.UseMaskAsDisplayFormat = true;
 
             // IMPORTANT : Gérer l'événement EditValueChanged du SpinEdit
@@ -1814,19 +1817,8 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
                     //decimal montantHT = Convert.ToDecimal(gvLigneEdit.GetRowCellValue(row, "DL_MontantHT"));
                     object montantHTvalue = gvLigneEdit.GetRowCellValue(row, "DL_MontantHT");
-                    decimal montantHT = 0;
-                    if (montantHT == 0)
-                    {
-                        if (new[] { "XW", "FOB" }.Contains(cmbIncoterm.Text))
-                        {
-                            montantHT = (qte * puNet * cours) + (frais + fret);
-                        }
-                        else
-                        {
-                            montantHT = (qte * puNet * cours) + frais;
-                        }
-                        gvLigneEdit.SetRowCellValue(row, "DL_MontantHT", montantHT);
-                    }
+                    decimal montantHT = (qte * puNet * cours) + frais;
+                    gvLigneEdit.SetRowCellValue(row, "DL_MontantHT", montantHT);
                     //decimal montantTTC = Convert.ToDecimal(gvLigneEdit.GetRowCellValue(row, "DL_MontantTTC"));
                     object montantTTCvalue = gvLigneEdit.GetRowCellValue(row, "DL_MontantTTC");
                     decimal montantTTC = 0;
@@ -2999,6 +2991,15 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             {
                 MessageBox.Show("La saisie du cours de devise est obligatoire!!!!", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
+            void SummaryColonne(string fieldName)
+            {
+                var col = gvLigneEdit.Columns[fieldName];
+                if (col == null) return;
+                col.SummaryItem.SummaryType = DevExpress.Data.SummaryItemType.Sum;
+                col.SummaryItem.DisplayFormat = "{0:N2}";
+            }
+            SummaryColonne("DL_MontantHT");
         }
         private void LoadCodeTaxe()
         {
@@ -3342,6 +3343,21 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                     cmd.ExecuteNonQuery();
                 }
 
+                string UPDATESqlsbl = @"UPDATE BL SET do_piece=@do_pieces WHERE do_piece=@do_piece";
+
+                using (SqlConnection conn = new SqlConnection(connectionString2))
+                using (SqlCommand cmd = new SqlCommand(UPDATESqlsbl, conn))
+                {
+                    cmd.Parameters.Add("@do_piece", SqlDbType.VarChar, 50)
+                        .Value = dopiecetxt.Text.Trim();
+
+                    cmd.Parameters.Add("@do_pieces", SqlDbType.VarChar, 20)
+                        .Value = newDocPieceNo;
+
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                }
+
 
                 string UPDATESqls3 = @"UPDATE F_DOCLIGNE SET do_piece=@do_pieces WHERE do_piece=@do_piece";
 
@@ -3366,10 +3382,10 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 using (SqlCommand cmd = new SqlCommand(UPDATESqls2, conn))
                 {
                     cmd.Parameters.Add("@do_piece", SqlDbType.VarChar, 50)
-                        .Value = dopiecetxt.Text.Trim() + 'N';
+                        .Value = dopiecetxt.Text.Trim();
 
                     cmd.Parameters.Add("@do_pieces", SqlDbType.VarChar, 20)
-                        .Value = dopiecetxt.Text;
+                        .Value = newDocPieceNo;
 
                     conn.Open();
                     new SqlCommand("DISABLE TRIGGER ALL ON F_FRET", conn).ExecuteNonQuery();
@@ -3422,18 +3438,38 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                     cmd.ExecuteNonQuery();
                 }
 
-                string UPDATESqlss2 = @"UPDATE Compagnie SET DO_PIECE=@do_pieces WHERE DO_PIECE=@do_piece";
+
+                string updateSql = @"
+                    UPDATE Compagnie
+                    SET DO_PIECE = @do_pieces
+                    WHERE DO_PIECE = @do_piece
+                      AND EXISTS (
+                          SELECT 1
+                          FROM Compagnie
+                          WHERE DO_PIECE = @do_piece
+                      )";
 
                 using (SqlConnection conn = new SqlConnection(connectionString2))
-                using (SqlCommand cmd = new SqlCommand(UPDATESqlss2, conn))
+                using (SqlCommand cmd = new SqlCommand(updateSql, conn))
                 {
+                    conn.Open();
+
                     cmd.Parameters.Add("@do_piece", SqlDbType.VarChar, 50)
-                        .Value = dopiecetxt.Text.Trim() + 'N';
+                        .Value = dopiecetxt.Text.Trim();
 
                     cmd.Parameters.Add("@do_pieces", SqlDbType.VarChar, 20)
-                        .Value = dopiecetxt.Text;
+                        .Value = newDocPieceNo;
 
-                    cmd.ExecuteNonQuery();
+                    int nbLignes = cmd.ExecuteNonQuery();
+
+                    if (nbLignes > 0)
+                    {
+                        // Mise à jour effectuée
+                    }
+                    else
+                    {
+                        // Aucun DO_PIECE correspondant trouvé
+                    }
                 }
             }
             catch (System.Exception ex)
@@ -3507,8 +3543,64 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         }
         private void lkCodeTaxe_EditValueChanged(object sender, EventArgs e)
         {
+            void SummaryColonne(string fieldName)
+            {
+                var col = gvLigneEdit.Columns[fieldName];
+                if (col == null) return;
+                col.SummaryItem.SummaryType = DevExpress.Data.SummaryItemType.Sum;
+                if (fieldName != "MontantTotalendevise")
+                    col.SummaryItem.DisplayFormat = "{0:N2}";
+                else
+                    col.SummaryItem.DisplayFormat = "{0:N2} " + lkDevise.Text;
+            }
+
+            SummaryColonne("DL_MontantHT");
+            if (lkDevise.Text == "MGA")
+            {
+                gvLigneEdit.BeginUpdate();
+                try
+                {
+                    for (int i = 0; i < gvLigneEdit.RowCount; i++)
+                    {
+                        object val = gvLigneEdit.GetRowCellValue(i, "DL_MontantHT");
+                        if (val != null && val != DBNull.Value)
+                        {
+                            decimal montant = Convert.ToDecimal(val);
+                            // Force MontantTotalendevise = MontantHT (pas de multiplication)
+                            gvLigneEdit.SetRowCellValue(i, "MontantTotalendevise", montant);
+                        }
+                    }
+                }
+                finally
+                {
+                    gvLigneEdit.EndUpdate();
+                }
+
+                gvLigneEdit.UpdateSummary();
+                gvLigneEdit.RefreshData();
+                SummaryColonne("MontantTotalendevise");
+            }
+            else
+            {
+                // Recalculer MontantTotalendevise = valeur * cours pour chaque ligne
+                foreach (DataRowView drv in gvLigneEdit.DataSource as System.Windows.Forms.BindingSource ?? new System.Windows.Forms.BindingSource())
+                {
+                    if (drv.Row.Table.Columns.Contains("MontantTotalendevise"))
+                    {
+                        decimal montant = Convert.ToDecimal(drv["DL_MontantHT"]);
+                        decimal cours = decimal.TryParse(txtCours.Text, out decimal c) ? c : 1;
+                        drv["MontantTotalendevise"] = montant / cours;
+
+                        gvLigneEdit.UpdateSummary();
+                        gvLigneEdit.RefreshData();
+
+                    }
+                }
+            }
+
             gvLigneEdit.UpdateSummary();
             gvLigneEdit.RefreshData();
+            SummaryColonne("MontantTotalendevise");
         }
 
         public class DeviseDto
@@ -3741,6 +3833,31 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                     }
                                     catch (Exception er) { }
                                 }
+                                else if (e.Column.FieldName == "MontantTotalendevise")
+                                {
+                                    try
+                                    {
+                                        decimal montant = Convert.ToDecimal(
+                                            gvLigneEdit.GetListSourceRowCellValue(e.ListSourceRowIndex, "DL_MontantHT"));
+                                        decimal cours = decimal.TryParse(txtCours.Text, out decimal c) ? c : 1;
+
+                                        decimal tot_endevise;
+
+                                        if (lkDevise.Text == "MGA")
+                                        {
+                                            // MontantHT est déjà en MGA, pas besoin de diviser
+                                            tot_endevise = montant;
+                                        }
+                                        else
+                                        {
+                                            // Devise étrangère : MontantHT / cours = valeur en devise
+                                            tot_endevise = cours != 0 ? montant / cours : montant;
+                                        }
+
+                                        e.Value = tot_endevise.ToString("N2");
+                                    }
+                                    catch (Exception er) { }
+                                }
                             }
                         };
                     }
@@ -3901,14 +4018,14 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 }
             }
         }
+        private SqlDataAdapter da2;
+        private DataTable dt2;
         private void lister_packing(String cond)
         {
-            lblval1.Text = "";
             string connectionString2 =
-                                    $"Server={serveripPrincipale};Database={dbPrincipale};" +
-                                    $"User ID=Dev;Password=1234;TrustServerCertificate=True;" +
-                                    $"Connection Timeout=240;";
-
+        $"Server={serveripPrincipale};Database={dbPrincipale};" +
+        $"User ID=Dev;Password=1234;TrustServerCertificate=True;" +
+        $"Connection Timeout=240;";
             string query = "SELECT * FROM F_PACKING_LIST WHERE dopiece = @do_piece";
 
             using (SqlConnection conn = new SqlConnection(connectionString2))
@@ -3919,25 +4036,129 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
                         cmd.Parameters.Add("@do_piece", SqlDbType.VarChar, 50)
-                       .Value = dopiecetxt.Text.Trim();
-                        using (SqlDataReader reader = cmd.ExecuteReader())
+                            .Value = cond.Trim();
+                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
                         {
-                            if (reader.HasRows == true)
-                            {
-                                lblval1.Text = "1";
-                                while (reader.Read())
-                                {
-                                    cmb_type.Text = reader.GetString(1).ToString();
-                                    txtnbr.Text = reader.GetString(2);
-                                    if (!reader.IsDBNull(3))
-                                        dteta.Value = Convert.ToDateTime(reader.GetValue(3));
+                            DataTable dt = new DataTable();
+                            da.Fill(dt);
 
-                                    if (!reader.IsDBNull(4))
-                                        dtetd.Value = Convert.ToDateTime(reader.GetValue(4));
+                            if (dt.Rows.Count > 0)
+                            {
+                                dataGridView2.DataSource = dt;
+                                if (dataGridView2.Columns.Contains("id"))
+                                {
+                                    dataGridView2.Columns["id"].Visible = false;
                                 }
+
+                                if (dataGridView2.Columns.Contains("dopiece"))
+                                {
+                                    dataGridView2.Columns["dopiece"].Visible = false;
+                                }
+                                AjouterBoutonsActions();
+                            }
+                            else
+                            {
+                                dataGridView2.DataSource = null;
                             }
                         }
                     }
+                }
+                catch (System.Exception ex)
+                {
+                    MethodBase m = MethodBase.GetCurrentMethod();
+                    MessageBox.Show($"Une erreur est survenue : {ex.Message}, {m}", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private void AjouterBoutonsActions()
+        {
+            if (!dataGridView2.Columns.Contains("btnModifier"))
+            {
+                DataGridViewImageColumn btnModifier = new DataGridViewImageColumn();
+                btnModifier.Name = "btnModifier";
+                btnModifier.HeaderText = "";
+                btnModifier.Image = System.Drawing.Image.FromFile(Path.Combine(System.Windows.Forms.Application.StartupPath, "images", "modifier.jpeg"));
+                btnModifier.ImageLayout = DataGridViewImageCellLayout.Zoom;
+                btnModifier.Width = 30; // augmenté (était 40)
+                dataGridView2.Columns.Add(btnModifier);
+                //dataGridView2.Columns.Insert(0, btnModifier);
+            }
+
+            if (!dataGridView2.Columns.Contains("btnSupprimer"))
+            {
+                DataGridViewImageColumn btnSupprimer = new DataGridViewImageColumn();
+                btnSupprimer.Name = "btnSupprimer";
+                btnSupprimer.HeaderText = "";
+                btnSupprimer.Image = System.Drawing.Image.FromFile(Path.Combine(System.Windows.Forms.Application.StartupPath, "images", "supprimer.jpeg"));
+                btnSupprimer.ImageLayout = DataGridViewImageCellLayout.Zoom;
+                btnSupprimer.Width = 30; // augmenté (était 40)
+                dataGridView2.Columns.Add(btnSupprimer);
+                //dataGridView2.Columns.Insert(0, btnSupprimer);
+            }
+
+            // Augmente la hauteur des lignes pour laisser de la place aux icônes plus grandes
+            dataGridView2.RowTemplate.Height = 10;
+
+            // Si des lignes existent déjà (rechargement), il faut aussi forcer la hauteur sur chaque ligne
+            foreach (DataGridViewRow row in dataGridView2.Rows)
+            {
+                row.Height = 25;
+            }
+        }
+
+        private void dataGridView2_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0) return; // ignore le clic sur l'en-tête
+
+            string colName = dataGridView2.Columns[e.ColumnIndex].Name;
+
+            // Récupère l'id de la ligne cliquée (adaptez "id" au nom réel de votre colonne clé primaire)
+            int idValue =Convert.ToInt32(dataGridView2.Rows[e.RowIndex].Cells["id"].Value);
+
+            if (colName == "btnModifier")
+            {
+                ModifierLigne(idValue);
+            }
+            else if (colName == "btnSupprimer")
+            {
+                SupprimerLigne(idValue);
+            }
+        }
+
+        private void ModifierLigne(int id)
+        {
+            frm_packingList fpg=new frm_packingList(dopiecetxt.Text,id);
+            fpg.lblval1.Text = "1";
+            fpg.ShowDialog();
+            lister_packing(dopiecetxt.Text);
+        }
+
+        private void SupprimerLigne(object id)
+        {
+            var confirm = MessageBox.Show("Voulez-vous vraiment supprimer cette ligne ?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (confirm != DialogResult.Yes) return;
+
+            string connectionString2 =
+                $"Server={serveripPrincipale};Database={dbPrincipale};" +
+                $"User ID=Dev;Password=1234;TrustServerCertificate=True;" +
+                $"Connection Timeout=240;";
+            string query = "DELETE FROM F_PACKING_LIST WHERE id = @id"; // adaptez "id" au nom réel de votre clé primaire
+
+            using (SqlConnection conn = new SqlConnection(connectionString2))
+            {
+                try
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@id", id);
+                        cmd.ExecuteNonQuery();
+                    }
+                    MessageBox.Show("Ligne supprimée avec succès.", "Succès", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    // Recharge le grid pour refléter la suppression
+                    lister_packing(dopiecetxt.Text.Trim());
                 }
                 catch (System.Exception ex)
                 {
@@ -4001,6 +4222,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         {
             try
             {
+                lister_BL();
                 DataTable dt = new DataTable();
 
                 using (SqlConnection cn = new SqlConnection(connectionStrings))
@@ -4169,7 +4391,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                     RepositoryItemSpinEdit spin = new RepositoryItemSpinEdit();
                     spin.IsFloatValue = true;
                     spin.Mask.MaskType = DevExpress.XtraEditors.Mask.MaskType.Numeric;
-                    spin.Mask.EditMask = "n2";
+                    spin.Mask.EditMask = "N2";
                     spin.Mask.UseMaskAsDisplayFormat = true;
 
                     // IMPORTANT : Gérer l'événement EditValueChanged du SpinEdit
@@ -4320,7 +4542,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                         };
 
                                         col1.SummaryItem.SummaryType = DevExpress.Data.SummaryItemType.Sum;
-                                        col1.SummaryItem.DisplayFormat = "{0:n2}";
+                                        col1.SummaryItem.DisplayFormat = "{0:N2}";
                                         gvLigneEdit.Appearance.FooterPanel.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
 
                                     }
@@ -4383,6 +4605,25 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                    .FirstOrDefault() ?? "";
 
                 ExecuteStockAlert();
+
+                void SummaryColonne(string fieldName)
+                {
+                    var col = gvLigneEdit.Columns[fieldName];
+                    if (col == null) return;
+                    col.SummaryItem.SummaryType = DevExpress.Data.SummaryItemType.Sum;
+
+                    if (fieldName != "MontantTotalendevise")
+                    {
+                        col.SummaryItem.DisplayFormat = "{0:N2}";
+                    }
+                    else
+                    {
+                        col.SummaryItem.DisplayFormat = "{0:N2} " + lkDevise.Text;
+                    }
+                }
+
+
+                SummaryColonne("DL_MontantHT");
             }catch(Exception ex) { }
         }
 
@@ -5304,7 +5545,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                             col_htdevises.DisplayFormat.FormatType =
                                 DevExpress.Utils.FormatType.Numeric;
 
-                            col_htdevises.DisplayFormat.FormatString = "n2";
+                            col_htdevises.DisplayFormat.FormatString = "N2";
 
                             col_htdevises.OptionsColumn.AllowEdit = false;
                             col_htdevises.OptionsColumn.ReadOnly = true;
@@ -6465,7 +6706,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                     col_htdevises.DisplayFormat.FormatType =
                         DevExpress.Utils.FormatType.Numeric;
 
-                    col_htdevises.DisplayFormat.FormatString = "n2";
+                    col_htdevises.DisplayFormat.FormatString = "N2";
 
                     col_htdevises.OptionsColumn.AllowEdit = false;
                     col_htdevises.OptionsColumn.ReadOnly = true;
@@ -6500,7 +6741,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
 
                 col_htdevise.SummaryItem.SummaryType = DevExpress.Data.SummaryItemType.Sum;
-                col_htdevise.SummaryItem.DisplayFormat = "{0:n2} " + devise;
+                col_htdevise.SummaryItem.DisplayFormat = "{0:N2} " + devise;
                 gvLigneEdit.Appearance.FooterPanel.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
                 // Déclenchement du handler si nécessaire
                 var args = new DevExpress.XtraGrid.Views.Base.CellValueChangedEventArgs(
@@ -6564,7 +6805,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                         col_htdevises.DisplayFormat.FormatType =
                             DevExpress.Utils.FormatType.Numeric;
 
-                        col_htdevises.DisplayFormat.FormatString = "n2";
+                        col_htdevises.DisplayFormat.FormatString = "N2";
 
                         col_htdevises.OptionsColumn.AllowEdit = false;
                         col_htdevises.OptionsColumn.ReadOnly = true;
@@ -6606,11 +6847,11 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
                         if (fieldName != "MontantTotalendevise")
                         {
-                            col.SummaryItem.DisplayFormat = "{0:n2}";
+                            col.SummaryItem.DisplayFormat = "{0:N2}";
                         }
                         else
                         {
-                            col.SummaryItem.DisplayFormat = "{0:n2} "+lkDevise.Text;
+                            col.SummaryItem.DisplayFormat = "{0:N2} "+lkDevise.Text;
                         }
                     }
 
@@ -6621,7 +6862,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
                 // Regénère le résumé sans appeler l’event manuellement
                 gvLigneEdit.UpdateSummary();
-            }
+                gvLigneEdit.RefreshData();            }
             catch (Exception ed) { }
         }
 
@@ -6841,7 +7082,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
                     cmd.Parameters.Add("@mode_paiement", SqlDbType.VarChar, 20)
                         .Value = cmbmdp.Text?.ToString();
-                    // OU cmbmdp.Text selon ton binding
+                    // OU cmbmdp.Text selon ton bindinglister_packing
 
                     cmd.Parameters.Add("@date_echeance", SqlDbType.DateTime)
                         .Value = dtecheance.Value;
@@ -6852,94 +7093,6 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
                 MessageBox.Show("Modification Mode de paiement terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
-        }
-
-        private void simpleButton5_Click(object sender, EventArgs e)
-        {
-            string connectionString2 =
-                                    $"Server={serveripPrincipale};Database={dbPrincipale};" +
-                                    $"User ID=Dev;Password=1234;TrustServerCertificate=True;" +
-                                    $"Connection Timeout=240;";
-
-            if (string.IsNullOrWhiteSpace(lblval1.Text))
-            {
-                lblval1.Text = "1";
-                string insertSql = @"
-                    INSERT INTO F_PACKING_LIST
-                    (
-                        dopiece,
-                        type,
-                        nombre,
-                        eta,
-                        etd
-                    )
-                    VALUES
-                    (
-                        @do_piece,
-                        @type,
-                        @nombre,
-                        @eta,
-                        @etd
-                    )";
-
-                using (SqlConnection conn = new SqlConnection(connectionString2))
-                using (SqlCommand cmd = new SqlCommand(insertSql, conn))
-                {
-                    cmd.Parameters.Add("@do_piece", SqlDbType.VarChar, 50)
-                        .Value = dopiecetxt.Text.Trim();
-
-                    cmd.Parameters.Add("@type", SqlDbType.VarChar, 20)
-                        .Value = cmb_type.Text?.ToString();
-
-                    cmd.Parameters.Add("@nombre", SqlDbType.VarChar)
-                        .Value = txtnbr.Text;
-
-                    cmd.Parameters.Add("@eta", SqlDbType.DateTime)
-                        .Value = dteta.Value;
-
-                    cmd.Parameters.Add("@etd", SqlDbType.DateTime)
-                        .Value = dtetd.Value;
-
-                    conn.Open();
-                    cmd.ExecuteNonQuery();
-                }
-            }
-            else
-            {
-                lblval1.Text = "1";
-                string UPDATESql = @"
-                UPDATE F_PACKING_LIST
-                    SET type=@type,
-                    nombre=@nombre,
-                    eta=@eta,
-                    etd=@etd
-                    WHERE dopiece=@do_piece 
-                ";
-
-                using (SqlConnection conn = new SqlConnection(connectionString2))
-                using (SqlCommand cmd = new SqlCommand(UPDATESql, conn))
-                {
-                    cmd.Parameters.Add("@do_piece", SqlDbType.VarChar, 50)
-                        .Value = dopiecetxt.Text.Trim();
-
-                    cmd.Parameters.Add("@type", SqlDbType.VarChar, 20)
-                        .Value = cmb_type.Text?.ToString();
-
-                    cmd.Parameters.Add("@nombre", SqlDbType.VarChar)
-                        .Value = txtnbr.Text;
-
-                    cmd.Parameters.Add("@eta", SqlDbType.DateTime)
-                        .Value = dteta.Value;
-
-                    cmd.Parameters.Add("@etd", SqlDbType.DateTime)
-                        .Value = dtetd.Value;
-
-                    conn.Open();
-                    cmd.ExecuteNonQuery();
-                }
-            }
-
-            MessageBox.Show("Modification Packing List terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void simpleButton4_Click(object sender, EventArgs e)
@@ -7137,6 +7290,64 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             }
         }
 
+        private void lister_BL()
+        {
+            try
+            {
+                memoBL.Text = "";
+                using (SqlConnection con = new SqlConnection(connectionString))
+                {
+                    con.Open();
+
+                    using (SqlCommand cmd = new SqlCommand())
+                    {
+                        cmd.Connection = con;
+
+
+                        cmd.Parameters.Clear();
+
+                        cmd.CommandText = @"
+                                         SELECT ar_ref,BL
+                                         FROM BL
+                                         WHERE Do_Piece = @Do_Piece";
+
+                        cmd.Parameters.AddWithValue("@Do_Piece", dopiecetxt.Text);
+
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            Dictionary<string, List<string>> refBLDict = new Dictionary<string, List<string>>();
+
+                            while (reader.Read())
+                            {
+                                string arRef = reader["ar_ref"].ToString();
+                                string bl = reader["BL"].ToString();
+
+                                if (string.IsNullOrEmpty(arRef) || string.IsNullOrEmpty(bl))
+                                    continue;
+
+                                if (!refBLDict.ContainsKey(arRef))
+                                    refBLDict[arRef] = new List<string>();
+
+                                refBLDict[arRef].Add(bl);
+                            }
+
+                            List<string> resultList = new List<string>();
+                            foreach (var kvp in refBLDict)
+                            {
+                                resultList.Add($"{kvp.Key}({string.Join(",", kvp.Value)})");
+                            }
+
+                            memoBL.Text = string.Join(",", resultList);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Erreur");
+            }
+        }
+
         private void cmbtransitaire_SelectedIndexChanged(object sender, EventArgs e)
         {
             if(cmbtransitaire.SelectedIndex != -1)
@@ -7167,6 +7378,13 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                     txt_autre_affreter.ReadOnly = true;
                 }
             }
+        }
+
+        private void btnappel_Click(object sender, EventArgs e)
+        {
+            frm_packingList fpq = new frm_packingList(dopiecetxt.Text);
+            fpq.ShowDialog();
+            lister_packing(dopiecetxt.Text);
         }
     }
 }

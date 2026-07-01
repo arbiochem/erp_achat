@@ -386,7 +386,7 @@
             this.gcCloture.Name = "gcCloture";
             this.gcCloture.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] {
             this.repositoryItemPictureEdit5});
-            this.gcCloture.Size = new System.Drawing.Size(385, 821);
+            this.gcCloture.Size = new System.Drawing.Size(385, 763);
             this.gcCloture.TabIndex = 9;
             this.gcCloture.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.gvCloture,
@@ -460,7 +460,7 @@
             this.gcLivre.Name = "gcLivre";
             this.gcLivre.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] {
             this.repositoryItemPictureEdit4});
-            this.gcLivre.Size = new System.Drawing.Size(341, 821);
+            this.gcLivre.Size = new System.Drawing.Size(341, 763);
             this.gcLivre.TabIndex = 8;
             this.gcLivre.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.gvLivre,
@@ -530,7 +530,7 @@
             this.gcFactures.Location = new System.Drawing.Point(350, 34);
             this.gcFactures.MainView = this.gvFacture;
             this.gcFactures.Name = "gcFactures";
-            this.gcFactures.Size = new System.Drawing.Size(339, 821);
+            this.gcFactures.Size = new System.Drawing.Size(339, 763);
             this.gcFactures.TabIndex = 7;
             this.gcFactures.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.gvFacture,
@@ -615,7 +615,7 @@
             this.gcEntetes.Name = "gcEntetes";
             this.gcEntetes.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] {
             this.repositoryItemPictureEdit1});
-            this.gcEntetes.Size = new System.Drawing.Size(339, 821);
+            this.gcEntetes.Size = new System.Drawing.Size(339, 763);
             this.gcEntetes.TabIndex = 5;
             this.gcEntetes.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.gvEntete,

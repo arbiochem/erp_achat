@@ -8,6 +8,7 @@ using DevExpress.DashboardCommon.Viewer;
 using DevExpress.Utils;
 using DevExpress.Xpo;
 using DevExpress.XtraBars;
+using DevExpress.XtraBars.Alerter;
 using DevExpress.XtraCharts.Native;
 using DevExpress.XtraEditors;
 using DevExpress.XtraEditors.Controls;
@@ -71,6 +72,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             CreateDatabaseMenu();
             ChargerDonneesDepuisBDD();
 
+            
             GridView gvDetailLivre = new GridView(gcLivre);
             gvDetailLivre.Name = "gvDetailLivre";
 
@@ -219,8 +221,6 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         private void ucDocuments_Load(object sender, EventArgs e)
         {
             ChargerDonneesDepuisBDD();
-            gcEntetes.ForceInitialize();
-            gvEntete.BestFitColumns();
         }
 
         List<F_DOCENTETE> dotype = new List<F_DOCENTETE>
@@ -249,10 +249,14 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
         public void ChargerDonneesDepuisBDD()
         {
+            if (BindingEntetes == null)
+                BindingEntetes = new BindingSource();
             try
             {
                 Entetes.AfficherEntetes_achat(gcEntetes, gcFactures, gcLivre, gcCloture, DoTypeSelected, BindingEntetes);
                 gvEntete.BestFitColumns();
+
+
 
                 // 4. Lier au GridControl
                
@@ -277,6 +281,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                         }
                     }
 
+                 
                     if (coldopiece != null)
                     {
                         RepositoryItemHyperLinkEdit hyperlink = new RepositoryItemHyperLinkEdit();
@@ -313,6 +318,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                         colDLDesign.Caption = "Designation";
                     }
 
+
                     var colDLPrixRU = gv.Columns["DL_PrixRU"];
                     if (colDLPrixRU != null)
                     {
@@ -329,6 +335,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                     if (colss != null)
                         colss.Visible = false;
                 }
+
             }
             catch (System.Exception ex)
             {

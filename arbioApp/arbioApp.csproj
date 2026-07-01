@@ -321,11 +321,11 @@
     <Compile Include="Modules\Principal\DI\2_Documents\frm_generer.Designer.cs">
       <DependentUpon>frm_generer.cs</DependentUpon>
     </Compile>
-    <Compile Include="Modules\Principal\DI\2_Documents\frm_nonLivre.cs">
+    <Compile Include="Modules\Principal\DI\2_Documents\frm_packingList.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Modules\Principal\DI\2_Documents\frm_nonLivre.Designer.cs">
-      <DependentUpon>frm_nonLivre.cs</DependentUpon>
+    <Compile Include="Modules\Principal\DI\2_Documents\frm_packingList.Designer.cs">
+      <DependentUpon>frm_packingList.cs</DependentUpon>
     </Compile>
     <Compile Include="Modules\Principal\DI\2_Documents\frm_qte_livre.cs">
       <SubType>Form</SubType>
@@ -758,8 +758,8 @@
     <EmbeddedResource Include="Modules\Principal\DI\2_Documents\frm_generer.resx">
       <DependentUpon>frm_generer.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Modules\Principal\DI\2_Documents\frm_nonLivre.resx">
-      <DependentUpon>frm_nonLivre.cs</DependentUpon>
+    <EmbeddedResource Include="Modules\Principal\DI\2_Documents\frm_packingList.resx">
+      <DependentUpon>frm_packingList.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Modules\Principal\DI\2_Documents\frm_qte_livre.resx">
       <DependentUpon>frm_qte_livre.cs</DependentUpon>
