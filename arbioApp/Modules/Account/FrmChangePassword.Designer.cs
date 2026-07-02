@@ -30,20 +30,22 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmChangePassword));
             this.layoutControl1 = new DevExpress.XtraLayout.LayoutControl();
-            this.txtNewPassword = new DevExpress.XtraEditors.TextEdit();
-            this.txtConfirm = new DevExpress.XtraEditors.TextEdit();
             this.btnChangePassword = new DevExpress.XtraEditors.SimpleButton();
             this.Root = new DevExpress.XtraLayout.LayoutControlGroup();
-            this.layoutControlItem2 = new DevExpress.XtraLayout.LayoutControlItem();
             this.layoutControlItem4 = new DevExpress.XtraLayout.LayoutControlItem();
             this.emptySpaceItem1 = new DevExpress.XtraLayout.EmptySpaceItem();
+            this.txtNewPassword = new DevExpress.XtraEditors.TextEdit();
+            this.txtConfirm = new DevExpress.XtraEditors.TextEdit();
+            this.layoutControlItem2 = new DevExpress.XtraLayout.LayoutControlItem();
             this.layoutControlItem3 = new DevExpress.XtraLayout.LayoutControlItem();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControl1)).BeginInit();
             this.layoutControl1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Root)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem4)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.emptySpaceItem1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txtNewPassword.Properties)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txtConfirm.Properties)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem3)).BeginInit();
             this.SuspendLayout();
             // 
@@ -60,24 +62,6 @@
             this.layoutControl1.Size = new System.Drawing.Size(341, 106);
             this.layoutControl1.TabIndex = 0;
             this.layoutControl1.Text = "layoutControl1";
-            // 
-            // txtNewPassword
-            // 
-            this.txtNewPassword.EditValue = "";
-            this.txtNewPassword.Location = new System.Drawing.Point(108, 12);
-            this.txtNewPassword.Name = "txtNewPassword";
-            this.txtNewPassword.Size = new System.Drawing.Size(221, 22);
-            this.txtNewPassword.StyleController = this.layoutControl1;
-            this.txtNewPassword.TabIndex = 5;
-            // 
-            // txtConfirm
-            // 
-            this.txtConfirm.EditValue = "";
-            this.txtConfirm.Location = new System.Drawing.Point(108, 38);
-            this.txtConfirm.Name = "txtConfirm";
-            this.txtConfirm.Size = new System.Drawing.Size(221, 22);
-            this.txtConfirm.StyleController = this.layoutControl1;
-            this.txtConfirm.TabIndex = 5;
             // 
             // btnChangePassword
             // 
@@ -101,18 +85,6 @@
             this.Root.Name = "Root";
             this.Root.Size = new System.Drawing.Size(341, 106);
             this.Root.TextVisible = false;
-            // 
-            // layoutControlItem2
-            // 
-            this.layoutControlItem2.Control = this.txtConfirm;
-            this.layoutControlItem2.ControlAlignment = System.Drawing.ContentAlignment.TopLeft;
-            this.layoutControlItem2.CustomizationFormText = "layoutControlItem2";
-            this.layoutControlItem2.Location = new System.Drawing.Point(0, 26);
-            this.layoutControlItem2.Name = "layoutControlItem2";
-            this.layoutControlItem2.Size = new System.Drawing.Size(321, 26);
-            this.layoutControlItem2.Text = "Confirm";
-            this.layoutControlItem2.TextLocation = DevExpress.Utils.Locations.Left;
-            this.layoutControlItem2.TextSize = new System.Drawing.Size(84, 17);
             // 
             // layoutControlItem4
             // 
@@ -138,6 +110,36 @@
             this.emptySpaceItem1.SizeConstraintsType = DevExpress.XtraLayout.SizeConstraintsType.Custom;
             this.emptySpaceItem1.TextSize = new System.Drawing.Size(0, 0);
             // 
+            // txtNewPassword
+            // 
+            this.txtNewPassword.EditValue = "";
+            this.txtNewPassword.Location = new System.Drawing.Point(108, 12);
+            this.txtNewPassword.Name = "txtNewPassword";
+            this.txtNewPassword.Size = new System.Drawing.Size(221, 22);
+            this.txtNewPassword.StyleController = this.layoutControl1;
+            this.txtNewPassword.TabIndex = 5;
+            // 
+            // txtConfirm
+            // 
+            this.txtConfirm.EditValue = "";
+            this.txtConfirm.Location = new System.Drawing.Point(108, 38);
+            this.txtConfirm.Name = "txtConfirm";
+            this.txtConfirm.Size = new System.Drawing.Size(221, 22);
+            this.txtConfirm.StyleController = this.layoutControl1;
+            this.txtConfirm.TabIndex = 5;
+            // 
+            // layoutControlItem2
+            // 
+            this.layoutControlItem2.Control = this.txtConfirm;
+            this.layoutControlItem2.ControlAlignment = System.Drawing.ContentAlignment.TopLeft;
+            this.layoutControlItem2.CustomizationFormText = "layoutControlItem2";
+            this.layoutControlItem2.Location = new System.Drawing.Point(0, 26);
+            this.layoutControlItem2.Name = "layoutControlItem2";
+            this.layoutControlItem2.Size = new System.Drawing.Size(321, 26);
+            this.layoutControlItem2.Text = "Confirm";
+            this.layoutControlItem2.TextLocation = DevExpress.Utils.Locations.Left;
+            this.layoutControlItem2.TextSize = new System.Drawing.Size(84, 16);
+            // 
             // layoutControlItem3
             // 
             this.layoutControlItem3.Control = this.txtNewPassword;
@@ -162,9 +164,11 @@
             ((System.ComponentModel.ISupportInitialize)(this.layoutControl1)).EndInit();
             this.layoutControl1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.Root)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem4)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.emptySpaceItem1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txtNewPassword.Properties)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txtConfirm.Properties)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem3)).EndInit();
             this.ResumeLayout(false);
 

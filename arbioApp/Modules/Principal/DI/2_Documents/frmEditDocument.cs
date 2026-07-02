@@ -3313,7 +3313,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                     $"User ID=Dev;Password=1234;TrustServerCertificate=True;" +
                                     $"Connection Timeout=240;";
 
-                string UPDATESqls1 = @"UPDATE F_DOCENTETE SET produit=@do_pieces WHERE do_piece=@do_piece";
+                string UPDATESqls1 = @"UPDATE F_DOCENTETE SET Produit=@do_pieces WHERE do_piece=@do_piece";
 
                 using (SqlConnection conn = new SqlConnection(connectionString2))
                 using (SqlCommand cmdx = new SqlCommand(UPDATESqls1, conn))
@@ -3328,16 +3328,19 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                     cmdx.ExecuteNonQuery();
                 }
 
-                string UPDATESqls = @"UPDATE F_DOCENTETE SET do_piece=@do_pieces WHERE do_piece=@do_piece";
+                string UPDATESqls = @"UPDATE F_DOCENTETE SET do_piece=@do_pieces,DO_TYPE=@dotype WHERE do_piece=@do_piece";
 
                 using (SqlConnection conn = new SqlConnection(connectionString2))
                 using (SqlCommand cmd = new SqlCommand(UPDATESqls, conn))
                 {
                     cmd.Parameters.Add("@do_piece", SqlDbType.VarChar, 50)
-                        .Value = dopiecetxt.Text.Trim() + 'N';
+                        .Value = dopiecetxt.Text.Trim() + '_';
 
                     cmd.Parameters.Add("@do_pieces", SqlDbType.VarChar, 20)
                         .Value = dopiecetxt.Text;
+
+                    cmd.Parameters.Add("@dotype", SqlDbType.Int)
+                        .Value =Convert.ToInt32(newDoType);
 
                     conn.Open();
                     cmd.ExecuteNonQuery();
@@ -3365,7 +3368,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 using (SqlCommand cmd = new SqlCommand(UPDATESqls3, conn))
                 {
                     cmd.Parameters.Add("@do_piece", SqlDbType.VarChar, 50)
-                        .Value = dopiecetxt.Text.Trim() + 'N';
+                        .Value = dopiecetxt.Text.Trim() + '_';
 
                     cmd.Parameters.Add("@do_pieces", SqlDbType.VarChar, 20)
                         .Value = dopiecetxt.Text.Replace("AFA","ABR");
@@ -3382,7 +3385,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 using (SqlCommand cmd = new SqlCommand(UPDATESqls2, conn))
                 {
                     cmd.Parameters.Add("@do_piece", SqlDbType.VarChar, 50)
-                        .Value = dopiecetxt.Text.Trim();
+                        .Value = dopiecetxt.Text.Trim().Replace("_","");
 
                     cmd.Parameters.Add("@do_pieces", SqlDbType.VarChar, 20)
                         .Value = newDocPieceNo;

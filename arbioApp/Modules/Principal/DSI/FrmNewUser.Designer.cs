@@ -32,19 +32,20 @@
             this.layoutControl1 = new DevExpress.XtraLayout.LayoutControl();
             this.simpleButton2 = new DevExpress.XtraEditors.SimpleButton();
             this.simpleButton1 = new DevExpress.XtraEditors.SimpleButton();
-            this.lookUpEdit1 = new DevExpress.XtraEditors.LookUpEdit();
             this.Root = new DevExpress.XtraLayout.LayoutControlGroup();
-            this.layoutControlItem1 = new DevExpress.XtraLayout.LayoutControlItem();
             this.layoutControlItem2 = new DevExpress.XtraLayout.LayoutControlItem();
             this.layoutControlItem3 = new DevExpress.XtraLayout.LayoutControlItem();
             this.emptySpaceItem1 = new DevExpress.XtraLayout.EmptySpaceItem();
+            this.lookUpEdit1 = new DevExpress.XtraEditors.LookUpEdit();
+            this.layoutControlItem1 = new DevExpress.XtraLayout.LayoutControlItem();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControl1)).BeginInit();
             this.layoutControl1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Root)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.emptySpaceItem1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.lookUpEdit1.Properties)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem1)).BeginInit();
             this.SuspendLayout();
             // 
             // layoutControl1
@@ -79,14 +80,6 @@
             this.simpleButton1.Text = "Ajouter";
             this.simpleButton1.Click += new System.EventHandler(this.simpleButton1_Click);
             // 
-            // lookUpEdit1
-            // 
-            this.lookUpEdit1.Location = new System.Drawing.Point(89, 12);
-            this.lookUpEdit1.Name = "lookUpEdit1";
-            this.lookUpEdit1.Size = new System.Drawing.Size(355, 22);
-            this.lookUpEdit1.StyleController = this.layoutControl1;
-            this.lookUpEdit1.TabIndex = 4;
-            // 
             // Root
             // 
             this.Root.EnableIndentsWithoutBorders = DevExpress.Utils.DefaultBoolean.True;
@@ -99,15 +92,6 @@
             this.Root.Name = "Root";
             this.Root.Size = new System.Drawing.Size(456, 79);
             this.Root.TextVisible = false;
-            // 
-            // layoutControlItem1
-            // 
-            this.layoutControlItem1.Control = this.lookUpEdit1;
-            this.layoutControlItem1.Location = new System.Drawing.Point(0, 0);
-            this.layoutControlItem1.Name = "layoutControlItem1";
-            this.layoutControlItem1.Size = new System.Drawing.Size(436, 26);
-            this.layoutControlItem1.Text = "PROT_User";
-            this.layoutControlItem1.TextSize = new System.Drawing.Size(65, 16);
             // 
             // layoutControlItem2
             // 
@@ -135,6 +119,23 @@
             this.emptySpaceItem1.Size = new System.Drawing.Size(79, 33);
             this.emptySpaceItem1.TextSize = new System.Drawing.Size(0, 0);
             // 
+            // lookUpEdit1
+            // 
+            this.lookUpEdit1.Location = new System.Drawing.Point(89, 12);
+            this.lookUpEdit1.Name = "lookUpEdit1";
+            this.lookUpEdit1.Size = new System.Drawing.Size(355, 22);
+            this.lookUpEdit1.StyleController = this.layoutControl1;
+            this.lookUpEdit1.TabIndex = 4;
+            // 
+            // layoutControlItem1
+            // 
+            this.layoutControlItem1.Control = this.lookUpEdit1;
+            this.layoutControlItem1.Location = new System.Drawing.Point(0, 0);
+            this.layoutControlItem1.Name = "layoutControlItem1";
+            this.layoutControlItem1.Size = new System.Drawing.Size(436, 26);
+            this.layoutControlItem1.Text = "PROT_User";
+            this.layoutControlItem1.TextSize = new System.Drawing.Size(65, 16);
+            // 
             // FrmNewUser
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 16F);
@@ -148,10 +149,11 @@
             ((System.ComponentModel.ISupportInitialize)(this.layoutControl1)).EndInit();
             this.layoutControl1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.Root)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem3)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.emptySpaceItem1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.lookUpEdit1.Properties)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem1)).EndInit();
             this.ResumeLayout(false);
 
         }

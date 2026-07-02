@@ -442,3 +442,4 @@ D:\Arbiochem\Travail\ERP\arbioApp\obj\Debug\arbioApp.Modules.Principal.DI._2_Doc
 D:\Arbiochem\Travail\ERP\arbioApp\obj\Debug\arbioApp.Modules.Principal.DI._2_Documents.frm_saisieQuantite.resources
 D:\Arbiochem\Travail\ERP\arbioApp\obj\Debug\arbioApp.Modules.Principal.DI._2_Documents.frm_qte_livre.resources
 D:\Arbiochem\Travail\ERP\arbioApp\obj\Debug\arbioApp.Modules.Principal.DI._2_Documents.frm_packingList.resources
+D:\Arbiochem\Travail\ERP\arbioApp\obj\Debug\arbioApp.Modules.Principal.DI._2_Documents.frmArticles.resources

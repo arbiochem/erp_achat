@@ -102,7 +102,7 @@ namespace arbioApp.Modules.Principal.DI
                         FROM dbo.ACHAT_ENTETE ent
                         INNER JOIN LignesGroupees lg
                             ON REPLACE(REPLACE(lg.Do_Piece, '_', ''),'AFA','ABR') = ent.DO_Piece
-                            OR lg.Do_Piece = ent.PRODUIT
+                            OR lg.Do_Piece = ent.Produit
                     )
                     SELECT
                         ent.DO_Piece,
@@ -119,20 +119,28 @@ namespace arbioApp.Modules.Principal.DI
                             ELSE FORMAT(lp.DL_Qte, 'N2')
                         END AS DL_QteRestant,
                         lp.Total_PrixRU,
-                        CAST(FORMAT(lp.Total_PrixRU, 'N2') AS VARCHAR(50)) + ' ' + ent.D_Intitule AS DL_PrixRU,
+                        CAST(FORMAT(lp.Total_PrixRU * ent.DO_Cours, 'N2') AS VARCHAR(50)) + ' MGA' AS DL_PrixRU,
+                        CAST(FORMAT(lp.Total_PrixRU, 'N2') AS VARCHAR(50)) + ' ' + ent.D_Intitule AS DL_PrixRU1,
+                        CAST(
+                            FORMAT(
+                                SUM(lp.Total_PrixRU * ent.DO_Cours) OVER (PARTITION BY ent.DO_Piece),
+                                'N2'
+                            ) AS VARCHAR(50)
+                        ) + ' MGA' AS Total_PrixRUs,
+
                         CAST(
                             FORMAT(
                                 SUM(lp.Total_PrixRU) OVER (PARTITION BY ent.DO_Piece),
                                 'N2'
                             ) AS VARCHAR(50)
-                        ) + ' ' + ent.D_Intitule AS Total_PrixRUs,
+                        ) + ' ' + ent.D_Intitule AS Total_PrixRUss,
                         CAST(FORMAT(lp.Total_MontantTTC / NULLIF(ent.DO_Cours, 0), 'N2') AS VARCHAR(50)) + ' ' + ent.D_Intitule AS TotalTTC,
                         ISNULL(CAST(ent.DO_Cloture AS INT), 0) AS DO_Cloture,
                         ent.CO_No, ent.DE_No, ent.DO_TIERS, ent.DO_Statut,
                         ent.DO_Expedit, ent.DO_Coord01, ent.DO_Ref, ent.DO_DateLivr,
                         ent.DO_Date, ent.DO_DateExpedition, ent.A_TYPE, ent.DO_CodeTaxe1,
                         ent.DO_Taxe1, ent.DO_Type, ent.DO_Imprim, ent.DO_Reliquat,
-                        ISNULL(ent.PRODUIT, '—') AS 'Facture origine'
+                        ISNULL(ent.Produit, '—') AS 'Facture origine'
                     FROM dbo.ACHAT_ENTETE ent
                     INNER JOIN LignesAvecProduit lp 
                         ON REPLACE(lp.DO_Piece_Entete, '_', '') = ent.DO_Piece
@@ -189,7 +197,7 @@ namespace arbioApp.Modules.Principal.DI
                                     "DO_Date","DO_DateExpedition","A_TYPE","DO_CodeTaxe1",
                                     "DO_Taxe1","DO_Type","DO_Imprim","DO_Reliquat",
                                     "AR_Ref","DL_Design","DL_Qte","DL_QteLivre",
-                                    "DL_QteRestant","DL_PrixRU","Facture origine","Total_PrixRU","Total_PrixRUs"
+                                    "DL_QteRestant","DL_PrixRU","DL_PrixRU1","Facture origine","Total_PrixRU","Total_PrixRUs","Total_PrixRUss"
                                 };
 
                                 foreach (DataTable dt in new[] { dtAPA, dtAutre })
@@ -256,7 +264,7 @@ namespace arbioApp.Modules.Principal.DI
                             FROM dbo.ACHAT_ENTETE ent
                             INNER JOIN LignesGroupees lg 
                                 ON lg.Do_Piece = ent.DO_Piece
-                                OR lg.Do_Piece = ent.PRODUIT
+                                OR lg.Do_Piece = ent.Produit
                             GROUP BY ent.DO_Piece
                         )
                         SELECT
@@ -266,7 +274,6 @@ namespace arbioApp.Modules.Principal.DI
                             END AS DO_Piece,
                             ent.CT_Intitule,
                             lp.AR_Ref, lp.DL_Design, lp.QteLivre, lp.Total_Qte,
-                            CAST(FORMAT(lp.Total_PrixRU, 'N2') AS VARCHAR(50)) + ' ' + ent.D_Intitule AS Total_PrixRUs,
                             CAST(FORMAT(lp.Total_MontantTTC / NULLIF(ent.DO_Cours, 0), 'N2') AS VARCHAR(50)) + ' ' + ent.D_Intitule AS TotalTTC,
                             ISNULL(CAST(ent.DO_Cloture AS INT), 0) AS DO_Cloture,
                             ent.CO_No, ent.DE_No, ent.DO_TIERS, ent.DO_Statut,
@@ -354,9 +361,12 @@ namespace arbioApp.Modules.Principal.DI
             dtHeader.Columns.Add("CT_Intitule", typeof(string));
             dtHeader.Columns.Add("Facture origine", typeof(string));
             dtHeader.Columns.Add("DL_PrixRU", typeof(string));
+            dtHeader.Columns.Add("DL_PrixRU1", typeof(string));
             dtHeader.Columns.Add("TotalTTC", typeof(string));
             dtHeader.Columns.Add("Total_PrixRUs", typeof(string));
-           
+            dtHeader.Columns.Add("Total_PrixRUss", typeof(string));
+
+
             if (withAction)
                 dtHeader.Columns.Add("Action", typeof(string));
 
@@ -372,6 +382,7 @@ namespace arbioApp.Modules.Principal.DI
             {
                 dtDetail.Columns.Add("DL_QteLivre", typeof(string));
                 dtDetail.Columns.Add("DL_QteRestant", typeof(string));
+                dtDetail.Columns.Add("DL_PrixRU1", typeof(string));
             }
 
             ds.Tables.Add(dtHeader);
@@ -409,9 +420,13 @@ namespace arbioApp.Modules.Principal.DI
                 headerRow["DO_Piece"] = doPiece;
                 headerRow["CT_Intitule"] = sourceRow["CT_Intitule"];
                 headerRow["DL_PrixRU"] = sourceRow["DL_PrixRU"];
+                headerRow["DL_PrixRU1"] = sourceRow["DL_PrixRU1"];
                 headerRow["TotalTTC"] = sourceRow["TotalTTC"];
                 headerRow["Total_PrixRUs"] = sourceRow.Table.Columns.Contains("Total_PrixRUs")
                ? sourceRow["Total_PrixRUs"]
+               : (object)"—";
+                headerRow["Total_PrixRUss"] = sourceRow.Table.Columns.Contains("Total_PrixRUss")
+               ? sourceRow["Total_PrixRUss"]
                : (object)"—";
 
                 string factureOrigine = sourceRow.Table.Columns.Contains("Facture origine")
@@ -443,6 +458,9 @@ namespace arbioApp.Modules.Principal.DI
             {
                 detailRow["DL_QteLivre"] = sourceRow["DL_QteLivre"];
                 detailRow["DL_QteRestant"] = sourceRow["DL_QteRestant"];
+                detailRow["DL_PrixRU1"] = sourceRow.Table.Columns.Contains("DL_PrixRU1")
+                   ? sourceRow["DL_PrixRU1"]
+                   : DBNull.Value;
             }
 
             dtDetail.Rows.Add(detailRow);
@@ -517,12 +535,25 @@ namespace arbioApp.Modules.Principal.DI
                 colFO.OptionsColumn.ReadOnly = true;
 
                 // DL_PRIXRU — visible seulement pour dsCloture
-                if (masterView.Columns["Total_PrixRUs"] != null)
+                if (isClotureView)
                 {
-                    masterView.Columns["Total_PrixRUs"].Caption = "Prix de revient total";
-                    masterView.Columns["Total_PrixRUs"].Width = 120;
-                    masterView.Columns["Total_PrixRUs"].Visible = !isLivre;
-                    masterView.Columns["Total_PrixRUs"].VisibleIndex = 3;
+                    if (masterView.Columns["Total_PrixRUs"] != null)
+                    {
+                        masterView.Columns["Total_PrixRUs"].Caption = "Prix de revient total";
+                        masterView.Columns["Total_PrixRUs"].Width = 120;
+                        masterView.Columns["Total_PrixRUs"].Visible = !isLivre;
+                        masterView.Columns["Total_PrixRUs"].VisibleIndex = 3;
+                    }
+                }
+                else
+                {
+                    if (masterView.Columns["Total_PrixRUss"] != null)
+                    {
+                        masterView.Columns["Total_PrixRUss"].Caption = "Prix de revient total";
+                        masterView.Columns["Total_PrixRUss"].Width = 120;
+                        masterView.Columns["Total_PrixRUss"].Visible = !isLivre;
+                        masterView.Columns["Total_PrixRUss"].VisibleIndex = 3;
+                    }
                 }
 
                 // TOTAL TTC — visible seulement pour dsCloture
@@ -748,7 +779,9 @@ namespace arbioApp.Modules.Principal.DI
                 {
                     EnsureDetailColumn(detailView, "DL_QteLivre", "Qté Livrée", 3, 100);
                     EnsureDetailColumn(detailView, "DL_QteRestant", "Reste à livrer", 4, 100);
+                    EnsureDetailColumn(detailView, "DL_PrixRU1", "Prix de revient", 5, 160);
 
+                   
                     if (detailView.Columns["DL_QteLivre"] != null)
                     {
                         detailView.Columns["DL_QteLivre"].AppearanceCell
@@ -764,6 +797,15 @@ namespace arbioApp.Modules.Principal.DI
                         detailView.Columns["DL_QteRestant"].DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
                         detailView.Columns["DL_QteRestant"].DisplayFormat.FormatString = "N2";
                     }
+
+                    if (detailView.Columns["DL_PrixRU1"] != null)
+                    {
+                        detailView.Columns["DL_PrixRU1"].AppearanceCell
+                                  .TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
+                        detailView.Columns["DL_PrixRU1"].DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
+                        detailView.Columns["DL_PrixRU1"].DisplayFormat.FormatString = "N2";
+                    }
+
                 }
 
                 detailView.RowStyle += (sender, e) =>

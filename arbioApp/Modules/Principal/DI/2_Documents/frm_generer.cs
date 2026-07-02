@@ -2,6 +2,7 @@
 using arbioApp.Models;
 using arbioApp.Repositories.ModelsRepository;
 using arbioApp.Services;
+using DevExpress.CodeParser;
 using DevExpress.Data;
 using DevExpress.DataProcessing;
 using DevExpress.XtraCharts.Native;
@@ -45,15 +46,15 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         private Dictionary<string, Rectangle> articleLineBounds = new Dictionary<string, Rectangle>();
         private Dictionary<string, bool> checkStatesFournisseurs = new Dictionary<string, bool>();
 
-            private Dictionary<string, Dictionary<string, bool>> checkStatesArticles
-            = new Dictionary<string, Dictionary<string, bool>>();
+        private Dictionary<string, Dictionary<string, bool>> checkStatesArticles
+        = new Dictionary<string, Dictionary<string, bool>>();
         public frm_generer()
         {
             _prefix = "APA";
             InitializeComponent();
         }
 
-        public static string recuperer_ctnum(string fournisseur,string connStr)
+        public static string recuperer_ctnum(string fournisseur, string connStr)
         {
             string query = "SELECT CT_Num FROM F_COMPTET WHERE CT_Intitule LIKE @intitule";
 
@@ -195,7 +196,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         }
 
         private void InsertFDOCLIGNE(string doPiece, string ar_Ref, string designation,
-                                      double qteACommander = 0,decimal pu=0,decimal montant=0,string ct_num="",int depot=0,decimal poids=0,string connStr="")
+                                      double qteACommander = 0, decimal pu = 0, decimal montant = 0, string ct_num = "", int depot = 0, decimal poids = 0, string connStr = "")
         {
             using (SqlConnection conn = new SqlConnection(connectionStrings))
             {
@@ -211,7 +212,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                     dlLigne = Convert.ToInt32(cmdLigne.ExecuteScalar());
                 }
 
-                string user=FrmMdiParent._id_user.ToString();
+                string user = FrmMdiParent._id_user.ToString();
 
                 new SqlCommand("DISABLE TRIGGER ALL ON F_DOCLIGNE", conn).ExecuteNonQuery();
 
@@ -265,13 +266,21 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             // ── Dictionnaires d'état ────────────────────────────────────────────────────
             // checkStates       : clé = "CT_Num|Source|AR_Ref",   valeur = bool coché
             // articleLineBounds : clé = "rowHandle|AR_Ref|Source", valeur = Rectangle ligne
+            // deleteLineBounds  : clé = "rowHandle|AR_Ref|Source", valeur = Rectangle bouton "✕"
             // cardBoundsDict    : clé = rowHandle,                 valeur = Rectangle carte
             // articleConnectionMap : clé = "CT_Num|Source|AR_Ref", valeur = connectionString
+            // plusButtonBounds  : clé = rowHandle, valeur = (Rectangle du bouton "+", CT_Num, Source, ConnStr)
+            // manualArticles    : clé = "CT_Num|Source", valeur = liste des articles ajoutés manuellement
+            // removedArticles   : clé = "CT_Num|Source", valeur = set des AR_Ref retirés de l'affichage
 
             var checkStates = new Dictionary<string, bool>();
             var articleLineBounds = new Dictionary<string, Rectangle>();
+            var deleteLineBounds = new Dictionary<string, Rectangle>();
             var cardBoundsDict = new Dictionary<int, Rectangle>();
             var articleConnectionMap = new Dictionary<string, string>();
+            var plusButtonBounds = new Dictionary<int, (Rectangle Rect, string CtNum, string Source, string ConnStr)>();
+            var manualArticles = new Dictionary<string, List<(string AR_Ref, string AR_Design, double StockADate, double StockMin, double StockMax)>>();
+            var removedArticles = new Dictionary<string, HashSet<string>>();
 
             DataTable dt = null;
             LayoutView layoutView = null;
@@ -362,6 +371,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             // ══════════════════════════════════════════════════════════════════════════════
 
             // ── Panel de recherche ──
+
             PanelControl searchPanel = new PanelControl();
             searchPanel.Dock = DockStyle.Top;
             searchPanel.Height = 60;
@@ -572,6 +582,24 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                     }
                 }
 
+                // ── Inclure les articles ajoutés manuellement via le bouton "+" ──
+                string manualKey = $"{ctNum}|{source}";
+                if (manualArticles.ContainsKey(manualKey))
+                {
+                    foreach (var m in manualArticles[manualKey])
+                    {
+                        if (!articles.Any(a => a.Ref == m.AR_Ref))
+                            articles.Add((m.AR_Ref, m.AR_Design, m.StockADate, m.StockMin, m.StockMax));
+                    }
+                }
+
+                // ── Exclure les articles supprimés manuellement (bouton "✕") ──
+                if (removedArticles.ContainsKey(manualKey))
+                {
+                    var removedSet = removedArticles[manualKey];
+                    articles = articles.Where(a => !removedSet.Contains(a.Ref)).ToList();
+                }
+
                 // ── Filtre article ──
                 articles = articles
                     .Where(a => string.IsNullOrEmpty(searchA) ||
@@ -583,6 +611,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 int colHeaderH = 22;
                 int lineH = 22;
                 int cbSize = 12;
+                int delSize = 14;
                 int maxVisible = 10;
                 int headerTop = e.Bounds.Top + 4;
                 int colHeaderTop = headerTop + headerH;
@@ -618,12 +647,40 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                         e.Cache.FillRectangle(headerBg,
                             new Rectangle(e.Bounds.Left + 1, headerTop, e.Bounds.Width - 2, headerH));
 
-                    // ── Nom du fournisseur ──
-                    e.Cache.DrawString(ctIntitule, fontCaption, fgWhite,
-                        new Rectangle(e.Bounds.Left + 8, headerTop, e.Bounds.Width - 90, headerH),
-                        sfLeft);
+                    // ── Nom du fournisseur (largeur réduite pour laisser la place au "+") ──
+                    SizeF textSize = e.Cache.CalcTextSize(ctIntitule, fontCaption);
+                    int maxNameWidth = e.Bounds.Width - 130;
+                    Rectangle ctIntituleRect = new Rectangle(e.Bounds.Left + 8, headerTop, maxNameWidth, headerH);
+                    e.Cache.DrawString(ctIntitule, fontCaption, fgWhite, ctIntituleRect, sfLeft);
 
-                    // ── Badge BASE ──
+                    // ── Bouton "+" (ajouter un article manuellement au fournisseur) ──
+                    int plusSize = 30;
+                    int nameEndX = e.Bounds.Left - 40;
+                    int plusX = nameEndX + 8;
+
+                    int maxPlusX = e.Bounds.Right - 100 - plusSize;
+                    if (plusX > maxPlusX) plusX = maxPlusX;
+
+                    int plusY = headerTop - 5;
+                    Rectangle plusRect = new Rectangle(plusX, plusY, plusSize, plusSize);
+
+                    Rectangle shadowRect = new Rectangle(plusRect.X + 1, plusRect.Y + 1, plusRect.Width, plusRect.Height);
+                    using (SolidBrush shadowBrush = new SolidBrush(Color.FromArgb(60, 0, 0, 0)))
+                        e.Cache.FillEllipse(shadowBrush, shadowRect);
+
+                    Color plusButtonColor = Color.FromArgb(46, 204, 113);
+                    using (SolidBrush plusBg = new SolidBrush(plusButtonColor))
+                        e.Cache.FillEllipse(plusBg, plusRect);
+                    using (Pen plusPen = new Pen(Color.White, 2f))
+                        e.Cache.DrawEllipse(plusPen, plusRect);
+
+                    using (Font fontPlusBig = new Font("Tahoma", 11f, FontStyle.Bold))
+                    using (SolidBrush plusFg = new SolidBrush(Color.White))
+                        e.Cache.DrawString("+", fontPlusBig, plusFg, plusRect, sfCenter);
+
+                    plusButtonBounds[e.RowHandle] = (plusRect, ctNum, source, connStr);
+
+                    // ── Badge BASE (à droite de l'en-tête) ──
                     string badgeText = source == "ARBIOCHEM" ? "● ARBIOCHEM" : "● ACTIVO";
                     Color badgeBgColor = source == "ARBIOCHEM"
                         ? Color.FromArgb(200, 20, 70, 140)
@@ -716,9 +773,31 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                             }
                         }
 
-                        // ── Texte désignation ──
+                        // ── Bouton "✕" Supprimer (fin de la colonne désignation) ──
+                        Rectangle delRect = new Rectangle(
+                            e.Bounds.Left + cbSize + 14 + col1W - delSize - 4,
+                            y + (lineH - delSize) / 2,
+                            delSize, delSize);
+
+                        using (SolidBrush delBg = new SolidBrush(Color.FromArgb(235, 87, 87)))
+                            e.Cache.FillEllipse(delBg, delRect);
+                        using (Pen delPen = new Pen(Color.White, 1.5f))
+                        {
+                            int pad = 3;
+                            e.Cache.DrawLine(delPen,
+                                new Point(delRect.Left + pad, delRect.Top + pad),
+                                new Point(delRect.Right - pad, delRect.Bottom - pad));
+                            e.Cache.DrawLine(delPen,
+                                new Point(delRect.Right - pad, delRect.Top + pad),
+                                new Point(delRect.Left + pad, delRect.Bottom - pad));
+                        }
+
+                        string delKey = $"{e.RowHandle}|{arRef}|{source}";
+                        deleteLineBounds[delKey] = delRect;
+
+                        // ── Texte désignation (largeur réduite pour laisser la place au "✕") ──
                         e.Cache.DrawString(arDesign ?? "", fontArt, fgDesign,
-                            new Rectangle(e.Bounds.Left + cbSize + 14, y, col1W, lineH), sfLeft);
+                            new Rectangle(e.Bounds.Left + cbSize + 14, y, col1W - delSize - 8, lineH), sfLeft);
 
                         // ── Stock info ──
                         string stockInfo =
@@ -779,6 +858,134 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             {
                 Point pt = e.Location;
 
+                // ── Clic sur le bouton "+" (ajout manuel d'un article au fournisseur) ──
+                foreach (var kvp in plusButtonBounds)
+                {
+                    if (!kvp.Value.Rect.Contains(pt)) continue;
+
+                    string ctNumPlus = kvp.Value.CtNum;
+                    string sourcePlus = kvp.Value.Source;
+                    string connStrPlus = kvp.Value.ConnStr;
+
+                    string arRefSaisi = "";
+
+                    int rowHandlePlus = kvp.Key;
+
+                    frmArticles farticle = new frmArticles();
+                    string ctIntitule = layoutView.GetRowCellValue(rowHandlePlus, "CT_Intitule")?.ToString() ?? "";
+                    farticle.Text = "Ajout article pour " + ctIntitule;
+                    ;
+                    farticle.ShowDialog();
+
+
+                    if (string.IsNullOrEmpty(arRefSaisi)) return;
+
+                    string arDesignTrouve = "";
+                    bool trouve = false;
+
+                    using (var conn = new SqlConnection(connStrPlus))
+                    {
+                        conn.Open();
+                        using (var cmd = new SqlCommand(
+                            "SELECT AR_Design FROM F_ARTICLE WHERE AR_Ref = @ref", conn))
+                        {
+                            cmd.Parameters.AddWithValue("@ref", arRefSaisi);
+                            object result = cmd.ExecuteScalar();
+                            if (result != null && result != DBNull.Value)
+                            {
+                                arDesignTrouve = result.ToString();
+                                trouve = true;
+                            }
+                        }
+                    }
+
+                    if (!trouve)
+                    {
+                        MessageBox.Show($"Article '{arRefSaisi}' introuvable dans la base {sourcePlus}.",
+                            "Article introuvable", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    string manualKeyClick = $"{ctNumPlus}|{sourcePlus}";
+                    if (!manualArticles.ContainsKey(manualKeyClick))
+                        manualArticles[manualKeyClick] = new List<(string, string, double, double, double)>();
+
+                    if (!manualArticles[manualKeyClick].Any(a => a.AR_Ref == arRefSaisi))
+                        manualArticles[manualKeyClick].Add((arRefSaisi, arDesignTrouve, 0, 0, 0));
+
+                    // Si l'article avait été retiré précédemment, on annule cette suppression
+                    if (removedArticles.ContainsKey(manualKeyClick))
+                        removedArticles[manualKeyClick].Remove(arRefSaisi);
+
+                    string articleKeyClick = $"{ctNumPlus}|{sourcePlus}|{arRefSaisi}";
+                    checkStates[articleKeyClick] = true;
+
+                    UpdateSelectionCount();
+                    articleLineBounds.Clear();
+                    deleteLineBounds.Clear();
+                    layoutView.RefreshData();
+                    return;
+                }
+
+                // ── Clic sur le bouton "✕" (suppression d'un article de la liste affichée) ──
+                foreach (var kvp in deleteLineBounds)
+                {
+                    if (!kvp.Value.Contains(pt)) continue;
+
+                    string[] partsDel = kvp.Key.Split('|');
+                    if (partsDel.Length < 3) continue;
+
+                    int rowHandleDel = int.Parse(partsDel[0]);
+                    string arRefDel = partsDel[1];
+                    string sourceDel = partsDel[2];
+
+                    string ctIntitule = layoutView.GetRowCellValue(rowHandleDel, "CT_Intitule")?.ToString() ?? "";
+                    string id_fournisseur = recuperer_code_fournisseur(ctIntitule);
+
+                    string ctNumDel = layoutView.GetRowCellValue(rowHandleDel, "CT_Num")?.ToString();
+                    if (string.IsNullOrEmpty(ctNumDel)) return;
+
+                    DialogResult confirmDel = MessageBox.Show(
+                        $"Retirer l'article '{arRefDel}' de la liste ?",
+                        "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                    if (confirmDel != DialogResult.Yes) return;
+
+                    try
+                    {
+                        using (SqlConnection connection = new SqlConnection(connectionStrings))
+                        {
+                            connection.Open();
+                            decimal existingQte = 0;
+
+
+                            string deleteSql = "DELETE FROM F_ARTFOURNISS WHERE AR_Ref=@AR_Ref AND CT_Num=@CT_Num";
+                            using (SqlCommand deleteCmd = new SqlCommand(deleteSql, connection))
+                            {
+
+                                deleteCmd.Parameters.AddWithValue("@AR_Ref", (object)arRefDel ?? DBNull.Value);
+                                deleteCmd.Parameters.AddWithValue("@CT_Num", (object)id_fournisseur ?? DBNull.Value);
+
+                                deleteCmd.ExecuteNonQuery();
+
+                                MessageBox.Show("Cet article est bien retiré à ce fournisseur.",
+                                "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message, "Erreur");
+                    }
+
+                    UpdateSelectionCount();
+                    articleLineBounds.Clear();
+                    deleteLineBounds.Clear();
+                    layoutView.RefreshData();
+                    return;
+                }
+
+                // ── Clic sur une ligne article (case à cocher) ──
                 foreach (var kvp in articleLineBounds)
                 {
                     if (!kvp.Value.Contains(pt)) continue;
@@ -805,6 +1012,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 }
             };
 
+
             // ══════════════════════════════════════════════════════════════════════════════
             // 7. FILTRES — RECHERCHE
             // ══════════════════════════════════════════════════════════════════════════════
@@ -813,6 +1021,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             {
                 cardBoundsDict.Clear();
                 articleLineBounds.Clear();
+                deleteLineBounds.Clear();
                 layoutView.RefreshData();
             };
 
@@ -820,6 +1029,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             {
                 cardBoundsDict.Clear();
                 articleLineBounds.Clear();
+                deleteLineBounds.Clear();
                 layoutView.RefreshData();
             };
 
@@ -842,6 +1052,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                     gdList.RefreshDataSource();
                     cardBoundsDict.Clear();
                     articleLineBounds.Clear();
+                    deleteLineBounds.Clear();
                 }
                 catch (Exception ex)
                 {
@@ -871,6 +1082,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                     gdList.RefreshDataSource();
                     cardBoundsDict.Clear();
                     articleLineBounds.Clear();
+                    deleteLineBounds.Clear();
                 }
                 catch (Exception ex)
                 {
@@ -891,6 +1103,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 gdList.RefreshDataSource();
                 cardBoundsDict.Clear();
                 articleLineBounds.Clear();
+                deleteLineBounds.Clear();
             };
 
             // ══════════════════════════════════════════════════════════════════════════════
@@ -934,6 +1147,8 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 }
 
                 // ── Grouper par CT_Num + Source (une carte = un groupe) ──
+                // Cette section inclut déjà les articles ajoutés manuellement via le "+"
+                // et exclut ceux retirés via le "✕" (ils ne sont plus dans checkStates).
                 var groupedByFournisseur = selectedKeys
                     .GroupBy(x => new { x.CT_Num, x.Source })
                     .Select(g =>
@@ -972,6 +1187,27 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                             string articleKey = $"{ctNum}|{source}|{arRef}";
                             if (checkStates.ContainsKey(articleKey) && checkStates[articleKey])
                                 dtFiltered.ImportRow(row);
+                        }
+
+                        // ── Inclure les articles ajoutés manuellement via le "+" ──
+                        string manualKey = $"{ctNum}|{source}";
+                        if (manualArticles.ContainsKey(manualKey))
+                        {
+                            foreach (var m in manualArticles[manualKey])
+                            {
+                                string articleKey = $"{ctNum}|{source}|{m.AR_Ref}";
+                                if (checkStates.ContainsKey(articleKey) && checkStates[articleKey] &&
+                                    !dtFiltered.AsEnumerable().Any(r => r["AR_Ref"]?.ToString() == m.AR_Ref))
+                                {
+                                    DataRow newRow = dtFiltered.NewRow();
+                                    newRow["AR_Ref"] = m.AR_Ref;
+                                    newRow["AR_Design"] = m.AR_Design;
+                                    newRow["StockADate"] = m.StockADate;
+                                    newRow["StockMinimum"] = m.StockMin;
+                                    newRow["StockMaximum"] = m.StockMax;
+                                    dtFiltered.Rows.Add(newRow);
+                                }
+                            }
                         }
 
                         return (CT_Num: ctNum, Source: source, ConnStr: connStr,
@@ -1096,7 +1332,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                         }
 
                                         InsertFDOCLIGNE(dodo_piece, arRef, arDesign, qte, pu,
-                                                        montant, ctNum, depot, poids,connStr);
+                                                        montant, ctNum, depot, poids, connStr);
                                     }
                                     finally
                                     {
@@ -1132,6 +1368,8 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 // ── Reset sélection ──
                 checkStates.Clear();
                 articleConnectionMap.Clear();
+                manualArticles.Clear();
+                removedArticles.Clear();
                 UpdateSelectionCount();
                 layoutView.RefreshData();
             };
@@ -1147,6 +1385,31 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             layoutView.RefreshData();
         }
 
+        private string recuperer_code_fournisseur(string cond)
+        {
+            string recup = null;
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+
+                string existfournisseur = @"
+                SELECT CT_Num
+                FROM F_COMPTET
+                WHERE CT_INTITULE LIKE @ctintitule";
+
+                using (SqlCommand checkCmd = new SqlCommand(existfournisseur, connection))
+                {
+                    checkCmd.Parameters.AddWithValue("@ctintitule", "%" + cond.Trim() + "%");
+                    var result = checkCmd.ExecuteScalar();
+                    if (result != null && result != DBNull.Value)
+                        recup = result.ToString().Trim();
+                }
+
+            }
+
+            return recup;
+        }
         private int recuperer_devise(String cond)
         {
             AppDbContext context = new AppDbContext();
@@ -1154,7 +1417,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
             var test = context.P_DEVISE.Where(p => p.D_Intitule.Contains(cond)).FirstOrDefault();
 
-            if(test != null)
+            if (test != null)
             {
                 d_val = (short)test.cbIndice;
             }

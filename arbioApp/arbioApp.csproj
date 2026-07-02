@@ -249,6 +249,12 @@
     <Compile Include="Modules\Principal\Dashboard\RECOUVREMENT\ucRecouvrement.Designer.cs">
       <DependentUpon>ucRecouvrement.cs</DependentUpon>
     </Compile>
+    <Compile Include="Modules\Principal\DI\2_Documents\frmArticles.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Modules\Principal\DI\2_Documents\frmArticles.Designer.cs">
+      <DependentUpon>frmArticles.cs</DependentUpon>
+    </Compile>
     <Compile Include="Modules\Principal\DI\2_Documents\frmAutorisation.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -714,6 +720,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Modules\Principal\Dashboard\RECOUVREMENT\ucRecouvrement.resx">
       <DependentUpon>ucRecouvrement.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\Principal\DI\2_Documents\frmArticles.resx">
+      <DependentUpon>frmArticles.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Modules\Principal\DI\2_Documents\frmAutorisation.resx">
       <DependentUpon>frmAutorisation.cs</DependentUpon>
