@@ -623,73 +623,78 @@ namespace arbioApp.Modules.Principal.DI
 
                     btnAction.ButtonClick += (s, e) =>
                     {
-                        try
+                        bool autorise = frmMenuAchat.verifier_droit("Bon de réception", "VIEW");
+
+                        if (autorise)
                         {
-                            var view = masterView;
-                            int rowHandle = view.FocusedRowHandle;
-                            if (rowHandle < 0) return;
-
-                            string doPiece = view.GetRowCellValue(rowHandle, "DO_Piece")?.ToString();
-                            if (string.IsNullOrEmpty(doPiece)) return;
-
-                            if (e.Button.Index == 0)
+                            try
                             {
-                                ucDocuments.Instance.OuvrirPiece(view, rowHandle);
-                            }
-                            else if (e.Button.Index == 1)
-                            {
-                                bool tester1(string cond)
+                                var view = masterView;
+                                int rowHandle = view.FocusedRowHandle;
+                                if (rowHandle < 0) return;
+
+                                string doPiece = view.GetRowCellValue(rowHandle, "DO_Piece")?.ToString();
+                                if (string.IsNullOrEmpty(doPiece)) return;
+
+                                if (e.Button.Index == 0)
                                 {
-                                    bool b_test = false;
-                                    using (SqlConnection cn = new SqlConnection(connectionString))
+                                    ucDocuments.Instance.OuvrirPiece(view, rowHandle);
+                                }
+                                else if (e.Button.Index == 1)
+                                {
+                                    bool tester1(string cond)
                                     {
-                                        cn.Open();
-                                        string sql = @"
+                                        bool b_test = false;
+                                        using (SqlConnection cn = new SqlConnection(connectionString))
+                                        {
+                                            cn.Open();
+                                            string sql = @"
                                             SELECT TOP 1 DL_Qte, QteLivre
                                             FROM F_DOCLIGNE
                                             WHERE DO_Piece LIKE '%' + @DO_Piece + '%'
                                             AND DL_Qte <> QteLivre";
 
-                                        using (SqlCommand cmd = new SqlCommand(sql, cn))
-                                        {
-                                            cmd.Parameters.AddWithValue("@DO_Piece", cond);
-                                            using (SqlDataReader reader = cmd.ExecuteReader())
-                                                while (reader.Read())
-                                                    if (reader["DL_Qte"] != reader["QteLivre"])
-                                                    { b_test = true; break; }
+                                            using (SqlCommand cmd = new SqlCommand(sql, cn))
+                                            {
+                                                cmd.Parameters.AddWithValue("@DO_Piece", cond);
+                                                using (SqlDataReader reader = cmd.ExecuteReader())
+                                                    while (reader.Read())
+                                                        if (reader["DL_Qte"] != reader["QteLivre"])
+                                                        { b_test = true; break; }
+                                            }
                                         }
+                                        return b_test;
                                     }
-                                    return b_test;
-                                }
 
-                                if (tester1(doPiece))
-                                {
-                                    MessageBox.Show(
-                                        "Vous ne pouvez pas clôturer ce document, il y a encore des quantités non livrées!!!!",
-                                        "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                }
-                                else
-                                {
-                                    DialogResult result = XtraMessageBox.Show(
-                                        $"Clôturer le document {doPiece} ?",
-                                        "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-
-                                    if (result == DialogResult.Yes)
+                                    if (tester1(doPiece))
                                     {
-                                        AppDbContext _context = new AppDbContext();
-                                        var doc = _context.F_DOCENTETE
-                                            .FirstOrDefault(d => d.DO_Piece == doPiece);
+                                        MessageBox.Show(
+                                            "Vous ne pouvez pas clôturer ce document, il y a encore des quantités non livrées!!!!",
+                                            "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    }
+                                    else
+                                    {
 
-                                        if (doc == null)
-                                        { MessageBox.Show($"Document introuvable : {doPiece}"); return; }
+                                        DialogResult result = XtraMessageBox.Show(
+                                       $"Clôturer le document {doPiece} ?",
+                                       "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
-                                        doc.DO_Cloture = 1;
-                                        _context.SaveChanges();
-
-                                        using (SqlConnection conn = new SqlConnection(connectionString))
+                                        if (result == DialogResult.Yes)
                                         {
-                                            conn.Open();
-                                            string queryss = @"
+                                            AppDbContext _context = new AppDbContext();
+                                            var doc = _context.F_DOCENTETE
+                                                .FirstOrDefault(d => d.DO_Piece == doPiece);
+
+                                            if (doc == null)
+                                            { MessageBox.Show($"Document introuvable : {doPiece}"); return; }
+
+                                            doc.DO_Cloture = 1;
+                                            _context.SaveChanges();
+
+                                            using (SqlConnection conn = new SqlConnection(connectionString))
+                                            {
+                                                conn.Open();
+                                                string queryss = @"
                                                 BEGIN TRY
                                                     DISABLE TRIGGER ALL ON dbo.F_DOCLIGNE;
                                                     UPDATE dbo.F_DOCLIGNE
@@ -702,20 +707,30 @@ namespace arbioApp.Modules.Principal.DI
                                                     THROW;
                                                 END CATCH";
 
-                                            using (SqlCommand cmds1 = new SqlCommand(queryss, conn))
-                                            {
-                                                cmds1.Parameters.AddWithValue("@DocPiece", doPiece.Replace("ABR", "AFA") + "_");
-                                                cmds1.Parameters.AddWithValue("@DocPieces", doPiece);
-                                                cmds1.ExecuteNonQuery();
+                                                using (SqlCommand cmds1 = new SqlCommand(queryss, conn))
+                                                {
+                                                    cmds1.Parameters.AddWithValue("@DocPiece", doPiece.Replace("ABR", "AFA") + "_");
+                                                    cmds1.Parameters.AddWithValue("@DocPieces", doPiece);
+                                                    cmds1.ExecuteNonQuery();
+                                                }
                                             }
-                                        }
 
-                                        ucDocuments.Instance.RafraichirDonnees();
+                                            ucDocuments.Instance.RafraichirDonnees();
+                                        }
                                     }
                                 }
                             }
+                            catch (Exception ex) { XtraMessageBox.Show(ex.Message); }
                         }
-                        catch (Exception ex) { XtraMessageBox.Show(ex.Message); }
+                        else
+                        {
+                            MessageBox.Show(
+                                        "Vous n'avez pas l'autorisation d'ouvrir un bon de récception !",
+                                        "Transformation bloquée",
+                                        MessageBoxButtons.OK,
+                                        MessageBoxIcon.Error
+                                    );
+                        }
                     };
                 }
 

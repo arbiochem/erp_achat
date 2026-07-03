@@ -111,8 +111,8 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
             var repoTypeDoc = new DevExpress.XtraEditors.Repository.RepositoryItemLookUpEdit();
             repoTypeDoc.DataSource = typeDocuments;
-            repoTypeDoc.DisplayMember = "Value"; // Ce qui est affiché dans la liste
-            repoTypeDoc.ValueMember = "Value";     // Ce qui est stocké dans la cellule
+            repoTypeDoc.DisplayMember = "Value";
+            repoTypeDoc.ValueMember = "Value";
             repoTypeDoc.NullText = "";
 
             repoTypeDoc.Columns.Clear();

@@ -41,7 +41,6 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             
             InitializeComponent();
             txtLot.Text = "";
-            txtnumerolot.Text = "";
         }
 
         public static bool tester_dopiece(string cond)
@@ -451,7 +450,6 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
         private void frm_qte_livre_Load(object sender, EventArgs e)
         {
             txtLot.Text = "";
-            txtnumerolot.Text = "";
             txtBL.Text = "";
         }
 

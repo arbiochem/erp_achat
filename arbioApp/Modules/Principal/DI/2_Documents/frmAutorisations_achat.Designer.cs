@@ -43,6 +43,7 @@
             this.layoutControlGroup1 = new DevExpress.XtraLayout.LayoutControlGroup();
             this.layoutControlItem3 = new DevExpress.XtraLayout.LayoutControlItem();
             this.layoutControlItem4 = new DevExpress.XtraLayout.LayoutControlItem();
+            this.saisie_qte_livre = new DevExpress.XtraGrid.Columns.GridColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataLayoutControl1)).BeginInit();
             this.dataLayoutControl1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gd_autorisation_achat)).BeginInit();
@@ -94,7 +95,8 @@
             this.create,
             this.update,
             this.delete,
-            this.transform});
+            this.transform,
+            this.saisie_qte_livre});
             this.gv_achat.GridControl = this.gd_autorisation_achat;
             this.gv_achat.Name = "gv_achat";
             // 
@@ -200,6 +202,15 @@
             this.layoutControlItem4.TextSize = new System.Drawing.Size(0, 0);
             this.layoutControlItem4.TextVisible = false;
             // 
+            // saisie_qte_livre
+            // 
+            this.saisie_qte_livre.Caption = "SAISIE QTE LIVREE";
+            this.saisie_qte_livre.MinWidth = 25;
+            this.saisie_qte_livre.Name = "saisie_qte_livre";
+            this.saisie_qte_livre.Visible = true;
+            this.saisie_qte_livre.VisibleIndex = 8;
+            this.saisie_qte_livre.Width = 94;
+            // 
             // frmAutorisations_achat
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 16F);
@@ -255,5 +266,6 @@
         private DevExpress.XtraGrid.Columns.GridColumn update;
         private DevExpress.XtraGrid.Columns.GridColumn delete;
         private DevExpress.XtraGrid.Columns.GridColumn transform;
+        private DevExpress.XtraGrid.Columns.GridColumn saisie_qte_livre;
     }
 }

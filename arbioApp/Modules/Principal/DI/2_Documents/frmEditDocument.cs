@@ -3362,7 +3362,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 }
 
 
-                string UPDATESqls3 = @"UPDATE F_DOCLIGNE SET do_piece=@do_pieces WHERE do_piece=@do_piece";
+                string UPDATESqls3 = @"UPDATE F_DOCLIGNE SET do_piece=@do_pieces,DO_TYPE=@dotype WHERE do_piece=@do_piece";
 
                 using (SqlConnection conn = new SqlConnection(connectionString2))
                 using (SqlCommand cmd = new SqlCommand(UPDATESqls3, conn))
@@ -3372,6 +3372,9 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
                     cmd.Parameters.Add("@do_pieces", SqlDbType.VarChar, 20)
                         .Value = dopiecetxt.Text.Replace("AFA","ABR");
+
+                    cmd.Parameters.Add("@dotype", SqlDbType.Int)
+                        .Value = Convert.ToInt32(newDoType);
 
                     conn.Open();
                     new SqlCommand("DISABLE TRIGGER ALL ON F_DOCLIGNE", conn).ExecuteNonQuery();
@@ -4924,7 +4927,9 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                     }
                     else if (dopiecetxt.Text.ToString().StartsWith("AFA") || (dopiecetxt.Text.ToString().StartsWith("ABR") && test!=null))
                     {
-                        bool autorise = frmMenuAchat.verifier_droit("Facture", "TRANSFORM");
+                        //bool autorise = frmMenuAchat.verifier_droit("Facture", "TRANSFORM");
+                        bool autorise = frmMenuAchat.verifier_droit("Facture", "SAISIE_QTE_LIVRE");
+
 
                         if (autorise)
                         {
@@ -5024,6 +5029,8 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                             }
                                         }
                                     }
+
+                                    affiche();
                                 }
                                 catch (System.Data.Entity.Infrastructure.DbUpdateException ex)
                                 {
@@ -5034,73 +5041,6 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                                     MessageBox.Show(ex.Message, "Erreur");
                                 }
                             }
-
-                            if (test == null)
-                            {
-                                var dlg = new frmTransform(_typeDocument);
-                                dlg.ParentFormInstance = this;
-
-                                if (dlg.ShowDialog() == DialogResult.OK)
-                                {
-                                    if (!tester_dopiece(dopiecetxt.Text.Replace("AFA", "ABR")))
-                                    {
-                                        this.TransformFDOCENTETE(dlg.doctype);
-                                    }
-                                    else
-                                    {
-                                        string insertSql = @"
-                                    DELETE FROM F_DOCENTETE WHERE Do_piece=@dopiece";
-
-                                        using (SqlConnection conn = new SqlConnection(connectionString))
-                                        using (SqlCommand cmd = new SqlCommand(insertSql, conn))
-                                        {
-                                            // Paramètres TYPÉS (bonne pratique)
-                                            cmd.Parameters.Add("@dopiece", SqlDbType.VarChar, 50)
-                                                .Value = dopiecetxt.Text.Trim();
-
-                                            conn.Open();
-                                            cmd.ExecuteNonQuery();
-                                        }
-
-                                        /*string insertSqls = @"
-                                        UPDATE F_DOCENTETE SET PRODUIT='' WHERE Do_piece=@dopiece";
-
-                                        using (SqlConnection conn = new SqlConnection(connectionString))
-                                        using (SqlCommand cmd = new SqlCommand(insertSqls, conn))
-                                        {
-                                            // Paramètres TYPÉS (bonne pratique)
-                                            cmd.Parameters.Add("@dopiece", SqlDbType.VarChar, 50)
-                                                .Value = dopiecetxt.Text.Trim().Replace("AFA","ABR");
-
-                                            conn.Open();
-                                            cmd.ExecuteNonQuery();
-                                        }
-
-                                        string insertSqls1 = @"
-                                        UPDATE F_DOCILGNE SET DO_piece=@dopieces,DO_Type=18 WHERE Do_piece=@dopiece";
-
-                                        using (SqlConnection conn = new SqlConnection(connectionString))
-                                        using (SqlCommand cmd = new SqlCommand(insertSqls1, conn))
-                                        {
-                                            // Paramètres TYPÉS (bonne pratique)
-                                            cmd.Parameters.Add("@dopieces", SqlDbType.VarChar, 50)
-                                                .Value = dopiecetxt.Text.Trim().Replace("AFA", "ABR");
-                                            cmd.Parameters.Add("@dopiece", SqlDbType.VarChar, 50)
-                                               .Value = dopiecetxt.Text.Trim();
-
-                                            conn.Open();
-                                            cmd.ExecuteNonQuery();
-                                        }*/
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                this.Hide();
-                            }
-
-                                // Fix for CS0120: Use the instance of ucDocuments instead of trying to call it statically
-                                _ucDocuments.ChargerDonneesDepuisBDD();
                         }
                         else
                         {
@@ -5152,6 +5092,79 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             }
         }
 
+        private void affiche()
+        {
+            var test = _context.Database.SqlQuery<F_DOCLIGNE>(
+                        "SELECT * FROM F_DOCLIGNE WHERE DO_Piece = @p0 AND TRY_CAST(QteLivre AS DECIMAL(18,2)) > 0",
+                        dopiecetxt.Text
+                    ).FirstOrDefault();
+            if (test == null)
+            {
+                var dlg = new frmTransform(_typeDocument);
+                dlg.ParentFormInstance = this;
+
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    if (!tester_dopiece(dopiecetxt.Text.Replace("AFA", "ABR")))
+                    {
+                        this.TransformFDOCENTETE(dlg.doctype);
+                    }
+                    else
+                    {
+                        string insertSql = @"
+                                    DELETE FROM F_DOCENTETE WHERE Do_piece=@dopiece";
+
+                        using (SqlConnection conn = new SqlConnection(connectionString))
+                        using (SqlCommand cmd = new SqlCommand(insertSql, conn))
+                        {
+                            // Paramètres TYPÉS (bonne pratique)
+                            cmd.Parameters.Add("@dopiece", SqlDbType.VarChar, 50)
+                                .Value = dopiecetxt.Text.Trim();
+
+                            conn.Open();
+                            cmd.ExecuteNonQuery();
+                        }
+
+                        /*string insertSqls = @"
+                        UPDATE F_DOCENTETE SET PRODUIT='' WHERE Do_piece=@dopiece";
+
+                        using (SqlConnection conn = new SqlConnection(connectionString))
+                        using (SqlCommand cmd = new SqlCommand(insertSqls, conn))
+                        {
+                            // Paramètres TYPÉS (bonne pratique)
+                            cmd.Parameters.Add("@dopiece", SqlDbType.VarChar, 50)
+                                .Value = dopiecetxt.Text.Trim().Replace("AFA","ABR");
+
+                            conn.Open();
+                            cmd.ExecuteNonQuery();
+                        }
+
+                        string insertSqls1 = @"
+                        UPDATE F_DOCILGNE SET DO_piece=@dopieces,DO_Type=18 WHERE Do_piece=@dopiece";
+
+                        using (SqlConnection conn = new SqlConnection(connectionString))
+                        using (SqlCommand cmd = new SqlCommand(insertSqls1, conn))
+                        {
+                            // Paramètres TYPÉS (bonne pratique)
+                            cmd.Parameters.Add("@dopieces", SqlDbType.VarChar, 50)
+                                .Value = dopiecetxt.Text.Trim().Replace("AFA", "ABR");
+                            cmd.Parameters.Add("@dopiece", SqlDbType.VarChar, 50)
+                               .Value = dopiecetxt.Text.Trim();
+
+                            conn.Open();
+                            cmd.ExecuteNonQuery();
+                        }*/
+                    }
+                }
+            }
+            else
+            {
+                this.Hide();
+            }
+
+            // Fix for CS0120: Use the instance of ucDocuments instead of trying to call it statically
+            _ucDocuments.ChargerDonneesDepuisBDD();
+        }
         public static bool tester_dopiece( string cond)
         {
             bool verif = false;
@@ -6342,7 +6355,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
         private void chkArActif_CheckedChanged(object sender, EventArgs e)
         {
-            if (dopiecetxt.Text.ToString().StartsWith("AFA"))
+            /*if (dopiecetxt.Text.ToString().StartsWith("AFA"))
             {
                 bool autorise = frmMenuAchat.verifier_droit("Facture", "UPDATE");
 
@@ -6414,7 +6427,7 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                         MessageBoxIcon.Error
                     );
                 }
-            }
+            }*/
         }
 
         private void chkArSommeil_CheckedChanged(object sender, EventArgs e)

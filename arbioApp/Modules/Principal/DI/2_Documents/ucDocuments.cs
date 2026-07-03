@@ -156,21 +156,34 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
             string doPiece = row["DO_Piece"]?.ToString() ?? "";
 
+            bool autorise = frmMenuAchat.verifier_droit("Bon de réception", "VIEW");
 
-            if (tester1(doPiece))
+            if (autorise)
             {
-                if (MessageBox.Show(
-                        $"Clôturer le document {doPiece} ?",
-                        "Confirmation",
-                        MessageBoxButtons.YesNo,
-                        MessageBoxIcon.Question) != DialogResult.Yes)
-                    return;
+                if (tester1(doPiece))
+                {
+                    if (MessageBox.Show(
+                            $"Clôturer le document {doPiece} ?",
+                            "Confirmation",
+                            MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Question) != DialogResult.Yes)
+                        return;
 
-                CloturerDocument(doPiece);
+                    CloturerDocument(doPiece);
+                }
+                else
+                {
+                    MessageBox.Show($"Vous ne pouvez pas clôturer ce document, il y a encore des quantités non livrées!!!!", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
             else
             {
-                MessageBox.Show($"Vous ne pouvez pas clôturer ce document, il y a encore des quantités non livrées!!!!", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                            "Vous n'avez pas l'autorisation de clôturer un document !",
+                            "Transformation bloquée",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error
+                        );
             }
         }
 
@@ -437,15 +450,94 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             // Pour tous les autres GridView → colonne DO_Piece
             if (e.Column.FieldName == "DO_Piece")
             {
-                OuvrirPiece(gv, e.RowHandle);
-                return;
+                object doPieceObj = gv.GetRowCellValue(e.RowHandle, "DO_Piece");
+
+                bool autorise = frmMenuAchat.verifier_droit("Facture", "VIEW");
+                bool autorise1 = frmMenuAchat.verifier_droit("Projet d'achat", "VIEW");
+                bool autorise2 = frmMenuAchat.verifier_droit("Bon de commande", "VIEW");
+                bool autorise3 = frmMenuAchat.verifier_droit("Facture", "SAISIE_QTE_LIVRE");
+
+                if (doPieceObj.ToString().StartsWith("APA"))
+                {
+                    if (autorise1)
+                    {
+                        OuvrirPiece(gv, e.RowHandle);
+                        return;
+                    }
+                    else
+                    {
+                        MessageBox.Show(
+                                   "Vous n'avez pas l'autorisation de modifier un projet d'achat !",
+                                   "Transformation bloquée",
+                                   MessageBoxButtons.OK,
+                                   MessageBoxIcon.Error
+                               );
+                    }
+                }
+                else if (doPieceObj.ToString().StartsWith("ABC"))
+                {
+                    if (autorise2)
+                    {
+                        OuvrirPiece(gv, e.RowHandle);
+                        return;
+                    }
+                    else
+                    {
+                        MessageBox.Show(
+                                   "Vous n'avez pas l'autorisation de modifier un bon de commande !",
+                                   "Transformation bloquée",
+                                   MessageBoxButtons.OK,
+                                   MessageBoxIcon.Error
+                               );
+                    }
+                }
+                else
+                {
+
+                    if (autorise)
+                    {
+                        OuvrirPiece(gv, e.RowHandle);
+                        return;
+                    }
+                    else
+                    {
+                        if (autorise3)
+                        {
+                            OuvrirPiece(gv, e.RowHandle);
+                            return;
+                        }
+                        else
+                        {
+                            MessageBox.Show(
+                                       "Vous n'avez pas l'autorisation de modifier une facture !",
+                                       "Transformation bloquée",
+                                       MessageBoxButtons.OK,
+                                       MessageBoxIcon.Error
+                                   );
+                        }
+                    }
+                }
             }
 
             // Pour gvLivre → colonne Action (bouton Ouvrir)
             if (gv == gvLivre && e.Column.FieldName == "Action")
             {
-                OuvrirPiece(gv, e.RowHandle);
-                return;
+                bool autorise = frmMenuAchat.verifier_droit("Bon de réception", "VIEW");
+
+                if (autorise)
+                {
+                    OuvrirPiece(gv, e.RowHandle);
+                    return;
+                }
+                else
+                {
+                    MessageBox.Show(
+                               "Vous n'avez pas l'autorisation de modifier un bon de réception !",
+                               "Transformation bloquée",
+                               MessageBoxButtons.OK,
+                               MessageBoxIcon.Error
+                           );
+                }
             }
         }
 
@@ -793,9 +885,24 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
         private void genItem_Itemclick(object sender, ItemClickEventArgs e)
         {
-            frm_generer frmGen = new frm_generer();
-            frmGen.ShowDialog();
-            ChargerDonneesDepuisBDD();
+            bool autorise = frmMenuAchat.verifier_droit("Projet d'achat", "VIEW");
+
+            if (autorise)
+            {
+                frm_generer frmGen = new frm_generer();
+                frmGen.ShowDialog();
+                ChargerDonneesDepuisBDD();
+                return;
+            }
+            else
+            {
+                MessageBox.Show(
+                           "Vous n'avez pas l'autorisation de créer un projet d'achat !",
+                           "Transformation bloquée",
+                           MessageBoxButtons.OK,
+                           MessageBoxIcon.Error
+                       );
+            }
         }
 
         private void DbItem_Item1Click(object sender, ItemClickEventArgs e)
@@ -841,9 +948,25 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
         private void button2_Click(object sender, EventArgs e)
         {
-            frm_generer frmGen = new frm_generer();
-            frmGen.ShowDialog();
-            ChargerDonneesDepuisBDD();
+            bool autorise = frmMenuAchat.verifier_droit("Projet d'achat", "VIEW");
+
+            if (autorise)
+            {
+                frm_generer frmGen = new frm_generer();
+                frmGen.ShowDialog();
+                ChargerDonneesDepuisBDD();
+                return;
+            }
+            else
+            {
+                MessageBox.Show(
+                           "Vous n'avez pas l'autorisation de créer un projet d'achat !",
+                           "Transformation bloquée",
+                           MessageBoxButtons.OK,
+                           MessageBoxIcon.Error
+                       );
+            }
+            
         }
 
         private void gcLivre_Load(object sender, EventArgs e)
