@@ -7173,10 +7173,10 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
 
             MessageBox.Show("Modification INCOTERM terminée", "Message d'information", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
-
+        
         private void hyperlinkLabelControl1_Click_1(object sender, EventArgs e)
         {
-            frm_correspondance f_corres = new frm_correspondance();
+            frm_correspondance_article f_corres = new frm_correspondance_article();
             f_corres.txtnumpiece.Text = dopiecetxt.Text.ToString();
             f_corres.ShowDialog();
         }

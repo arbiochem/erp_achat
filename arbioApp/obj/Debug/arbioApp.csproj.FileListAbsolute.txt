@@ -437,9 +437,10 @@ D:\Arbiochem\Travail\Sauvegarde projets\erp_sauve_20260123\APM\arbioApp\obj\Debu
 D:\Arbiochem\Travail\Sauvegarde projets\erp_sauve_20260123\APM\arbioApp\obj\Debug\arbioApp.csproj.CoreCompileInputs.cache
 D:\Arbiochem\Travail\Sauvegarde projets\erp_sauve_20260123\APM\arbioApp\obj\Debug\arbioApp.exe
 D:\Arbiochem\Travail\Sauvegarde projets\erp_sauve_20260123\APM\arbioApp\obj\Debug\arbioApp.pdb
-D:\Arbiochem\Travail\ERP\arbioApp\obj\Debug\arbioApp.Modules.Principal.DI._2_Documents.frm_correspondance.resources
 D:\Arbiochem\Travail\ERP\arbioApp\obj\Debug\arbioApp.Modules.Principal.DI._2_Documents.frm_generer.resources
 D:\Arbiochem\Travail\ERP\arbioApp\obj\Debug\arbioApp.Modules.Principal.DI._2_Documents.frm_saisieQuantite.resources
 D:\Arbiochem\Travail\ERP\arbioApp\obj\Debug\arbioApp.Modules.Principal.DI._2_Documents.frm_qte_livre.resources
 D:\Arbiochem\Travail\ERP\arbioApp\obj\Debug\arbioApp.Modules.Principal.DI._2_Documents.frm_packingList.resources
 D:\Arbiochem\Travail\ERP\arbioApp\obj\Debug\arbioApp.Modules.Principal.DI._2_Documents.frmArticles.resources
+D:\Arbiochem\Travail\erp\arbioApp\obj\Debug\arbioApp.Modules.Principal.DI._2_Documents.frm_correspondance_article.resources
+D:\Arbiochem\Travail\erp\arbioApp\obj\Debug\arbioApp.Modules.Principal.DI._2_Documents.frm_correspondance_articles.resources

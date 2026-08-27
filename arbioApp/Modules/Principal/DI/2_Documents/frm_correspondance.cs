@@ -21,12 +21,12 @@ using Exception = System.Exception;
 
 namespace arbioApp.Modules.Principal.DI._2_Documents
 {
-    public partial class frm_correspondance : Form
+    public partial class frm_correspondance_article : Form
     {
         private string dbPrincipale = ucDocuments.dbNamePrincipale;
         private string serveripPrincipale = ucDocuments.serverIpPrincipale;
 
-        public frm_correspondance()
+        public frm_correspondance_article()
         {
             InitializeComponent();
         }

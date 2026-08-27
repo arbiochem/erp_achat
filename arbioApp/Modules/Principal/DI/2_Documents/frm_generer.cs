@@ -405,6 +405,18 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
             txtSearch1.Height = 24;
             txtSearch1.Parent = searchPanel;
 
+            SimpleButton btnCorres = new SimpleButton();
+            btnCorres.Text = "Correspondance Article";
+            btnCorres.Dock = DockStyle.Right;
+            btnCorres.Width = 220;
+            btnCorres.Appearance.BackColor = Color.FromArgb(52, 152, 219);
+            btnCorres.Appearance.ForeColor = Color.White;
+            btnCorres.Appearance.Font = new Font("Tahoma", 9f, FontStyle.Bold);
+            btnCorres.Padding = new Padding(5, 5, 5, 5);
+            btnCorres.Location = new Point(200, 48);
+            btnCorres.Parent = searchPanel;
+            btnCorres.Click += simpleButton1_Click;
+
             // ── Filtre BASE ──
             LabelControl lblBase = new LabelControl();
             lblBase.Text = "Base :";
@@ -1422,6 +1434,12 @@ namespace arbioApp.Modules.Principal.DI._2_Documents
                 d_val = (short)test.cbIndice;
             }
             return d_val;
+        }
+
+        private void simpleButton1_Click(object sender, EventArgs e)
+        {
+            frm_correspondance_articles frm_article = new frm_correspondance_articles();
+            frm_article.ShowDialog();
         }
     }
 }
